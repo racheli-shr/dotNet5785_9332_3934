@@ -10,8 +10,8 @@ namespace targil0
             Welcome9332();
             Console.ReadKey();
         }
-        static partial void Welcome9332();
-        private static void Welcome3934()
+        static partial void Welcome3934();
+        private static void Welcome9332()
         {
             Console.WriteLine("enter your name:");
             string name = Console.ReadLine();
