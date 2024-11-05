@@ -10,7 +10,7 @@ namespace targil0
             Welcome3934();
             Welcome9332();
             Console.ReadKey();
-            Console.WriteLine("d");
+           
         }
         static partial void Welcome3934();
         private static void Welcome9332()
