@@ -21,12 +21,12 @@ public record Call
 (
     int Id,
     CallType CallType,  // הגדרת enum עם סוג "CallType"
-    string Description,
+    string? Description,
     string FullAdress,
     double Latitude,
     double Longitude,
     DateTime OpeningCallTime,
-    DateTime MaxTimeToEnd
+    DateTime? MaxTimeToEnd
 )
 {
     // בנאי ברירת מחדל שמאתחל את הערכים

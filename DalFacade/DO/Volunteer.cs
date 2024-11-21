@@ -1,36 +1,25 @@
 ﻿
+using System.Data;
 using static DO.Volunteer;
 
 namespace DO;
 
 public record Volunteer
+(
+    int Id,
+    string FullName,
+    string Phone,
+    string Email,
+    string? Password,
+    string? FullAdress,
+    double? Latitude,
+    double? Longitude,
+    Role Role,  // Role הוא Enum
+    bool IsActive,
+    double? MaxDistance,
+    DistanceType? DistanceType  // DistanceType הוא Enum, Nullable
+)
 {
-	int Id;
-    public string FullName { get; set; }
-    public string Phone { get; set; }
-    public string Email { get; set; }
-    public string? Password { get; set; }
-    public string? FullAdress { get; set; }
-    public double? Latitude { get; set; }
-    public double? Longitude { get; set; }
-    public enum Role;
-    public bool IsActive { get; set; }
-    public double? MaxDistance { get; set; }
-    public enum DistanseType;
-
-    public Volunteer()
-    {
-        
-        FullName = "Unknown";
-        Phone = "Unknown";
-        Email = "Unknown";
-        Password = "Unknown";
-        FullAdress = "Unknown";
-        Latitude = null;
-        Longitude = null;
-        //Role = null;      לא מוגדר
-        IsActive = true;
-        MaxDistance = null;
-        //DistanceType = null;   לא מוגדר 
-    }
+    // אם ברצונך להוסיף בנאי ברירת מחדל עם ערכים, אפשר להגדיר כך:
+    public Volunteer() : this(0, "Unknown", "Unknown", "Unknown", null, "Unknown", null, null, Role.Volunteer, true, null, null) { }
 }
