@@ -11,7 +11,7 @@ public record Assignment
     int VolunteerId,
     DateTime EntryTimeForTreatment,
     DateTime? ActualTreatmentEndTime,
-    DateTime? TypeOfTreatmentTermination
+    TypeOfTreatmentTerm? TypeOfTreatmentTermination
 )
 {
     // בנאי ברירת מחדל
