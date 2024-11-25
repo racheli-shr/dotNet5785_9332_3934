@@ -1,11 +1,9 @@
-﻿
-
-
-using static DO.Volunteer;
+﻿using static DO.Volunteer;
 using System.Numerics;
 using Microsoft.VisualBasic;
 
 namespace DO;
+
 /// <summary>
 /// 
 /// </summary>
@@ -26,10 +24,9 @@ public record Call
     double Latitude,
     double Longitude,
     DateTime OpeningCallTime,
-    DateTime? MaxTimeToEnd
+    DateTime? MaxTimeToEnd  // כאן הערך יכול להיות null
 )
 {
     // בנאי ברירת מחדל שמאתחל את הערכים
-    public Call() : this(0, "No description", "Unknown", 0.0, 0.0, DateTime.Now, DateTime.Now.AddHours(1)) { }
+    public Call() : this(0, default(CallType), "No description", "Unknown", 0.0, 0.0, DateTime.Now, null) { }
 }
-

@@ -14,15 +14,18 @@
 //}
 { 
 using System;
-
+    using Dal;
+    using DalApi;
+    using DO;
 internal class Program
 {
     private static IVolunteer? s_dalVolunteer = new VolunteerImplementation();
     private static ICall? s_dalCall = new CallImplementation();
     private static IAssignment? s_dalAssignment = new AssignmentImplementation();
-    private static IConfig? s_dalConfig = new ConfigImplementation();
+        //private static IConfig? s_dalConfig = new ConfigImplementation();
+        private static IConfig? s_dalConfig = (IConfig?)new ConfigImplementation();
 
-    public static void Main(string[] args)
+        public static void Main(string[] args)
     {
         try
         {
@@ -68,7 +71,7 @@ internal class Program
                     ConfigMenu();
                     break;
                 case "5":
-                    Initialization.Do(s_dalVolunteer, s_dalCall, s_dalAssignment, s_dalConfig);
+                    Initialization.Do(s_dalAssignment, s_dalVolunteer, s_dalCall,  s_dalConfig);
                     break;
                 case "6":
                     ShowAllData();
@@ -128,26 +131,26 @@ internal class Program
         }
     }
 
-    private static void AddVolunteer()
-    {
-        try
+        private static void AddVolunteer()
         {
-            // קליטת נתונים מהמסך
-            Console.Write("Enter Volunteer ID: ");
-            int id = int.Parse(Console.ReadLine());
-            Console.Write("Enter Volunteer Name: ");
-            string name = Console.ReadLine();
-            // יצירת אובייקט חדש והוספתו דרך הממשק
-            var volunteer = new Volunteer { ID = id, Name = name };
-            s_dalVolunteer?.Create(volunteer);
+            try
+            {
+                // קליטת נתונים מהמסך
+                Console.Write("Enter Volunteer ID: ");
+                int id = int.Parse(Console.ReadLine());
+                Console.Write("Enter Volunteer Name: ");
+                string name = Console.ReadLine();
+                // יצירת אובייקט חדש והוספתו דרך הממשק
+                var volunteer = new Volunteer(id, name, "Unknown", "Unknown", null, "Unknown", null, null, Role.volunteer, true, null, null);
+                s_dalVolunteer?.Create(volunteer);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Exception caught: {ex.Message}");
+            }
         }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Exception caught: {ex.Message}");
-        }
-    }
 
-    private static void DisplayVolunteerById()
+        private static void DisplayVolunteerById()
     {
         try
         {
@@ -178,31 +181,31 @@ internal class Program
         }
     }
 
-    private static void UpdateVolunteer()
-    {
-        try
+        private static void UpdateVolunteer()
         {
-            Console.Write("Enter Volunteer ID: ");
-            int id = int.Parse(Console.ReadLine());
-            var volunteer = s_dalVolunteer?.Read(id);
-            if (volunteer != null)
+            try
             {
-                Console.Write("Enter new Volunteer Name (leave empty to keep current): ");
-                string name = Console.ReadLine();
-                if (!string.IsNullOrEmpty(name))
+                Console.Write("Enter Volunteer ID: ");
+                int id = int.Parse(Console.ReadLine());
+                var volunteer = s_dalVolunteer?.Read(id);
+                if (volunteer != null)
                 {
-                    volunteer.Name = name;
+                    Console.Write("Enter new Volunteer Name (leave empty to keep current): ");
+                    string name = Console.ReadLine();
+                    if (!string.IsNullOrEmpty(name))
+                    {
+                        volunteer = volunteer with { FullName = name };
+                    }
+                    s_dalVolunteer?.Update(volunteer);
                 }
-                s_dalVolunteer?.Update(volunteer);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Exception caught: {ex.Message}");
             }
         }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Exception caught: {ex.Message}");
-        }
-    }
 
-    private static void DeleteVolunteerById()
+        private static void DeleteVolunteerById()
     {
         try
         {

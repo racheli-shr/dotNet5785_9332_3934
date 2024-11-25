@@ -1,6 +1,4 @@
-﻿
-
-using System;
+﻿using System;
 
 namespace DO;
 
@@ -15,5 +13,5 @@ public record Assignment
 )
 {
     // בנאי ברירת מחדל
-    public Assignment() : this(0, 0, 0, DateTime.MinValue, DateTime.MinValue, DateTime.MinValue) { }
+    public Assignment() : this(0, 0, 0, DateTime.MinValue, null, null) { }
 }

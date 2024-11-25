@@ -8,10 +8,10 @@ namespace Stage0
 {
     partial class Program
     {
-        static partial void Welcome3934()
-        {
-            Console.WriteLine("HI!");
-            ;
-        }
+        //static partial void Welcome3934()
+        //{
+        //    Console.WriteLine("HI!");
+        //    ;
+        //}
     }
 }

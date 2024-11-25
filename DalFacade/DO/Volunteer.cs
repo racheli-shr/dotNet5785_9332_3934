@@ -21,5 +21,5 @@ public record Volunteer
 )
 {
     // אם ברצונך להוסיף בנאי ברירת מחדל עם ערכים, אפשר להגדיר כך:
-    public Volunteer() : this(0, "Unknown", "Unknown", "Unknown", null, "Unknown", null, null, Role.Volunteer, true, null, null) { }
+    public Volunteer() : this(0, "Unknown", "Unknown", "Unknown", null, "Unknown", null, null, Role.volunteer, true, null, null) { }
 }
