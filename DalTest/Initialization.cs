@@ -1,6 +1,4 @@
-﻿
-
-namespace DalTest;
+﻿namespace DalTest;
 using DalApi;
 using DO;
 using System.Data;
@@ -30,9 +28,9 @@ public static class Initialization
     private static void createVolunteer()
     {
         int MIN_ID = 200000000;
-        int MAX_ID = 999999999;
+        int MAX_ID = 400000000;
         int MIN_PHONE = 0264000000;
-        int MAX_PHONE = 026999999;
+        int MAX_PHONE = 026599999;
 
         string[] fullName = { "Yael Bar", "Racheli Tal ", "Hadas Shay", "Shira Or", "Daniel Zohar", "David Mor" };
         string[] adress = { "mango 32", "orange 15", "ananas 66", "kiwi 46", "apple 21", "cherry 10" };
@@ -75,5 +73,30 @@ public static class Initialization
             DateTime? MaxTimeToEnd = s_dalConfig.Clock.AddDays(i + 14);
             s_dalCall.Create(new(0, CallType, Description, FullAdress, Latitude, Longitude, OpeningCallTime, MaxTimeToEnd));
         }
+    }
+    public static void Do(IAssignment? dalAssignment, IVolunteer? dalVolunteer, ICall? dalCall, IConfig? dalConfig)
+    {
+        // הצבת הפרמטרים למשתנים הסטטיים
+        s_dalAssignment = dalAssignment ?? throw new NullReferenceException("DAL object can not be null!");
+        s_dalVolunteer = dalVolunteer ?? throw new NullReferenceException("DAL object can not be null!");
+        s_dalCall = dalCall ?? throw new NullReferenceException("DAL object can not be null!");
+        s_dalConfig = dalConfig ?? throw new NullReferenceException("DAL object can not be null!");
+
+        // איפוס נתוני התצורה ואיפוס רשימות נתונים
+        Console.WriteLine("Reset Configuration values and List values...");
+        s_dalConfig.Reset();
+        s_dalAssignment.DeleteAll();
+        s_dalVolunteer.DeleteAll();
+        s_dalCall.DeleteAll();
+
+        // קריאה לפונקציות אתחול הרשימות
+        Console.WriteLine("Initializing Volunteers list ...");
+        createVolunteer();
+
+        Console.WriteLine("Initializing Calls list ...");
+        createCall();
+
+        Console.WriteLine("Initializing Assignments list ...");
+        createAssignment();
     }
 }
