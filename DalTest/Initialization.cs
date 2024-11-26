@@ -29,8 +29,8 @@ public static class Initialization
     {
         int MIN_ID = 200000000;
         int MAX_ID = 400000000;
-        int MIN_PHONE = 0264000000;
-        int MAX_PHONE = 026599999;
+        int MIN_PHONE = 64000000;
+        int MAX_PHONE = 65999999;
 
         string[] fullName = { "Yael Bar", "Racheli Tal ", "Hadas Shay", "Shira Or", "Daniel Zohar", "David Mor" };
         string[] adress = { "mango 32", "orange 15", "ananas 66", "kiwi 46", "apple 21", "cherry 10" };
@@ -39,14 +39,16 @@ public static class Initialization
         foreach (string name in fullName)
         {
             int Id = s_rand.Next(MIN_ID, MAX_ID);
-            while (s_dalVolunteer.Read(Id) == null)
+            while (s_dalVolunteer.Read(Id) != null)
             {
                 Id = s_rand.Next(MIN_ID, MAX_ID);
             }
             string FullName = name;
-            string phone = $"{s_rand.Next(MIN_PHONE, MAX_PHONE)}";
-            string email = $"{name}@gmail.com";
-            string password = $"{name.ToUpper()}2024";
+            int phoneNumber = s_rand.Next(MIN_PHONE, MAX_PHONE);
+            string phone = $"02-{phoneNumber}";
+            string email = $"{name.Trim().Replace(" ", "")}@gmail.com";
+            string password = s_dalVolunteer.GenerateStrongPassword();
+            string encriptedPassword = s_dalVolunteer.EncryptPassword(password);
             string fullAdress = $"{adress[i]}";
             double longtitude = (s_rand.NextDouble() * 360) - 180;
             double latitude = (s_rand.NextDouble() * 180) - 90;
@@ -54,7 +56,7 @@ public static class Initialization
             bool isIative = (i % 2 == 0) ? false : true;
             double maxDistance = i * i + 50;
             DistanceType distanceType = (i % 2 == 0 ? DistanceType.walkDistance : i % 3 == 0 ? DistanceType.airDistance : DistanceType.driveDistance);
-            s_dalVolunteer.Create(new(Id, FullName, phone, email, password, fullAdress, latitude, longtitude, role, isIative, maxDistance, distanceType));
+            s_dalVolunteer.Create(new(Id, FullName, phone, email, encriptedPassword, fullAdress, latitude, longtitude, role, isIative, maxDistance, distanceType));
             i += 1;
         }
     }
