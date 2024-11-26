@@ -58,6 +58,7 @@ public static class Initialization
             DistanceType distanceType = (i % 2 == 0 ? DistanceType.walkDistance : i % 3 == 0 ? DistanceType.airDistance : DistanceType.driveDistance);
             s_dalVolunteer.Create(new(Id, FullName, phone, email, encriptedPassword, fullAdress, latitude, longtitude, role, isIative, maxDistance, distanceType));
             i += 1;
+
         }
     }
     private static void createCall()
