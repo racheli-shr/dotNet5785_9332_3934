@@ -59,15 +59,15 @@ using DalApi;
 using DO;
 using System.Collections.Generic;
 
-public class CallImplementation : ICall
+internal class CallImplementation : ICall
 {
-    public int Create(Call item)
+    public void Create(Call item)
     {
         // יצירת אובייקט חדש עם ID חדש
         int newId = Config.NextCallId;
         Call c = item with { Id = newId }; // יצירת אובייקט חדש עם ה-ID החדש
         DataSource.Calls.Add(c);
-        return newId;
+        
     }
 
     public void Delete(int id)

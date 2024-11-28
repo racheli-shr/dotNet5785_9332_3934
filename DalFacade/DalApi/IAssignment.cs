@@ -1,27 +1,9 @@
 ﻿
-//namespace DalApi;
-//using DO;
-
-//public interface IAssignment
-//{
-//    int Create(Assignment item); //Creates new entity object in DAL
-//    Assignment? Read(int id); //Reads entity object by its ID
-//    List<Assignment> ReadAll(); //stage 1 only, Reads all entity objects
-//    void Update(Assignment item); //Updates entity object
-//    void Delete(int id); //Deletes an object by its Id
-//    void DeleteAll(); //Delete all entity objects
-
-//}
 namespace DalApi;
 using DO;
 
-public interface IAssignment
+public interface IAssignment : ICrud<Assignment>
 {
-    int Create(Assignment item); // Creates new entity object in DAL
-    Assignment? Read(int id); // Reads entity object by its ID
-    List<Assignment> ReadAll(); // Stage 1 only, Reads all entity objects
-    void Update(Assignment item); // Updates entity object
-    void Delete(int id); // Deletes an object by its ID
-    void DeleteAll(); // Delete all entity objects
+    
 }
 
