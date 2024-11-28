@@ -10,12 +10,8 @@
     using Dal;
     internal class Program
     {
-        private static IVolunteer? s_dalVolunteer = new VolunteerImplementation();
-        private static ICall? s_dalCall = new CallImplementation();
-        private static IAssignment? s_dalAssignment = new AssignmentImplementation();
-        //private static IConfig? s_dalConfig = new ConfigImplementation();
-        private static IConfig? s_dalConfig = (IConfig?)new ConfigImplementation();
-
+        static readonly IDal s_dal = new DalList(); //stage 2
+        
         public static void Main(string[] args)
         {
             try
@@ -62,7 +58,7 @@
                         ConfigMenu();
                         break;
                     case "5":
-                        Initialization.Do(s_dalAssignment, s_dalVolunteer, s_dalCall, s_dalConfig);
+                        Initialization.Do(s_dal);
                         break;
                     case "6":
                         ShowAllData();
@@ -130,21 +126,21 @@
 
             Console.WriteLine("enter the id of the volunteer to update his password");
             int id = int.Parse(Console.ReadLine());
-            while (s_dalVolunteer.Read(id) == null)
+            while (s_dal.Volunteer.Read(a => a.Id == id) == null)
             {
                 Console.WriteLine("Id is not existing please r-enter the id of the volunteer to update his password");
                 id = int.Parse(Console.ReadLine());
             }
             Console.Write("Enter a strong password of 8 characters with at least 1 digits ,one lowercase Letter, one uppercase lette:");
             string password = Console.ReadLine();
-            while (!s_dalVolunteer.checkPassword(password))
+            while (!s_dal.Volunteer.checkPassword(password))
             {
                 Console.WriteLine("Sorry! Password is incorrect or not strong enough please enter again");
                 Console.Write("Enter a strong password of 8 characters with at least 1 digits ,one lowercase Letter, one uppercase lette:");
                 password = Console.ReadLine();
             }
-            string encriptedPassword = s_dalVolunteer.EncryptPassword(password);
-            s_dalVolunteer.updatePassword(id, encriptedPassword);
+            string encriptedPassword = s_dal.Volunteer.EncryptPassword(password);
+            s_dal.Volunteer.updatePassword(id, encriptedPassword);
             Console.WriteLine("password updated successfully!");
         }
         
@@ -163,9 +159,9 @@
                 Console.Write("Enter Volunteer Email: ");
                 string email = Console.ReadLine();
                 //Console.Write("Enter a strong password of 8 characters with at least 1 digits ,one lowercase Letter, one uppercase lette:");
-                string password = s_dalVolunteer.GenerateStrongPassword();//הגרלת סיסמא ראשונית
+                string password = s_dal.Volunteer.GenerateStrongPassword();//הגרלת סיסמא ראשונית
                 Console.WriteLine($"Your password is: {password} you could change it at the volunteer menu.");
-                string encriptedPassword = s_dalVolunteer.EncryptPassword(password);
+                string encriptedPassword = s_dal.Volunteer.EncryptPassword(password);
                 Console.Write("Enter Volunteer Adress: ");
                 string adress = Console.ReadLine();
                 Console.Write("Enter Volunteer latitude a number between -90 to 90: ");
@@ -176,7 +172,7 @@
                 int maxDistance = int.Parse(Console.ReadLine());
                 // יצירת אובייקט חדש והוספתו דרך הממשק
                 var volunteer = new Volunteer(id, name, $"02-{phone}", email, encriptedPassword, adress, latitude, longtitude, Role.volunteer, true, maxDistance, DistanceType.airDistance);
-                s_dalVolunteer?.Create(volunteer);
+                s_dal.Volunteer?.Create(volunteer);
             }
             catch (Exception ex)
             {
@@ -190,7 +186,7 @@
             {
                 Console.Write("Enter Volunteer ID: ");
                 int id = int.Parse(Console.ReadLine());
-                var volunteer = s_dalVolunteer?.Read(id);
+                var volunteer = s_dal.Volunteer?.Read(a => a.Id == id);
                 Console.WriteLine(volunteer);
             }
             catch (Exception ex)
@@ -203,7 +199,7 @@
         {
             try
             {
-                var volunteers = s_dalVolunteer?.ReadAll();
+                var volunteers = s_dal.Volunteer?.ReadAll();
                 foreach (var volunteer in volunteers)
                 {
                     Console.WriteLine(volunteer);
@@ -221,7 +217,7 @@
             {
                 Console.Write("Enter Volunteer ID: ");
                 int id = int.Parse(Console.ReadLine());
-                var volunteer = s_dalVolunteer?.Read(id);
+                var volunteer = s_dal.Volunteer?.Read(a => a.Id == id);
                 if (volunteer != null)
                 {
                     Console.Write("Enter Volunteer Name: ");
@@ -232,13 +228,13 @@
                     string email = Console.ReadLine();
                     Console.Write("Enter a strong password of 8 characters with at least 1 digits ,one lowercase Letter, one uppercase lette:");
                     string password = Console.ReadLine();
-                    while (!s_dalVolunteer.checkPassword(password))
+                    while (!s_dal.Volunteer.checkPassword(password))
                     {
                         Console.WriteLine("Sorry! Password is incorrect or not strong enough please enter again");
                         Console.Write("Enter a strong password of 8 characters with at least 1 digits ,one lowercase Letter, one uppercase lette:");
                         password = Console.ReadLine();
                     }
-                    string encriptedPassword = s_dalVolunteer.EncryptPassword(password);
+                    string encriptedPassword = s_dal.Volunteer.EncryptPassword(password);
                     Console.Write("Enter Volunteer Adress: ");
                     string adress = Console.ReadLine();
                     Console.Write("Enter Volunteer latitude a number between -90 to 90: ");
@@ -248,7 +244,7 @@
                     Console.Write("Enter Volunteer maxDistance in km: ");
                     int maxDistance = int.Parse(Console.ReadLine());
                     volunteer = volunteer with { FullName = name, Phone = $"02-{phone}", Email = email, Password = encriptedPassword, FullAdress = adress, Latitude = latitude, Longitude = longtitude, MaxDistance = maxDistance };
-                    s_dalVolunteer?.Update(volunteer);
+                    s_dal.Volunteer?.Update(volunteer);
                 }
             }
             catch (Exception ex)
@@ -263,7 +259,7 @@
             {
                 Console.Write("Enter Volunteer ID: ");
                 int id = int.Parse(Console.ReadLine());
-                s_dalVolunteer?.Delete(id);
+                s_dal.Volunteer?.Delete(id);
             }
             catch (Exception ex)
             {
@@ -275,7 +271,7 @@
         {
             try
             {
-                s_dalVolunteer?.DeleteAll();
+                s_dal.Volunteer?.DeleteAll();
             }
             catch (Exception ex)
             {
@@ -317,10 +313,10 @@
         {
             try
             {
-                s_dalVolunteer?.DeleteAll();
-                s_dalCall?.DeleteAll();
-                s_dalAssignment?.DeleteAll();
-                s_dalConfig?.Reset();
+                s_dal.Volunteer?.DeleteAll();
+                s_dal.Call?.DeleteAll();
+                s_dal.Assignment?.DeleteAll();
+                s_dal.Config?.Reset();
             }
             catch (Exception ex)
             {

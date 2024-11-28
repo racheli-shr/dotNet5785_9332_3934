@@ -5,6 +5,7 @@ namespace Dal
     using DalApi;
     using DO;
     using System.Collections.Generic;
+    using System.ComponentModel;
     using System.Text;
     using System.Xml.Linq;
 
@@ -26,7 +27,7 @@ namespace Dal
         }
         public void Create(Volunteer item)//create
         {
-            if (Read(item.Id) != null)
+            if (Read(a => a.Id == item.Id) != null)
             {
                 throw new Exception("אובייקט מסוג Volunteer עם ID כזה כבר קיים");
             }
@@ -35,7 +36,7 @@ namespace Dal
 
         public void Delete(int id)//delete
         {
-            Volunteer v = Read(id);
+            Volunteer v = Read(a => a.Id == id);
             if (v != null)
             {
                 DataSource.Volunteers.Remove(v);
@@ -50,10 +51,10 @@ namespace Dal
         {
             DataSource.Volunteers.Clear();
         }
-
-        public Volunteer? Read(int id)//check for an specific volunteer
+        public Volunteer? Read(Func<Volunteer, bool> filter)
+        
         {
-            Volunteer? v = DataSource.Volunteers.Find(volunteer => volunteer.Id == id);
+            Volunteer? v = DataSource.Volunteers.FirstOrDefault(filter);
 
             if (v != null)
             {
@@ -64,17 +65,19 @@ namespace Dal
             return v; // מחזיר את האובייקט (או null אם לא נמצא)
         }
 
-        public List<Volunteer> ReadAll()//return the list of all volunteer
+        public IEnumerable<Volunteer> ReadAll(Func<Volunteer, bool>? filter = null)
         {
-
-            return DataSource.Volunteers
-           .Select(volunteer => volunteer with { Password = DecryptPassword(volunteer.Password) })
-           .ToList();
+            return filter != null
+                ? from item in DataSource.Volunteers
+                  where filter(item)
+                  select item
+                : from item in DataSource.Volunteers
+                  select item;
         }
 
         public void Update(Volunteer item)//update an volunteer
         {
-            Volunteer v = Read(item.Id);
+            Volunteer v = Read(a => a.Id == item.Id);
             if (v == null)
             {
                 throw new Exception("אובייקט מסוג Volunteer עם ID כזה לא קיים");

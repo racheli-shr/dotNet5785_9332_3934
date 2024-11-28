@@ -17,7 +17,7 @@ internal class AssignmentImplementation : IAssignment
 
     public void Delete(int id)
     {
-        Assignment? a = Read(id);
+        Assignment? a = Read(a => a.Id == id);
         if (a != null)
         {
             DataSource.Assignments.Remove(a);
@@ -33,15 +33,20 @@ internal class AssignmentImplementation : IAssignment
         DataSource.Assignments.Clear();
     }
 
-    public Assignment? Read(int id)
+    public Assignment? Read(Func<Assignment, bool> filter)
     {
-        // חיפוש אובייקט Assignment לפי ID
-        return DataSource.Assignments.Find(assignment => assignment.Id == id);
+        // חיפוש אובייקט Assignment לפי הפילטר
+        return DataSource.Assignments.FirstOrDefault(filter);
     }
 
-    public List<Assignment> ReadAll()
+    public IEnumerable<Assignment> ReadAll(Func<Assignment, bool>? filter = null)
     {
-        return new List<Assignment>(DataSource.Assignments);
+        return filter != null
+            ? from item in DataSource.Assignments
+              where filter(item)
+              select item
+            : from item in DataSource.Assignments
+              select item;
     }
 
     public void Update(Assignment item)

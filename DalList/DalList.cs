@@ -10,18 +10,18 @@ using DO;
 
 sealed public class DalList : IDal
 {
-    public ICall call { get; } = new CallImplementation();
-    public IAssignment assignment { get; } = new AssignmentImplementation();
+    public ICall Call { get; } = new CallImplementation();
+    public IAssignment Assignment { get; } = new AssignmentImplementation();
 
-    public IVolunteer volunteer { get; } = new VolunteerImplementation();
+    public IVolunteer Volunteer { get; } = new VolunteerImplementation();
 
-    public IConfig config { get; } = new ConfigImplementation();
+    public IConfig Config { get; } = new ConfigImplementation();
 
     public void ResetDB()
     {
-        call.DeleteAll();
-        assignment.DeleteAll();
-        volunteer.DeleteAll();
+        Call.DeleteAll();
+        Assignment.DeleteAll();
+        Volunteer.DeleteAll();
         Config.Reset();
     }
 }
