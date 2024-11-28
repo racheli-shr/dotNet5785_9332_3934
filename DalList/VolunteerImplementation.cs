@@ -29,7 +29,7 @@ namespace Dal
         {
             if (Read(a => a.Id == item.Id) != null)
             {
-                throw new Exception("אובייקט מסוג Volunteer עם ID כזה כבר קיים");
+                throw new DalAlreadyExistsException("אובייקט מסוג Volunteer עם ID כזה כבר קיים");
             }
             DataSource.Volunteers.Add(item);
         }
@@ -43,7 +43,7 @@ namespace Dal
             }
             else
             {
-                throw new Exception("אובייקט מסוג Volunteer עם ID כזה לא קיים");
+                throw new DalDoesNotExistException("אובייקט מסוג Volunteer עם ID כזה לא קיים");
             }
         }
 
@@ -80,7 +80,7 @@ namespace Dal
             Volunteer v = Read(a => a.Id == item.Id);
             if (v == null)
             {
-                throw new Exception("אובייקט מסוג Volunteer עם ID כזה לא קיים");
+                throw new DalDoesNotExistException("אובייקט מסוג Volunteer עם ID כזה לא קיים");
             }
             else
             {
