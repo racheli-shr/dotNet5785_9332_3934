@@ -24,7 +24,7 @@ internal class CallImplementation : ICall
         }
         else
         {
-            throw new Exception("אובייקט מסוג Call עם ID כזה לא קיים");
+            throw new DalDoesNotExistException("אובייקט מסוג Call עם ID כזה לא קיים");
         }
     }
 
@@ -60,7 +60,7 @@ internal class CallImplementation : ICall
         }
         else
         {
-            throw new Exception("אובייקט מסוג Call עם ID כזה לא קיים");
+            throw new DalDoesNotExistException("אובייקט מסוג Call עם ID כזה לא קיים");
         }
     }
 }
