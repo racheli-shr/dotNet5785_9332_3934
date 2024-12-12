@@ -1,33 +1,32 @@
-﻿
-namespace Dal;
-
-internal static class Config
+﻿namespace Dal
 {
-    internal const int startCallId = 1;
-    private static int nextCallId = startCallId;
-    internal static int NextCallId
+    internal static class Config
     {
-        get => nextCallId++;
-        set => nextCallId = value; // Add set accessor
-    }
+        internal const int startCallId = 1;
+        private static int nextCallId = startCallId;
+        public static int NextCallId
+        {
+            get => nextCallId++;
+            set => nextCallId = value;
+        }
 
-    internal const int StartAssignmentId = 1;
-    private static int nextAssignmentId = StartAssignmentId;
-    internal static int NextAssignmentId
-    {
-        get => nextAssignmentId++;
-        set => nextAssignmentId = value; // Add set accessor
-    }
+        internal const int StartAssignmentId = 1;
+        private static int nextAssignmentId = StartAssignmentId;
+        public static int NextAssignmentId
+        {
+            get => nextAssignmentId++;
+            set => nextAssignmentId = value;
+        }
 
-    internal static DateTime Clock { get; set; } = DateTime.Now;
-    internal static TimeSpan RiskRange { get; set; } = TimeSpan.Zero;
+        public static DateTime Clock { get; set; } = DateTime.Now;
+        public static TimeSpan RiskRange { get; set; } = TimeSpan.Zero;
 
-    internal static void Reset()
-    {
-        nextCallId = startCallId;
-        nextAssignmentId = StartAssignmentId;
-        Clock = DateTime.Now;
-        RiskRange = TimeSpan.Zero;
+        public static void Reset()
+        {
+            nextCallId = startCallId;
+            nextAssignmentId = StartAssignmentId;
+            Clock = DateTime.Now;
+            RiskRange = TimeSpan.Zero;
+        }
     }
 }
-
