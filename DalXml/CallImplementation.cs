@@ -8,7 +8,7 @@ using System.Xml.Linq;
 
 internal class CallImplementation : ICall
 {
-    public Call() : this(0) { };
+   // public Call() : this(0) { };
     static Call getCall(XElement s)
     {
         return new DO.Call()

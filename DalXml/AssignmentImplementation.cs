@@ -7,7 +7,7 @@ using System.Collections.Generic;
 
 internal class AssignmentImplementation : IAssignment
 {
-    public Assignment() : this(0) { };
+   // public Assignment() : this(0) { };
     public void Create(Assignment item)
     {
         throw new NotImplementedException();
