@@ -10,6 +10,7 @@ using System.Xml.Linq;
 
 internal class VolunteerImplementation : IVolunteer
 {
+    public Volunteer() : this(0) { };
     static Volunteer getVolunteer(XElement s)
     {
         return new DO.Volunteer()

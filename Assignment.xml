@@ -1,0 +1,36 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<ArrayOfAssignment>
+	<Assignment>
+		<Id>111</Id>
+		<CallId>11</CallId>
+		<VolunteerId>344165165</VolunteerId>
+		<EntryTimeForTreatment>2009-11-03T14:00:00</EntryTimeForTreatment>
+		<ActualTreatmentEndTime>2009-11-03T20:00:00</ActualTreatmentEndTime>
+		<TypeOfTreatmentTermination>finished</TypeOfTreatmentTermination>
+	</Assignment>
+	<Assignment>
+		<Id>222</Id>
+		<CallId>22</CallId>
+		<VolunteerId>239894668</VolunteerId>
+		<EntryTimeForTreatment>2019-10-27T15:00:00</EntryTimeForTreatment>
+		<ActualTreatmentEndTime>2019-10-28T00:00:00</ActualTreatmentEndTime>
+		<TypeOfTreatmentTermination>selfCancelation</TypeOfTreatmentTermination>
+	</Assignment>
+	<Assignment>
+		<Id>333</Id>
+		<CallId>33</CallId>
+		<VolunteerId>200315134</VolunteerId>
+		<EntryTimeForTreatment>2015-07-25T00:00:00</EntryTimeForTreatment>
+		<ActualTreatmentEndTime>2015-08-25T00:00:00</ActualTreatmentEndTime>
+		<TypeOfTreatmentTermination>managerCancelation</TypeOfTreatmentTermination>
+	</Assignment>
+	<Assignment>
+		<Id>444</Id>
+		<CallId>44</CallId>
+		<VolunteerId>384822544</VolunteerId>
+		<EntryTimeForTreatment>2011-04-04T06:00:00</EntryTimeForTreatment>
+		<ActualTreatmentEndTime>2011-04-06T00:00:00</ActualTreatmentEndTime>
+		<TypeOfTreatmentTermination>endTermCancelation</TypeOfTreatmentTermination>
+	</Assignment>
+</ArrayOfAssignment>

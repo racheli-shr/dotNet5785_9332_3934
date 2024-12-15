@@ -8,22 +8,23 @@ using System.Xml.Linq;
 
 internal class CallImplementation : ICall
 {
+    public Call() : this(0) { };
     static Call getCall(XElement s)
     {
         return new DO.Call()
         {
-            //Id = s.ToIntNullable("Id") ?? throw new FormatException("can't convert id"),
-            //FullName = (string?)s.Element("FullName") ?? "",
-            //IsActive = (bool?)s.Element("IsActive") ?? false,
-            //Phone = (string?)s.Element("Phone") ?? "",
-            //Email = (string?)s.Element("Email") ?? "",
-            //Password = (string?)s.Element("Password"),
-            //FullAdress = (string?)s.Element("FullAdress"),
-            //Latitude = (double?)s.Element("Latitude") ?? 0.0,
-            //Longitude = (double?)s.Element("Longtitude") ?? 0.0,
-            //Role = s.ToEnumNullable<Role>("Role") ?? Role.volunteer,
-            //MaxDistance = (double?)s.Element("MaxDistance") ?? 0.0,
-            //DistanceType = s.ToEnumNullable<DistanceType>("Role") ?? DistanceType.airDistance
+            Id = s.ToIntNullable("Id") ?? throw new FormatException("can't convert id"),
+            FullName = (string?)s.Element("FullName") ?? "",
+            IsActive = (bool?)s.Element("IsActive") ?? false,
+            Phone = (string?)s.Element("Phone") ?? "",
+            Email = (string?)s.Element("Email") ?? "",
+            Password = (string?)s.Element("Password"),
+            FullAdress = (string?)s.Element("FullAdress"),
+            Latitude = (double?)s.Element("Latitude") ?? 0.0,
+            Longitude = (double?)s.Element("Longtitude") ?? 0.0,
+            Role = s.ToEnumNullable<Role>("Role") ?? Role.volunteer,
+            MaxDistance = (double?)s.Element("MaxDistance") ?? 0.0,
+            DistanceType = s.ToEnumNullable<DistanceType>("Role") ?? DistanceType.airDistance
         };
     }
 

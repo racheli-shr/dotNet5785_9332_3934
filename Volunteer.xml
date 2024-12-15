@@ -1,0 +1,59 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ArrayOfVolunteers>
+	<Volunteer>
+		<Id>1001</Id>
+		<FullName>Rina Cohen</FullName>
+		<Phone>052-1234567</Phone>
+		<Email>rina.cohen@example.com</Email>
+		<Password>rina1234</Password>
+		<FullAdress>123 Main St, Tel Aviv</FullAdress>
+		<Latitude>32.0853</Latitude>
+		<Longitude>34.7818</Longitude>
+		<Role>manager</Role>
+		<IsActive>true</IsActive>
+		<MaxDistance>10.0</MaxDistance>
+		<DistanceType>walkDistance</DistanceType>
+	</Volunteer>
+	<Volunteer>
+		<Id>1002</Id>
+		<FullName>David Levi</FullName>
+		<Phone>054-2345678</Phone>
+		<Email>david.levi@example.com</Email>
+		<Password>david1234</Password>
+		<FullAdress>456 Elm St, Jerusalem</FullAdress>
+		<Latitude>31.7683</Latitude>
+		<Longitude>35.2137</Longitude>
+		<Role>volunteer</Role>
+		<IsActive>true</IsActive>
+		<MaxDistance>20.0</MaxDistance>
+		<DistanceType>driveDistance</DistanceType>
+	</Volunteer>
+	<Volunteer>
+		<Id>1003</Id>
+		<FullName>Sara Shalom</FullName>
+		<Phone>050-3456789</Phone>
+		<Email>sara.shalom@example.com</Email>
+		<Password>sara1234</Password>
+		<FullAdress>789 Pine St, Haifa</FullAdress>
+		<Latitude>32.7940</Latitude>
+		<Longitude>34.9896</Longitude>
+		<Role>manager</Role>
+		<IsActive>false</IsActive>
+		<MaxDistance>15.0</MaxDistance>
+		<DistanceType>airDistance</DistanceType>
+	</Volunteer>
+	<Volunteer>
+		<Id>1004</Id>
+		<FullName>Moshe Rahamim</FullName>
+		<Phone>053-4567890</Phone>
+		<Email>moshe.rahamim@example.com</Email>
+		<Password>moshe1234</Password>
+		<FullAdress>1010 Cedar St, Ramat Gan</FullAdress>
+		<Latitude>32.109333</Latitude>
+		<Longitude>34.855499</Longitude>
+		<Role>volunteer</Role>
+		<IsActive>true</IsActive>
+		<MaxDistance>5.0</MaxDistance>
+		<DistanceType>walkDistance</DistanceType>
+	</Volunteer>
+</ArrayOfVolunteers>
