@@ -42,4 +42,11 @@ internal class Config
         RiskRange = TimeSpan.Zero;
         Clock = DateTime.Now;
     }
+    public static void SetNextAssignmentId(int value) {
+        NextAssignmentId = value;
+    }
+    public static void SetNextCallId(int value)
+    {
+        NextCallId = value;
+    }
 }

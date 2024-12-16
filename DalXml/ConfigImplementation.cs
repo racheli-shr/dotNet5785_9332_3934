@@ -19,12 +19,12 @@ namespace Dal
         public int NextAssignmentId
         {
             get => Config.NextAssignmentId;
-            set => Config.NextAssignmentId = value;
+            set => Config.SetNextAssignmentId(value);
         }
         public int NextCallId
         {
             get => Config.NextCallId;
-            set => Config.NextCallId = value;
+            set => Config.SetNextCallId(value);
         }
         public void Reset()
         {

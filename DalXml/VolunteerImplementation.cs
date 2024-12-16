@@ -6,12 +6,13 @@ using DO;
 using System;
 using System.Collections.Generic;
 using System.Numerics;
+using System.Text;
 using System.Xml.Linq;
 
 internal class VolunteerImplementation : IVolunteer
 {
   //  public Volunteer() : this(0) { };
-    static Volunteer getVolunteer(XElement s)
+    static Volunteer GetVolunteer(XElement s)
     {
         return new DO.Volunteer()
         {
@@ -34,17 +35,38 @@ internal class VolunteerImplementation : IVolunteer
 
     public bool checkPassword(string password)
     {
-        throw new NotImplementedException();
+        if (string.IsNullOrEmpty(password) || password.Length != 8)
+            return false;
+
+        bool hasUpper = password.Any(char.IsUpper);
+        bool hasLower = password.Any(char.IsLower);
+        bool hasDigit = password.Any(char.IsDigit);
+        bool hasSpecial = password.Any(ch => !char.IsLetterOrDigit(ch));
+
+        return hasUpper && hasLower && hasDigit && hasSpecial;
     }
 
     public void Create(Volunteer item)
     {
-        throw new NotImplementedException();
+        var volunteers = XMLTools.LoadListFromXMLSerializer<Volunteer>(Config.s_volunteer_xml);
+        if (volunteers.Exists(v => v.Id == item.Id))
+            throw new DalAlreadyExistsException($"Volunteer with ID={item.Id} already exists.");
+
+        volunteers.Add(item);
+        XMLTools.SaveListToXMLSerializer(volunteers, Config.s_volunteer_xml);
     }
 
-    public string DecryptPassword(string password)
+    public string DecryptPassword(string encryptedPassword)
     {
-        throw new NotImplementedException();
+        if (string.IsNullOrEmpty(encryptedPassword))
+            throw new ArgumentException("Encrypted password cannot be null or empty.");
+
+        StringBuilder decryptedPassword = new StringBuilder();
+
+        foreach (char ch in encryptedPassword)
+            decryptedPassword.Append((char)(ch - 2));
+
+        return decryptedPassword.ToString();
     }
 
     public void Delete(int id)
@@ -63,24 +85,50 @@ internal class VolunteerImplementation : IVolunteer
 
     public string EncryptPassword(string password)
     {
-        throw new NotImplementedException();
+        if (string.IsNullOrEmpty(password))
+            throw new ArgumentException("Password cannot be null or empty.");
+
+        StringBuilder encryptedPassword = new StringBuilder();
+
+        foreach (char ch in password)
+            encryptedPassword.Append((char)(ch + 2));
+
+        return encryptedPassword.ToString();
     }
 
     public string GenerateStrongPassword()
     {
-        throw new NotImplementedException();
+        const string upperChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        const string lowerChars = "abcdefghijklmnopqrstuvwxyz";
+        const string digits = "0123456789";
+        const string specialChars = "@$!%*?&";
+
+        Random random = new Random();
+
+        char upper = upperChars[random.Next(upperChars.Length)];
+        char lower = lowerChars[random.Next(lowerChars.Length)];
+        char digit = digits[random.Next(digits.Length)];
+        char special = specialChars[random.Next(specialChars.Length)];
+
+        string allChars = upperChars + lowerChars + digits + specialChars;
+        string randomChars = new string(Enumerable.Range(0, 4)
+            .Select(_ => allChars[random.Next(allChars.Length)]).ToArray());
+
+        string password = upper.ToString() + lower + digit + special + randomChars;
+        return new string(password.OrderBy(_ => random.Next()).ToArray());
     }
 
     public Volunteer? Read(Func<Volunteer, bool> filter)
     {
         return XMLTools.LoadListFromXMLElement(Config.s_volunteer_xml).Elements().Select(s =>
-        getVolunteer(s)).FirstOrDefault(filter);
+        GetVolunteer(s)).FirstOrDefault(filter);
     }
 
 
     public IEnumerable<Volunteer> ReadAll(Func<Volunteer, bool>? filter = null)
     {
-        throw new NotImplementedException();
+        var volunteers = XMLTools.LoadListFromXMLSerializer<Volunteer>(Config.s_volunteer_xml);
+        return filter == null ? volunteers : volunteers.Where(filter);
     }
 
     public void Update(Volunteer item)
@@ -94,6 +142,15 @@ internal class VolunteerImplementation : IVolunteer
 
     public void updatePassword(int id, string password)
     {
-        throw new NotImplementedException();
+        var volunteers = XMLTools.LoadListFromXMLSerializer<Volunteer>(Config.s_volunteer_xml);
+        var volunteer = volunteers.FirstOrDefault(v => v.Id == id);
+
+        if (volunteer == null)
+            throw new DalDoesNotExistException("אובייקט מסוג Volunteer עם ID כזה לא קיים");
+
+        volunteer = volunteer with { Password = EncryptPassword(password) };
+        volunteers.RemoveAll(v => v.Id == id);
+        volunteers.Add(volunteer);
+        XMLTools.SaveListToXMLSerializer(volunteers, Config.s_volunteer_xml);
     }
 }

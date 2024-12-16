@@ -21,6 +21,6 @@ namespace DO
         DistanceType? DistanceType  // שימוש ב-enum DistanceType
     )
     {
-        public Volunteer() : this(0, "Unknown", "Unknown", "Unknown", null, null, null, null, Role.Volunteer, true, null, null) { }
+        public Volunteer() : this(0, "Unknown", "Unknown", "Unknown", null, null, null, null, Role.volunteer, true, null, null) { }
     }
 }

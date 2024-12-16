@@ -9,29 +9,30 @@ using System.Xml.Linq;
 internal class CallImplementation : ICall
 {
    // public Call() : this(0) { };
-    static Call getCall(XElement s)
+    static Call GetCall(XElement s)
     {
         return new DO.Call()
         {
             Id = s.ToIntNullable("Id") ?? throw new FormatException("can't convert id"),
-            FullName = (string?)s.Element("FullName") ?? "",
-            IsActive = (bool?)s.Element("IsActive") ?? false,
-            Phone = (string?)s.Element("Phone") ?? "",
-            Email = (string?)s.Element("Email") ?? "",
-            Password = (string?)s.Element("Password"),
-            FullAdress = (string?)s.Element("FullAdress"),
+            CallType = s.ToEnumNullable<CallType>("CallType") ?? CallType.pastry,  // הגדרת enum עם סוג "CallType"
+            Description= (string?)s.Element("Description") ?? "",
+            FullAdress= (string?)s.Element("FullAdress") ?? "",
             Latitude = (double?)s.Element("Latitude") ?? 0.0,
             Longitude = (double?)s.Element("Longtitude") ?? 0.0,
-            Role = s.ToEnumNullable<Role>("Role") ?? Role.volunteer,
-            MaxDistance = (double?)s.Element("MaxDistance") ?? 0.0,
-            DistanceType = s.ToEnumNullable<DistanceType>("Role") ?? DistanceType.airDistance
+            OpeningCallTime = s.ToDateTimeNullable("OpeningCallTime") ?? DateTime.Now,
+            MaxTimeToEnd = s.ToDateTimeNullable("MaxTimeToEnd") ?? DateTime.Now,
         };
     }
 
 
     public void Create(Call item)
     {
-        throw new NotImplementedException();
+        List<Call> calls = XMLTools.LoadListFromXMLSerializer<Call>(Config.s_call_xml);
+        if (calls.Any(c => c.Id == item.Id))
+            throw new DalAlreadyExistsException($"Call with ID={item.Id} already exists");
+        calls.Add(item);
+        XMLTools.SaveListToXMLSerializer(calls, Config.s_call_xml);
+        ;
     }
 
     public void Delete(int id)
@@ -50,12 +51,15 @@ internal class CallImplementation : ICall
 
     public Call? Read(Func<Call, bool> filter)
     {
-        throw new NotImplementedException();
+        return XMLTools.LoadListFromXMLElement(Config.s_call_xml).Elements().Select(s =>
+        GetCall(s)).FirstOrDefault(filter);
     }
 
     public IEnumerable<Call> ReadAll(Func<Call, bool>? filter = null)
     {
-        throw new NotImplementedException();
+        List<Call> calls = XMLTools.LoadListFromXMLSerializer<Call>(Config.s_call_xml);
+        return filter != null ? calls.Where(filter) : calls;
+
     }
 
     public void Update(Call item)

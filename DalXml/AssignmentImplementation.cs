@@ -4,13 +4,32 @@ using DalApi;
 using DO;
 using System;
 using System.Collections.Generic;
+using System.Xml.Linq;
 
 internal class AssignmentImplementation : IAssignment
 {
-   // public Assignment() : this(0) { };
+    // public Assignment() : this(0) { };GetAssignment
+
+    static Assignment GetAssignment(XElement s)
+    {
+        return new DO.Assignment()
+        {
+            Id = s.ToIntNullable("Id") ?? throw new FormatException("can't convert id"),
+            CallId = s.ToIntNullable("CallId") ?? 0,
+            VolunteerId= s.ToIntNullable("VolunteerId") ?? 0,
+            EntryTimeForTreatment= s.ToDateTimeNullable("EntryTimeForTreatment") ?? DateTime.Now,
+            ActualTreatmentEndTime=s.ToDateTimeNullable("ActualTreatmentEndTime") ?? DateTime.Now,
+            TypeOfTreatmentTermination= s.ToEnumNullable<TypeOfTreatmentTerm>("TypeOfTreatmentTermination") ?? TypeOfTreatmentTerm.endTermCancelation,
+        };
+    }
     public void Create(Assignment item)
     {
-        throw new NotImplementedException();
+        List<Assignment> assignments = XMLTools.LoadListFromXMLSerializer<Assignment>(Config.s_assignment_xml);
+        if (assignments.Any(a => a.Id == item.Id))
+            throw new DalAlreadyExistsException($"Assignment with ID={item.Id} already exists");
+        assignments.Add(item);
+        XMLTools.SaveListToXMLSerializer(assignments, Config.s_assignment_xml);
+
     }
 
     public void Delete(int id)
@@ -29,12 +48,15 @@ internal class AssignmentImplementation : IAssignment
 
     public Assignment? Read(Func<Assignment, bool> filter)
     {
-        throw new NotImplementedException();
+        return XMLTools.LoadListFromXMLElement(Config.s_assignment_xml).Elements().Select(s =>
+        GetAssignment(s)).FirstOrDefault(filter);
     }
 
     public IEnumerable<Assignment> ReadAll(Func<Assignment, bool>? filter = null)
     {
-        throw new NotImplementedException();
+        List<Assignment> assignments = XMLTools.LoadListFromXMLSerializer<Assignment>(Config.s_assignment_xml);
+        return filter != null ? assignments.Where(filter) : assignments;
+
     }
 
     public void Update(Assignment item)
