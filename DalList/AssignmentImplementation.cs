@@ -8,9 +8,9 @@ internal class AssignmentImplementation : IAssignment
 {
     public void Create(Assignment item)
     {
-        // יצירת אובייקט חדש עם ID חדש
+       
         int newId = Config.NextAssignmentId;
-        Assignment a = item with { Id = newId }; // יצירת אובייקט חדש עם ה-ID החדש
+        Assignment a = item with { Id = newId }; 
         DataSource.Assignments.Add(a);
         
     }
@@ -35,7 +35,6 @@ internal class AssignmentImplementation : IAssignment
 
     public Assignment? Read(Func<Assignment, bool> filter)
     {
-        // חיפוש אובייקט Assignment לפי הפילטר
         return DataSource.Assignments.FirstOrDefault(filter);
     }
 
@@ -54,7 +53,6 @@ internal class AssignmentImplementation : IAssignment
         Assignment? a = DataSource.Assignments.Find(assignment => assignment.Id == item.Id);
         if (a != null)
         {
-            // עדכון האובייקט על ידי יצירת אובייקט חדש עם הערכים החדשים
             DataSource.Assignments.Remove(a);
             DataSource.Assignments.Add(item);
         }

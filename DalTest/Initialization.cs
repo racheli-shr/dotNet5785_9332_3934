@@ -6,6 +6,7 @@ using System.Security.Principal;
 
 public static class Initialization
 {
+    //initialization of data
     private static IDal? s_dal;
     private static readonly Random s_rand = new();
 

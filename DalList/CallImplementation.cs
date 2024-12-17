@@ -8,9 +8,8 @@ internal class CallImplementation : ICall
 {
     public void Create(Call item)
     {
-        // יצירת אובייקט חדש עם ID חדש
         int newId = Config.NextCallId;
-        Call c = item with { Id = newId }; // יצירת אובייקט חדש עם ה-ID החדש
+        Call c = item with { Id = newId }; 
         DataSource.Calls.Add(c);
         
     }
@@ -35,7 +34,7 @@ internal class CallImplementation : ICall
 
     public Call? Read(Func<Call, bool> filter)
     {
-        // חיפוש אובייקט Assignment לפי הפילטר
+        
         return DataSource.Calls.FirstOrDefault(filter);
     }
 
@@ -54,7 +53,7 @@ internal class CallImplementation : ICall
         Call? c = DataSource.Calls.Find(call => call.Id == item.Id);
         if (c != null)
         {
-            // עדכון האובייקט על ידי מחיקת האובייקט הישן והוספת האובייקט החדש
+           
             DataSource.Calls.Remove(c);
             DataSource.Calls.Add(item);
         }

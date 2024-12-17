@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ArrayOfCall xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Call>
+    <Id>1000</Id>
+    <CallType>desert</CallType>
+    <Description>I want to prepare a lemomCake</Description>
+    <FullAdress>orange 56</FullAdress>
+    <Latitude>42.986398604569075</Latitude>
+    <Longitude>-45.53017163120448</Longitude>
+    <OpeningCallTime>2024-12-17T17:43:39</OpeningCallTime>
+    <MaxTimeToEnd>2024-12-31T17:43:39</MaxTimeToEnd>
+  </Call>
+  <Call>
+    <Id>1001</Id>
+    <CallType>pastry</CallType>
+    <Description>Hi mazal tov! i prepare a creamy champinion pasta</Description>
+    <FullAdress>ananas 12</FullAdress>
+    <Latitude>-9.211782415808756</Latitude>
+    <Longitude>36.65337915163029</Longitude>
+    <OpeningCallTime>2024-12-18T18:43:39</OpeningCallTime>
+    <MaxTimeToEnd>2025-01-01T17:43:39</MaxTimeToEnd>
+  </Call>
+  <Call>
+    <Id>1002</Id>
+    <CallType>mainMeal</CallType>
+    <Description>harbe nahat! i bring a cheesy salad</Description>
+    <FullAdress>kiwi 88</FullAdress>
+    <Latitude>13.71991102086993</Latitude>
+    <Longitude>-9.11645353926427</Longitude>
+    <OpeningCallTime>2024-12-19T19:43:39</OpeningCallTime>
+    <MaxTimeToEnd>2025-01-02T17:43:39</MaxTimeToEnd>
+  </Call>
+  <Call>
+    <Id>1003</Id>
+    <CallType>salade</CallType>
+    <Description>oh a new baby! i bring the family a chocolate pai</Description>
+    <FullAdress>apple 2</FullAdress>
+    <Latitude>76.36109356509698</Latitude>
+    <Longitude>15.391298253058494</Longitude>
+    <OpeningCallTime>2024-12-20T17:43:39</OpeningCallTime>
+    <MaxTimeToEnd>2025-01-03T17:43:39</MaxTimeToEnd>
+  </Call>
+</ArrayOfCall>

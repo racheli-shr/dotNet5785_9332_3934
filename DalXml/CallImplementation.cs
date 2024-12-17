@@ -8,15 +8,15 @@ using System.Xml.Linq;
 
 internal class CallImplementation : ICall
 {
-   // public Call() : this(0) { };
+    // convert from element to call object
     static Call GetCall(XElement s)
     {
         return new DO.Call()
         {
             Id = s.ToIntNullable("Id") ?? throw new FormatException("can't convert id"),
             CallType = s.ToEnumNullable<CallType>("CallType") ?? CallType.pastry,  // הגדרת enum עם סוג "CallType"
-            Description= (string?)s.Element("Description") ?? "",
-            FullAdress= (string?)s.Element("FullAdress") ?? "",
+            Description = (string?)s.Element("Description") ?? "",
+            FullAdress = (string?)s.Element("FullAdress") ?? "",
             Latitude = (double?)s.Element("Latitude") ?? 0.0,
             Longitude = (double?)s.Element("Longtitude") ?? 0.0,
             OpeningCallTime = s.ToDateTimeNullable("OpeningCallTime") ?? DateTime.Now,
@@ -27,12 +27,23 @@ internal class CallImplementation : ICall
 
     public void Create(Call item)
     {
+        // bring the next id from the data config
+        int newId = XMLTools.GetAndIncreaseConfigIntVal(Config.s_data_config_xml, "NextCallId");
+
+        //create a new object
+
+        Call c = item with { Id = newId };
+
+        // load all exsisting call and check that there are not 2 calls with the same ID
         List<Call> calls = XMLTools.LoadListFromXMLSerializer<Call>(Config.s_call_xml);
-        if (calls.Any(c => c.Id == item.Id))
-            throw new DalAlreadyExistsException($"Call with ID={item.Id} already exists");
-        calls.Add(item);
+        if (calls.Any(existingCall => existingCall.Id == c.Id))
+            throw new DalAlreadyExistsException($"Call with ID={c.Id} already exists");
+
+        //add a new call to the list
+        calls.Add(c);
+
+        // save at the XML file
         XMLTools.SaveListToXMLSerializer(calls, Config.s_call_xml);
-        ;
     }
 
     public void Delete(int id)

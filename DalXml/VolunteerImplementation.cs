@@ -11,7 +11,7 @@ using System.Xml.Linq;
 
 internal class VolunteerImplementation : IVolunteer
 {
-  //  public Volunteer() : this(0) { };
+  //  convert from element to volunteer object
     static Volunteer GetVolunteer(XElement s)
     {
         return new DO.Volunteer()
@@ -32,7 +32,7 @@ internal class VolunteerImplementation : IVolunteer
     }
 
 
-
+    //verify if the password is legal and srtong
     public bool checkPassword(string password)
     {
         if (string.IsNullOrEmpty(password) || password.Length != 8)
@@ -55,7 +55,7 @@ internal class VolunteerImplementation : IVolunteer
         volunteers.Add(item);
         XMLTools.SaveListToXMLSerializer(volunteers, Config.s_volunteer_xml);
     }
-
+    //Decrypt the Password
     public string DecryptPassword(string encryptedPassword)
     {
         if (string.IsNullOrEmpty(encryptedPassword))
@@ -82,7 +82,7 @@ internal class VolunteerImplementation : IVolunteer
     {
         XMLTools.SaveListToXMLSerializer(new List<Volunteer>(), Config.s_volunteer_xml);
     }
-
+    //Encrypt the Password
     public string EncryptPassword(string password)
     {
         if (string.IsNullOrEmpty(password))
@@ -95,7 +95,7 @@ internal class VolunteerImplementation : IVolunteer
 
         return encryptedPassword.ToString();
     }
-
+    //genarate first password for a new person
     public string GenerateStrongPassword()
     {
         const string upperChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -139,7 +139,7 @@ internal class VolunteerImplementation : IVolunteer
         Volunteers.Add(item);
         XMLTools.SaveListToXMLSerializer(Volunteers, Config.s_volunteer_xml);
     }
-
+    //change and update a new password
     public void updatePassword(int id, string password)
     {
         var volunteers = XMLTools.LoadListFromXMLSerializer<Volunteer>(Config.s_volunteer_xml);

@@ -8,7 +8,7 @@ using System.Xml.Linq;
 
 internal class AssignmentImplementation : IAssignment
 {
-    // public Assignment() : this(0) { };GetAssignment
+    // convert from element to assignment object
 
     static Assignment GetAssignment(XElement s)
     {
@@ -24,12 +24,22 @@ internal class AssignmentImplementation : IAssignment
     }
     public void Create(Assignment item)
     {
-        List<Assignment> assignments = XMLTools.LoadListFromXMLSerializer<Assignment>(Config.s_assignment_xml);
-        if (assignments.Any(a => a.Id == item.Id))
-            throw new DalAlreadyExistsException($"Assignment with ID={item.Id} already exists");
-        assignments.Add(item);
-        XMLTools.SaveListToXMLSerializer(assignments, Config.s_assignment_xml);
+        // bring the next id from the data config
+        int newId = XMLTools.GetAndIncreaseConfigIntVal(Config.s_data_config_xml, "NextAssignmentId");
 
+        //create a new object
+        Assignment c = item with { Id = newId };
+
+        // load all exsisting assigment and check that there are not 2 assigments with the same ID
+        List<Assignment> assignments = XMLTools.LoadListFromXMLSerializer<Assignment>(Config.s_assignment_xml);
+        if (assignments.Any(existingAssignment => existingAssignment.Id == c.Id))
+            throw new DalAlreadyExistsException($"Assignment with ID={c.Id} already exists");
+
+        //add a new assigment to the list
+        assignments.Add(c);
+
+        // save at the XML file
+        XMLTools.SaveListToXMLSerializer(assignments, Config.s_assignment_xml);
     }
 
     public void Delete(int id)

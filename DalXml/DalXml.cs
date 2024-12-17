@@ -15,7 +15,7 @@ public class DalXml : IDal
     public IVolunteer Volunteer { get; } =new VolunteerImplementation();
 
     public IConfig Config { get; } =new ConfigImplementation();
-
+    //reset the data
     public void ResetDB()
     {
         Call.DeleteAll();
