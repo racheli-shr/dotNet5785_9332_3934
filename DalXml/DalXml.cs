@@ -9,7 +9,10 @@ namespace Dal;
 sealed internal class DalXml : IDal
 {
     public static IDal Instance { get; } = new DalXml();
-    private DalXml() { }
+    private DalXml()
+    {
+    
+    }
 
     public ICall Call { get; } =new CallImplementation();
 
