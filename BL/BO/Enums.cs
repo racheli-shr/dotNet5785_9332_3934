@@ -34,3 +34,19 @@ public enum AssignmentEndType
     ArtificialCancel // Artificially created assignment due to expiration or other reasons
                      // Add more end types as needed
 }
+
+public enum VolunteerSortField
+{
+    Id,
+    Name,
+    Role
+}
+
+public enum TimeUnit
+{
+    MINUTE, // Minute unit
+    HOUR,   // Hour unit
+    DAY,    // Day unit
+    MONTH,  // Month unit
+    YEAR    // Year unit
+}
