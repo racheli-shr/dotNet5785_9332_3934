@@ -11,8 +11,8 @@
     internal class Program
     {
         //static readonly IDal s_dal = new DalList(); //stage 2
-        static readonly IDal s_dal = new DalXml(); //stage 3
-
+        //static readonly IDal s_dal = new DalXml(); //stage 3
+        static readonly IDal s_dal = Factory.Get; //stage 4
         public static void Main(string[] args)
         {
             try
@@ -59,7 +59,7 @@
                         ConfigMenu();
                         break;
                     case "5":
-                        Initialization.Do(s_dal);
+                        Initialization.Do();
                         break;
                     case "6":
                         ShowAllData();
@@ -656,8 +656,6 @@
         //Config Menu
         private static void ConfigMenu()
         {
-            Console.WriteLine(s_dal.Config.NextAssignmentId);
-            Console.WriteLine(s_dal.Config.NextCallId);
             bool exit = false;
             while (!exit)
             {

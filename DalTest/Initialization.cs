@@ -75,11 +75,12 @@ public static class Initialization
             s_dal!.Call.Create(new(0, CallType, Description, FullAdress, Latitude, Longitude, OpeningCallTime, MaxTimeToEnd));
         }
     }
-    public static void Do(IDal dal)
+    public static void Do()
     {
-        s_dal = dal;
+        //s_dal = dal;
         // הצבת הפרמטרים למשתנים הסטטיים
-        s_dal = dal ?? throw new NullReferenceException("DAL object can not be null!"); // stage 2
+        s_dal = DalApi.Factory.Get; //stage 4
+
 
         // איפוס נתוני התצורה ואיפוס רשימות נתונים
         Console.WriteLine("Reset Configuration values and List values...");
