@@ -1,40 +1,45 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using BL;
+﻿namespace BlImplementation;
+using BlApi;
 using BO;
 using DO;
-namespace BlApi;
 
-public interface IVolunteer
+internal class VolunteerImplementation : IVolunteer
 {
+    private readonly DalApi.IDal _dal = DalApi.Factory.Get;
 
-    // מתודת כניסה למערכת
-    Task<string> LoginAsync(string username, string password);
+    public async Task<string> LoginAsync(string username, string password)
+    {
+        // מימוש בסיסי, ניתן להתאים לפי הצורך
+        return await Task.FromResult("Login successful.");
+    }
 
-    // מתודת בקשת רשימת מתנדבים
-    internal Task<IEnumerable<VolunteerInList>> GetVolunteerListAsync(
-        bool? isActive,
-        VolunteerSortField? sortBy
-    );
+    public async Task<IEnumerable<VolunteerInList>> GetVolunteerListAsync(bool? isActive, VolunteerSortField? sortBy)
+    {
+        // מימוש בסיסי, להחזיר רשימה ריקה
+        return await Task.FromResult(Enumerable.Empty<VolunteerInList>());
+    }
 
-    // מתודת בקשת פרטי מתנדב
-    Task<Volunteer> GetVolunteerDetailsAsync(string id);
+    public async Task<Volunteer> GetVolunteerDetailsAsync(string id)
+    {
+        // מימוש בסיסי, להחזיר ערך דיפולטי
+        return await Task.FromResult(new Volunteer());
+    }
 
-    // מתודת עדכון פרטי מתנדב
-    Task UpdateVolunteerAsync(string id, Volunteer volunteer);
+    public async Task UpdateVolunteerAsync(string id, Volunteer volunteer)
+    {
+        // מימוש בסיסי, פעולה ריקה
+        await Task.CompletedTask;
+    }
 
-    // מתודת בקשת מחיקת מתנדב
-    Task DeleteVolunteerAsync(string id);
+    public async Task DeleteVolunteerAsync(string id)
+    {
+        // מימוש בסיסי, פעולה ריקה
+        await Task.CompletedTask;
+    }
 
-    // מתודת הוספת מתנדב
-    Task AddVolunteerAsync(Volunteer volunteer);
+    public async Task AddVolunteerAsync(Volunteer volunteer)
+    {
+        // מימוש בסיסי, פעולה ריקה
+        await Task.CompletedTask;
+    }
 }
-
-
-
-
-
-
