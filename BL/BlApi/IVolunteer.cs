@@ -1,45 +1,49 @@
-﻿namespace BlImplementation;
+﻿namespace BlApi;
 using BlApi;
 using BO;
+using DalApi;
 using DO;
-
-internal class VolunteerImplementation : IVolunteer
+public interface IVolunteer
 {
-    private readonly DalApi.IDal _dal = DalApi.Factory.Get;
+    /// <summary>
+    /// מתודת כניסה למערכת
+    /// </summary>
+    /// <param name="username">שם משתמש</param>
+    /// <param name="password">סיסמה</param>
+    /// <returns>מחרוזת תוצאה של ההתחברות</returns>
+    Task<string> LoginAsync(string username, string password);
 
-    public async Task<string> LoginAsync(string username, string password)
-    {
-        // מימוש בסיסי, ניתן להתאים לפי הצורך
-        return await Task.FromResult("Login successful.");
-    }
+    /// <summary>
+    /// מתודת בקשת רשימת מתנדבים
+    /// </summary>
+    /// <param name="isActive">מצב הפעילות של המתנדב (אופציונלי)</param>
+    /// <param name="sortBy">שדה למיון (אופציונלי)</param>
+    /// <returns>רשימה של מתנדבים</returns>
+    internal Task<IEnumerable<VolunteerInList>> GetVolunteerListAsync(bool? isActive, VolunteerSortField? sortBy);
 
-    public async Task<IEnumerable<VolunteerInList>> GetVolunteerListAsync(bool? isActive, VolunteerSortField? sortBy)
-    {
-        // מימוש בסיסי, להחזיר רשימה ריקה
-        return await Task.FromResult(Enumerable.Empty<VolunteerInList>());
-    }
+    /// <summary>
+    /// מתודת בקשת פרטי מתנדב
+    /// </summary>
+    /// <param name="id">מזהה המתנדב</param>
+    /// <returns>אובייקט עם פרטי המתנדב</returns>
+    Task<Volunteer> GetVolunteerDetailsAsync(string id);
 
-    public async Task<Volunteer> GetVolunteerDetailsAsync(string id)
-    {
-        // מימוש בסיסי, להחזיר ערך דיפולטי
-        return await Task.FromResult(new Volunteer());
-    }
+    /// <summary>
+    /// מתודת עדכון פרטי מתנדב
+    /// </summary>
+    /// <param name="id">מזהה המתנדב</param>
+    /// <param name="volunteer">אובייקט עם הפרטים המעודכנים</param>
+    Task UpdateVolunteerAsync(string id, Volunteer volunteer);
 
-    public async Task UpdateVolunteerAsync(string id, Volunteer volunteer)
-    {
-        // מימוש בסיסי, פעולה ריקה
-        await Task.CompletedTask;
-    }
+    /// <summary>
+    /// מתודת בקשת מחיקת מתנדב
+    /// </summary>
+    /// <param name="id">מזהה המתנדב למחיקה</param>
+    Task DeleteVolunteerAsync(string id);
 
-    public async Task DeleteVolunteerAsync(string id)
-    {
-        // מימוש בסיסי, פעולה ריקה
-        await Task.CompletedTask;
-    }
-
-    public async Task AddVolunteerAsync(Volunteer volunteer)
-    {
-        // מימוש בסיסי, פעולה ריקה
-        await Task.CompletedTask;
-    }
+    /// <summary>
+    /// מתודת הוספת מתנדב
+    /// </summary>
+    /// <param name="volunteer">אובייקט עם פרטי המתנדב החדש</param>
+    Task AddVolunteerAsync(Volunteer volunteer);
 }
