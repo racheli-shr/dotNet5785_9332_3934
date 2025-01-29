@@ -2,11 +2,11 @@
 using System.Data;
 using static DO.Volunteer;
 using DO; // כאן אנחנו מייבאים את ה-namespace שבו נמצאים ה-enums
-
 namespace DO
 {
     public record Volunteer
     (
+        
         int Id,
         string FullName,
         string Phone,
@@ -15,12 +15,12 @@ namespace DO
         string? FullAdress,
         double? Latitude,
         double? Longitude,
-        Role Role,  // שימוש ב-enum Role
+        DO.Enums.Role Role,  // שימוש ב-enum Role
         bool IsActive,
         double? MaxDistance,
-        DistanceType? DistanceType  // שימוש ב-enum DistanceType
+        DO.Enums.DistanceType? DistanceType  // שימוש ב-enum DistanceType
     )
     {
-        public Volunteer() : this(0, "Unknown", "Unknown", "Unknown", null, null, null, null, Role.volunteer, true, null, null) { }
+        public Volunteer() : this(0, "Unknown", "Unknown", "Unknown", null, null, null, null, DO.Enums.Role.volunteer, true, null, null) { }
     }
 }

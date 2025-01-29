@@ -26,7 +26,7 @@ static class XMLTools
         }
         catch (Exception ex)
         {
-            throw new DalXMLFileLoadCreateException($"fail to create xml file: {s_xmlDir + xmlFilePath}, {ex.Message}");
+            throw new DO.Exceptions.DalXMLFileLoadCreateException($"fail to create xml file: {s_xmlDir + xmlFilePath}, {ex.Message}");
         }
     }
     public static List<T> LoadListFromXMLSerializer<T>(string xmlFileName) where T : class
@@ -42,7 +42,7 @@ static class XMLTools
         }
         catch (Exception ex)
         {
-            throw new DalXMLFileLoadCreateException($"fail to load xml file: {xmlFilePath}, {ex.Message}");
+            throw new DO.Exceptions.DalXMLFileLoadCreateException($"fail to load xml file: {xmlFilePath}, {ex.Message}");
         }
     }
     #endregion
@@ -58,7 +58,7 @@ static class XMLTools
         }
         catch (Exception ex)
         {
-            throw new DalXMLFileLoadCreateException($"fail to create xml file: {s_xmlDir + xmlFilePath}, {ex.Message}");
+            throw new DO.Exceptions.DalXMLFileLoadCreateException($"fail to create xml file: {s_xmlDir + xmlFilePath}, {ex.Message}");
         }
     }
     public static XElement LoadListFromXMLElement(string xmlFileName)
@@ -75,7 +75,7 @@ static class XMLTools
         }
         catch (Exception ex)
         {
-            throw new DalXMLFileLoadCreateException($"fail to load xml file: {s_xmlDir + xmlFilePath}, {ex.Message}");
+            throw new DO.Exceptions.DalXMLFileLoadCreateException($"fail to load xml file: {s_xmlDir + xmlFilePath}, {ex.Message}");
         }
     }
     #endregion

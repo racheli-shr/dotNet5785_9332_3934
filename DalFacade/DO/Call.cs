@@ -19,7 +19,7 @@ namespace DO;
 public record Call
 (
     int Id,
-    CallType CallType,  // הגדרת enum עם סוג "CallType"
+    DO.Enums.CallType CallType,  // הגדרת enum עם סוג "CallType"
     string? Description,
     string FullAdress,
     double Latitude,
@@ -29,5 +29,5 @@ public record Call
 )
 {
     // בנאי ברירת מחדל שמאתחל את הערכים
-    public Call() : this(0, default(CallType), "No description", "Unknown", 0.0, 0.0, DateTime.Now, null) { }
+    public Call() : this(0, default(DO.Enums.CallType), "No description", "Unknown", 0.0, 0.0, DateTime.Now, null) { }
 }

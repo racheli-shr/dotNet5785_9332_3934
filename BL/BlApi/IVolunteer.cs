@@ -1,49 +1,52 @@
-﻿namespace BlApi;
-using BlApi;
-using BO;
-using DalApi;
-using DO;
+﻿using DalApi;
+
+namespace BLApi;
+
+/// <summary>
+/// Interface for managing volunteer-related operations in the business logic layer.
+/// </summary>
 public interface IVolunteer
 {
     /// <summary>
-    /// מתודת כניסה למערכת
+    /// Authenticates a user and returns their role.
     /// </summary>
-    /// <param name="username">שם משתמש</param>
-    /// <param name="password">סיסמה</param>
-    /// <returns>מחרוזת תוצאה של ההתחברות</returns>
-    Task<string> LoginAsync(string username, string password);
+    /// <param name="fullName">The fullName of the volunteer.</param>
+    /// <param name="password">The password of the volunteer.</param>
+    /// <returns>The role of the authenticated volunteer.</returns>
+     BO.Enums.Role Login(string fullName, string password);
 
     /// <summary>
-    /// מתודת בקשת רשימת מתנדבים
+    /// Retrieves a list of volunteers based on filter and sort criteria.
     /// </summary>
-    /// <param name="isActive">מצב הפעילות של המתנדב (אופציונלי)</param>
-    /// <param name="sortBy">שדה למיון (אופציונלי)</param>
-    /// <returns>רשימה של מתנדבים</returns>
-    internal Task<IEnumerable<VolunteerInList>> GetVolunteerListAsync(bool? isActive, VolunteerSortField? sortBy);
+    /// <param name="isActive">Optional parameter to filter by active or inactive volunteers.</param>
+    /// <param name="sortField">Optional parameter to specify the field by which to sort the list.</param>
+    /// <returns>A collection of volunteers matching the criteria.</returns>
+     internal IEnumerable<BO.VolunteerInList> GetVolunteersList(bool? isActive, BO.Enums.VolunteerSortField? sortField = null);
 
     /// <summary>
-    /// מתודת בקשת פרטי מתנדב
+    /// Retrieves detailed information about a specific volunteer.
     /// </summary>
-    /// <param name="id">מזהה המתנדב</param>
-    /// <returns>אובייקט עם פרטי המתנדב</returns>
-    Task<Volunteer> GetVolunteerDetailsAsync(string id);
+    /// <param name="volunteerId">The unique identifier of the volunteer.</param>
+    /// <returns>The volunteer details.</returns>
+     internal BO.Volunteer Read(int volunteerId);
 
     /// <summary>
-    /// מתודת עדכון פרטי מתנדב
+    /// Updates the details of a volunteer. The requester must have the appropriate permissions.
     /// </summary>
-    /// <param name="id">מזהה המתנדב</param>
-    /// <param name="volunteer">אובייקט עם הפרטים המעודכנים</param>
-    Task UpdateVolunteerAsync(string id, Volunteer volunteer);
+    /// <param name="requesterId">The ID of the person requesting the update (admin or the same volunteer).</param>
+    /// <param name="volunteer">The volunteer object containing updated details.</param>
+     internal void UpdateVolunteerDetails(int requesterId, BO.Volunteer volunteer);
 
     /// <summary>
-    /// מתודת בקשת מחיקת מתנדב
+    /// Deletes a volunteer from the system. The volunteer must not be currently handling any calls.
     /// </summary>
-    /// <param name="id">מזהה המתנדב למחיקה</param>
-    Task DeleteVolunteerAsync(string id);
+    /// <param name="volunteerId">The unique identifier of the volunteer to delete.</param>
+     void DeleteVolunteer(int volunteerId);
 
     /// <summary>
-    /// מתודת הוספת מתנדב
+    /// Adds a new volunteer to the system.
     /// </summary>
-    /// <param name="volunteer">אובייקט עם פרטי המתנדב החדש</param>
-    Task AddVolunteerAsync(Volunteer volunteer);
+    /// <param name="volunteer">The volunteer object containing the details of the new volunteer.</param>
+     internal void AddVolunteer(BO.Volunteer volunteer);
+
 }

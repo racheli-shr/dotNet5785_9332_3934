@@ -24,7 +24,7 @@ internal class AssignmentImplementation : IAssignment
         }
         else
         {
-            throw new DalDoesNotExistException("אובייקט מסוג Assignment עם ID כזה לא קיים");
+            throw new DO.Exceptions.DalDoesNotExistException("אובייקט מסוג Assignment עם ID כזה לא קיים");
         }
     }
 
@@ -58,7 +58,7 @@ internal class AssignmentImplementation : IAssignment
         }
         else
         {
-            throw new DalDoesNotExistException("אובייקט מסוג Assignment עם ID כזה לא קיים");
+            throw new DO.Exceptions.DalDoesNotExistException("אובייקט מסוג Assignment עם ID כזה לא קיים");
         }
     }
 }

@@ -19,7 +19,7 @@ internal class AssignmentImplementation : IAssignment
             VolunteerId= s.ToIntNullable("VolunteerId") ?? 0,
             EntryTimeForTreatment= s.ToDateTimeNullable("EntryTimeForTreatment") ?? DateTime.Now,
             ActualTreatmentEndTime=s.ToDateTimeNullable("ActualTreatmentEndTime") ?? DateTime.Now,
-            TypeOfTreatmentTermination= s.ToEnumNullable<TypeOfTreatmentTerm>("TypeOfTreatmentTermination") ?? TypeOfTreatmentTerm.endTermCancelation,
+            TypeOfTreatmentTermination= s.ToEnumNullable<DO.Enums.TypeOfTreatmentTerm>("TypeOfTreatmentTermination") ?? DO.Enums.TypeOfTreatmentTerm.endTermCancelation,
         };
     }
     public void Create(Assignment item)
@@ -33,7 +33,7 @@ internal class AssignmentImplementation : IAssignment
         // load all exsisting assigment and check that there are not 2 assigments with the same ID
         List<Assignment> assignments = XMLTools.LoadListFromXMLSerializer<Assignment>(Config.s_assignment_xml);
         if (assignments.Any(existingAssignment => existingAssignment.Id == c.Id))
-            throw new DalAlreadyExistsException($"Assignment with ID={c.Id} already exists");
+            throw new DO.Exceptions.DalAlreadyExistsException($"Assignment with ID={c.Id} already exists");
 
         //add a new assigment to the list
         assignments.Add(c);
@@ -46,7 +46,7 @@ internal class AssignmentImplementation : IAssignment
     {
         List<Assignment> Assignments = XMLTools.LoadListFromXMLSerializer<Assignment>(Config.s_assignment_xml);
         if (Assignments.RemoveAll(it => it.Id == id) == 0)
-            throw new DalDoesNotExistException($"Course with ID={id} does Not exist");
+            throw new DO.Exceptions.DalDoesNotExistException($"Course with ID={id} does Not exist");
         XMLTools.SaveListToXMLSerializer(Assignments, Config.s_assignment_xml);
 
     }
@@ -73,7 +73,7 @@ internal class AssignmentImplementation : IAssignment
     {
         List<Assignment> Assignments = XMLTools.LoadListFromXMLSerializer<Assignment>(Config.s_assignment_xml);
         if (Assignments.RemoveAll(it => it.Id == item.Id) == 0)
-            throw new DalDoesNotExistException($"Course with ID={item.Id} does Not exist");
+            throw new DO.Exceptions.DalDoesNotExistException($"Course with ID={item.Id} does Not exist");
         Assignments.Add(item);
         XMLTools.SaveListToXMLSerializer(Assignments, Config.s_assignment_xml);
     }

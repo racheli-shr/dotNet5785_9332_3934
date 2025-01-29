@@ -19,7 +19,7 @@ public static class Initialization
             int VolunteerId = VolList[s_rand.Next(0, VolList.Count)].Id;
             DateTime EntryTimeForTreatment = s_dal!.Config.Clock;
             DateTime? ActualTreatmentEndTime = s_dal!.Config.Clock.AddDays(14);
-            TypeOfTreatmentTerm? TypeOfTreatmentTermination = i % 2 == 0 ? i % 4 == 0 ? TypeOfTreatmentTerm.endTermCancelation : TypeOfTreatmentTerm.selfCancelation : i % 3 == 0 ? TypeOfTreatmentTerm.selfCancelation : TypeOfTreatmentTerm.finished;
+            DO.Enums.TypeOfTreatmentTerm? TypeOfTreatmentTermination = i % 2 == 0 ? i % 4 == 0 ? DO.Enums.TypeOfTreatmentTerm.endTermCancelation : DO.Enums.TypeOfTreatmentTerm.selfCancelation : i % 3 == 0 ? DO.Enums.TypeOfTreatmentTerm.selfCancelation : DO.Enums.TypeOfTreatmentTerm.finished;
             s_dal!.Assignment.Create(new(0, CallId, VolunteerId, EntryTimeForTreatment, ActualTreatmentEndTime, TypeOfTreatmentTermination));
         }
     }
@@ -50,10 +50,10 @@ public static class Initialization
             string fullAdress = $"{adress[i]}";
             double longtitude = (s_rand.NextDouble() * 360) - 180;
             double latitude = (s_rand.NextDouble() * 180) - 90;
-            Role role = (i == 0 ? Role.manager : Role.volunteer);
+            DO.Enums.Role role = (i == 0 ? DO.Enums.Role.manager : DO.Enums.Role.volunteer);
             bool isIative = (i % 2 == 0) ? false : true;
             double maxDistance = i * i + 50;
-            DistanceType distanceType = (i % 2 == 0 ? DistanceType.walkDistance : i % 3 == 0 ? DistanceType.airDistance : DistanceType.driveDistance);
+            DO.Enums.DistanceType distanceType = (i % 2 == 0 ? DO.Enums.DistanceType.walkDistance : i % 3 == 0 ? DO.Enums.DistanceType.airDistance : DO.Enums.DistanceType.driveDistance);
             s_dal!.Volunteer.Create(new(Id, FullName, phone, email, encriptedPassword, fullAdress, latitude, longtitude, role, isIative, maxDistance, distanceType));
             i += 1;
 
@@ -65,7 +65,7 @@ public static class Initialization
         string[] sortOfFood = { "I want to prepare a lemomCake", "Hi mazal tov! i prepare a creamy champinion pasta", "harbe nahat! i bring a cheesy salad", "oh a new baby! i bring the family a chocolate pai" };
         for (int i = 0; i < 4; i++)
         {
-            CallType CallType = i % 2 == 0 ? i % 4 == 0 ? CallType.desert : CallType.mainMeal : i % 3 == 0 ? CallType.salade : CallType.pastry;
+            DO.Enums.CallType CallType = i % 2 == 0 ? i % 4 == 0 ? DO.Enums.CallType.desert : DO.Enums.CallType.mainMeal : i % 3 == 0 ? DO.Enums.CallType.salade : DO.Enums.CallType.pastry;
             string? Description = sortOfFood[i];
             string FullAdress = adress[i + 1];
             double Latitude = (s_rand.NextDouble() * 180) - 90;

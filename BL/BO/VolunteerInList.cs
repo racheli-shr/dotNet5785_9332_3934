@@ -1,4 +1,4 @@
-﻿using System;
+﻿
 
 namespace BO
 {
@@ -11,5 +11,6 @@ namespace BO
         public int TotalCallsCanceled { get; set; } // Total number of calls canceled by the volunteer
         public int TotalExpiredCalls { get; set; } // Total number of calls that expired for the volunteer
         public int? CurrentCallId { get; set; } // ID of the call currently being handled by the volunteer, if any
+        public BO.Enums.CallType CallType { get; set; }
     }
 }

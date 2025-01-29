@@ -1,6 +1,4 @@
-﻿
-
-namespace Dal;
+﻿namespace Dal;
 using DalApi;
 using DO;
 using System;
@@ -25,9 +23,9 @@ internal class VolunteerImplementation : IVolunteer
             FullAdress = (string?)s.Element("FullAdress"),
             Latitude=(double?)s.Element("Latitude")?? 0.0,
             Longitude= (double?)s.Element("Longtitude") ?? 0.0,
-            Role= s.ToEnumNullable < Role >("Role")?? Role.volunteer,
+            Role= s.ToEnumNullable <DO.Enums.Role >("Role")?? DO.Enums.Role.volunteer,
             MaxDistance=(double?)s.Element("MaxDistance") ?? 0.0,
-            DistanceType= s.ToEnumNullable<DistanceType>("Role") ?? DistanceType.airDistance
+            DistanceType= s.ToEnumNullable<DO.Enums.DistanceType>("Role") ?? DO.Enums.DistanceType.airDistance
         };
     }
 
@@ -50,7 +48,7 @@ internal class VolunteerImplementation : IVolunteer
     {
         var volunteers = XMLTools.LoadListFromXMLSerializer<Volunteer>(Config.s_volunteer_xml);
         if (volunteers.Exists(v => v.Id == item.Id))
-            throw new DalAlreadyExistsException($"Volunteer with ID={item.Id} already exists.");
+            throw new DO.Exceptions.DalAlreadyExistsException($"Volunteer with ID={item.Id} already exists.");
 
         volunteers.Add(item);
         XMLTools.SaveListToXMLSerializer(volunteers, Config.s_volunteer_xml);
@@ -73,7 +71,7 @@ internal class VolunteerImplementation : IVolunteer
     {
         List<Volunteer> Volunteers = XMLTools.LoadListFromXMLSerializer<Volunteer>(Config.s_volunteer_xml);
         if (Volunteers.RemoveAll(it => it.Id == id) == 0)
-            throw new DalDoesNotExistException($"Course with ID={id} does Not exist");
+            throw new DO.Exceptions.DalDoesNotExistException($"Course with ID={id} does Not exist");
         XMLTools.SaveListToXMLSerializer(Volunteers, Config.s_volunteer_xml);
 
     }
@@ -135,7 +133,7 @@ internal class VolunteerImplementation : IVolunteer
     {
         List<Volunteer> Volunteers = XMLTools.LoadListFromXMLSerializer<Volunteer>(Config.s_volunteer_xml);
         if (Volunteers.RemoveAll(it => it.Id == item.Id) == 0)
-            throw new DalDoesNotExistException($"Course with ID={item.Id} does Not exist");
+            throw new DO.Exceptions.DalDoesNotExistException($"Course with ID={item.Id} does Not exist");
         Volunteers.Add(item);
         XMLTools.SaveListToXMLSerializer(Volunteers, Config.s_volunteer_xml);
     }
@@ -146,7 +144,7 @@ internal class VolunteerImplementation : IVolunteer
         var volunteer = volunteers.FirstOrDefault(v => v.Id == id);
 
         if (volunteer == null)
-            throw new DalDoesNotExistException("אובייקט מסוג Volunteer עם ID כזה לא קיים");
+            throw new DO.Exceptions.DalDoesNotExistException("אובייקט מסוג Volunteer עם ID כזה לא קיים");
 
         volunteer = volunteer with { Password = EncryptPassword(password) };
         volunteers.RemoveAll(v => v.Id == id);

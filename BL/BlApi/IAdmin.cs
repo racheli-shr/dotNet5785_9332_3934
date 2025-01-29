@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using static BO.Enums;
 namespace BlApi;
 
 
@@ -14,7 +14,7 @@ public interface IAdmin
     DateTime GetClock();
 
     // Method to advance the system clock by a specified time unit
-    void ForwardClock(BO.TimeUnit unit);
+    void ForwardClock(TimeUnit unit);
 
     // Method to request the current risk time span
     TimeSpan GetRiskTimeSpan();
@@ -29,10 +29,10 @@ public interface IAdmin
     void InitializeDB();
 
     // Method to get the maximum range value
-    int GetMaxRange();
+    TimeSpan GetMaxRange();
 
     // Method to set the maximum range value
-    void SetMaxRange(int maxRange);
+    void SetMaxRange(TimeSpan maxRange);
 }
 
 

@@ -1,29 +1,29 @@
-﻿using BL.BO;
+﻿
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using static BO.Enums;
 
 //using Helpers;
 namespace BO;
-public class Student
+internal class Volunteer
 {
     public int Id { get; init; }
-    public string Name { get; set; }
-    public string phone { get; set; }
-    public string email { get; set; }
-    public string? password { get; set; }
-    public string? address { get; set; }
+    public string FullName { get; set; }
+    public string Phone { get; set; }
+    public string Email { get; set; }
+    public string? Password { get; set; }
+    public string? FullAddress { get; set; }
     public double? Latitude { get; set; }
     public double? Longitude{ get; set; }
-    public Role? role{ get; set; }
+    public Role? Role{ get; set; }
     public bool IsActive { get; set; }
     public double? MaxDistance { get; set; }
     public DistanceType DistanceType { get; set; }
-    public int numberOfCalls { get; set; }
-    public int numberOfCanceledCalls { get; set; }
-    public int numberOfexpiredCalls { get; set; }
-    CallInProgress callInProgress { get; set; }
+    public int NumberOfCalls { get; set; }
+    public int NumberOfCanceledCalls { get; set; }
+    public int NumberOfexpiredCalls { get; set; }
+    public BO.CallInProgress? CurrentCallInProgress { get; set; }
 }

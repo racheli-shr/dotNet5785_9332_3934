@@ -173,7 +173,7 @@
                 Console.Write("Enter Volunteer maxDistance in km: ");
                 int maxDistance = int.Parse(Console.ReadLine());
                 // יצירת אובייקט חדש והוספתו דרך הממשק
-                var volunteer = new Volunteer(id, name, $"02-{phone}", email, encriptedPassword, adress, latitude, longtitude, Role.volunteer, true, maxDistance, DistanceType.airDistance);
+                var volunteer = new Volunteer(id, name, $"02-{phone}", email, encriptedPassword, adress, latitude, longtitude, DO.Enums.Role.volunteer, true, maxDistance, DO.Enums.DistanceType.airDistance);
                 s_dal.Volunteer?.Create(volunteer);
             }
             catch (Exception ex)
@@ -343,10 +343,10 @@
                 int id = int.Parse(Console.ReadLine());
                 Console.Write("Enter Call Type (e.g., pastry, emergency, etc.): ");
                 string callTypeStr = Console.ReadLine();
-                if (!Enum.TryParse(callTypeStr, out CallType callType))
+                if (!Enum.TryParse(callTypeStr, out DO.Enums.CallType callType))
                 {
                     Console.WriteLine("Invalid call type. Setting to default (pastry).");
-                    callType = CallType.pastry; // Default to "pastry" if the input is invalid.
+                    callType = DO.Enums.CallType.pastry; // Default to "pastry" if the input is invalid.
                 }
                 Console.Write("Enter Call Description: ");
                 string description = Console.ReadLine();
@@ -421,7 +421,7 @@
                 {
                     Console.Write("Enter new Call Type (e.g., pastry, emergency, etc.): ");
                     string callTypeStr = Console.ReadLine();
-                    if (!Enum.TryParse(callTypeStr, out CallType callType))
+                    if (!Enum.TryParse(callTypeStr, out DO.Enums.CallType callType))
                     {
                         Console.WriteLine("Invalid call type. Keeping the existing type.");
                         callType = call.CallType; // Keep the existing type if the input is invalid.
@@ -552,7 +552,7 @@
                 Console.Write("Enter Actual Treatment End Time (yyyy-mm-dd hh:mm): ");
                 DateTime endTime = DateTime.Parse(Console.ReadLine());
                 Console.Write("Enter Type of Treatment Termination (e.g., endTermCancelation): ");
-                TypeOfTreatmentTerm terminationType = (TypeOfTreatmentTerm)Enum.Parse(typeof(TypeOfTreatmentTerm), Console.ReadLine());
+                DO.Enums.TypeOfTreatmentTerm terminationType = (DO.Enums.TypeOfTreatmentTerm)Enum.Parse(typeof(DO.Enums.TypeOfTreatmentTerm), Console.ReadLine());
 
                 var assignment = new Assignment(id, callId, volunteerId, entryTime, endTime, terminationType);
                 s_dal.Assignment?.Create(assignment);
@@ -612,7 +612,7 @@
                     Console.Write("Enter Actual Treatment End Time (yyyy-mm-dd hh:mm): ");
                     DateTime endTime = DateTime.Parse(Console.ReadLine());
                     Console.Write("Enter Type of Treatment Termination (e.g., endTermCancelation): ");
-                    TypeOfTreatmentTerm terminationType = (TypeOfTreatmentTerm)Enum.Parse(typeof(TypeOfTreatmentTerm), Console.ReadLine());
+                    DO.Enums.TypeOfTreatmentTerm terminationType = (DO.Enums.TypeOfTreatmentTerm)Enum.Parse(typeof(DO.Enums.TypeOfTreatmentTerm), Console.ReadLine());
 
                     assignment = assignment with { CallId = callId, VolunteerId = volunteerId, EntryTimeForTreatment = entryTime, ActualTreatmentEndTime = endTime, TypeOfTreatmentTermination = terminationType };
                     s_dal.Assignment?.Update(assignment);

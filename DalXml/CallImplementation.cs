@@ -14,7 +14,7 @@ internal class CallImplementation : ICall
         return new DO.Call()
         {
             Id = s.ToIntNullable("Id") ?? throw new FormatException("can't convert id"),
-            CallType = s.ToEnumNullable<CallType>("CallType") ?? CallType.pastry,  // הגדרת enum עם סוג "CallType"
+            CallType = s.ToEnumNullable<DO.Enums.CallType>("CallType") ?? DO.Enums.CallType.pastry,  // הגדרת enum עם סוג "CallType"
             Description = (string?)s.Element("Description") ?? "",
             FullAdress = (string?)s.Element("FullAdress") ?? "",
             Latitude = (double?)s.Element("Latitude") ?? 0.0,
@@ -37,7 +37,7 @@ internal class CallImplementation : ICall
         // load all exsisting call and check that there are not 2 calls with the same ID
         List<Call> calls = XMLTools.LoadListFromXMLSerializer<Call>(Config.s_call_xml);
         if (calls.Any(existingCall => existingCall.Id == c.Id))
-            throw new DalAlreadyExistsException($"Call with ID={c.Id} already exists");
+            throw new DO.Exceptions.DalAlreadyExistsException($"Call with ID={c.Id} already exists");
 
         //add a new call to the list
         calls.Add(c);
@@ -50,7 +50,7 @@ internal class CallImplementation : ICall
     {
         List<Call> Calls = XMLTools.LoadListFromXMLSerializer<Call>(Config.s_call_xml);
         if (Calls.RemoveAll(it => it.Id == id) == 0)
-            throw new DalDoesNotExistException($"Course with ID={id} does Not exist");
+            throw new DO.Exceptions.DalDoesNotExistException($"Course with ID={id} does Not exist");
         XMLTools.SaveListToXMLSerializer(Calls, Config.s_call_xml);
 
     }
@@ -77,7 +77,7 @@ internal class CallImplementation : ICall
     {
         List<Call> Calls = XMLTools.LoadListFromXMLSerializer<Call>(Config.s_call_xml);
         if (Calls.RemoveAll(it => it.Id == item.Id) == 0)
-            throw new DalDoesNotExistException($"Course with ID={item.Id} does Not exist");
+            throw new DO.Exceptions.DalDoesNotExistException($"Course with ID={item.Id} does Not exist");
         Calls.Add(item);
         XMLTools.SaveListToXMLSerializer(Calls, Config.s_call_xml);
     }
