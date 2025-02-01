@@ -6,11 +6,24 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BL.Helpers
+//namespace BL.Helpers
+namespace Helpers
 {
     internal static class CallManager
     {
-        private static IDal s_dal = Factory.Get; //stage 4
+        internal static DO.Call ConvertBOToDO(BO.Call call) =>
+    new DO.Call
+    {
+        Id=call.Id,
+        CallType=(DO.Enums.CallType)call.CallType,
+        FullAdress=call.Address,
+        Latitude=call.Latitude,
+        Longitude=call.Longitude,
+        OpeningCallTime=call.OpeningTime,
+        Description = call.Description,
+        MaxTimeToEnd=call.MaxFinishTime
+    };
+        private static readonly IDal s_dal = Factory.Get; //stage 4
         static internal BO.Enums.CallStatus GetCallStatus(int id)
         {
             // Retrieve the call from the database or throw an exception if not found

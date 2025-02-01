@@ -15,6 +15,35 @@ public class Enums
         CALL_ID,                       // Sort by call ID
         CALL_TYPE                      // Sort by type of call
     }
+    public enum TypeHosting
+    {
+        TEMPORARY_LIVING,   // Temporary accommodation for volunteers
+        EMERGENCY_SHELTER,  // Shelter provided during emergencies
+        SHABBAT_NEAR_HOSPITALS, // Accommodation for volunteers near hospitals during Shabbat
+        SHORT_TERM_LODGING   // Short-term lodging for volunteers
+    }
+    public enum CallInListFields
+    {
+        Id,                   // Unique identifier for the call
+        CallId,               // ID associated with the specific call
+        CallType,             // Type of the call (e.g., emergency, temporary living)
+        OpeningTime,          // The time the call was opened
+        RemainingTime,        // The remaining time for the call to be handled
+        LastVolunteerName,    // The name of the last volunteer assigned to the call
+        TotalHandlingTime,    // Total time spent handling the call
+        CallStatus,           // The current status of the call
+        TotalAssignments      // Total number of assignments associated with the call
+    }
+    public enum ClosedCallInListFields
+    {
+        Id,                   // Unique identifier for the closed call
+        CallType,             // Type of the closed call
+        FullAddress,          // Full address where the call was handled
+        OpenTime,             // The time the call was opened
+        EntryTime,            // The time the volunteer entered to handle the call
+        ActualEndTime,        // The actual time the call handling ended
+        EndType               // The type of closure (e.g., treated, expired)
+    }
     public enum CallType
     {
         Emergency, // Urgent call
@@ -48,7 +77,6 @@ public class Enums
         ArtificialCancel // Artificially created assignment due to expiration or other reasons
                          // Add more end types as needed
     }
-
     
     public enum TimeUnit
     {
