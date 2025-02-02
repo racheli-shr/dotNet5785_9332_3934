@@ -38,7 +38,7 @@ internal class CallImplementation : ICall
     {
         try
         {
-            var DOcall = _dal.Call.Read(callId);
+            var DOcall = _dal.Call.Read(c=>c.Id==callId);
             var BOcall = Read(DOcall.Id);
 
             if (BOcall == null)
@@ -139,7 +139,7 @@ internal class CallImplementation : ICall
         }
     }
 
-    public IEnumerable<BO.ClosedCallInList> GetClosedCallsByVolunteer(int volunteerId, BO.Enums.TypeHosting? callType, BO.Enums.ClosedCallInListFields? sortByField)
+    public IEnumerable<BO.ClosedCallInList> GetClosedCallsByVolunteer(int volunteerId, BO.Enums.CallType? callType, BO.Enums.ClosedCallInListFields? sortByField)
     {
         // Step 1: Fetch all assignments for the specific volunteer
         var volunteerAssignments = _dal.Assignment.ReadAll(a => a.VolunteerId == volunteerId);
@@ -163,11 +163,11 @@ internal class CallImplementation : ICall
             {
                 Id = c.Id,
                 CallType = c.CallType,
-               // Address = c.CallAddress,
-               // OpeningTime = c.OpenDate,
+                Address = c.Address,
+                OpeningTime = c.OpeningTime,
                 EntryTimeToHandle = assignment.EntryTimeForTreatment,  // Use the assignment data if available
                 ActualFinishTime = assignment.ActualTreatmentEndTime,  // Use the assignment data if available
-                FinishType = (BO.Enums.AssignmentEndType)assignment.TypeOfTreatmentTermination  // Use the assignment data if available
+                FinishType = (BO.Enums.TypeOfTreatmentTerm)assignment.TypeOfTreatmentTermination  // Use the assignment data if available
             };
         });
 
@@ -184,10 +184,10 @@ internal class CallImplementation : ICall
                 closedCallInList = closedCallInList.OrderBy(c => c.Id); // Sort by call ID
                 break;
             case BO.Enums.ClosedCallInListFields.ActualEndTime:
-                closedCallInList = closedCallInList.OrderBy(c => c.ActualEndTime); // Sort by completion date
+                closedCallInList = closedCallInList.OrderBy(c => c.ActualFinishTime); // Sort by completion date
                 break;
             case BO.Enums.ClosedCallInListFields.EndType:
-                closedCallInList = closedCallInList.OrderBy(c => c.EndType); // Sort by status (EndType)
+                closedCallInList = closedCallInList.OrderBy(c => c.FinishType); // Sort by status (EndType)
                 break;
             default:
                 closedCallInList = closedCallInList.OrderBy(c => c.Id); // Default: Sort by call number (ID)
@@ -239,7 +239,7 @@ internal class CallImplementation : ICall
                 callInLists = callInLists.Where(call => call.CallId == (int)filterValue);
                 break;
             case BO.Enums.CallInListFields.CallType:
-                callInLists = callInLists.Where(call => call.CallType == (BO.Enums.TypeHosting)filterValue);
+                callInLists = callInLists.Where(call => call.CallType == (BO.Enums.CallType)filterValue);
                 break;
             case BO.Enums.CallInListFields.OpeningTime:
                 callInLists = callInLists.Where(call => call.OpeningTime == (DateTime)filterValue);
