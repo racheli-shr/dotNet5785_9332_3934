@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace BO;
 
-internal class Call
+public class Call
 {
     public int Id { get; init; } // Unique running number for the call (from Call.DO)
     public CallType CallType { get; set; } // Type of the call (ENUM, from Call.DO)

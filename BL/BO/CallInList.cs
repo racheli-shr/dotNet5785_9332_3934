@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using static BO.Enums;
 namespace BO;
 
-internal class CallInList
+public class CallInList
 {
 
     public int Id { get; set; } // Unique identifier for the assignment, not displayed in the UI

@@ -1,6 +1,4 @@
-﻿using DalApi;
-
-namespace BLApi;
+﻿namespace BLApi;
 
 /// <summary>
 /// Interface for managing volunteer-related operations in the business logic layer.
@@ -13,7 +11,8 @@ public interface IVolunteer
     /// <param name="fullName">The fullName of the volunteer.</param>
     /// <param name="password">The password of the volunteer.</param>
     /// <returns>The role of the authenticated volunteer.</returns>
-     BO.Enums.Role Login(string fullName, string password);
+    public BO.Enums.Role Login(string fullName, string password);
+
 
     /// <summary>
     /// Retrieves a list of volunteers based on filter and sort criteria.
@@ -21,32 +20,32 @@ public interface IVolunteer
     /// <param name="isActive">Optional parameter to filter by active or inactive volunteers.</param>
     /// <param name="sortField">Optional parameter to specify the field by which to sort the list.</param>
     /// <returns>A collection of volunteers matching the criteria.</returns>
-     internal IEnumerable<BO.VolunteerInList> GetVolunteersList(bool? isActive, BO.Enums.VolunteerSortField? sortField = null);
+    public IEnumerable<BO.VolunteerInList> GetVolunteersList(bool? isActive, BO.Enums.VolunteerSortField? sortField = null);
 
     /// <summary>
     /// Retrieves detailed information about a specific volunteer.
     /// </summary>
     /// <param name="volunteerId">The unique identifier of the volunteer.</param>
     /// <returns>The volunteer details.</returns>
-     internal BO.Volunteer Read(int volunteerId);
+    public BO.Volunteer Read(int volunteerId);
 
     /// <summary>
     /// Updates the details of a volunteer. The requester must have the appropriate permissions.
     /// </summary>
     /// <param name="requesterId">The ID of the person requesting the update (admin or the same volunteer).</param>
     /// <param name="volunteer">The volunteer object containing updated details.</param>
-     internal void UpdateVolunteerDetails(int requesterId, BO.Volunteer volunteer);
+    public void UpdateVolunteerDetails(int requesterId, BO.Volunteer volunteer);
 
     /// <summary>
     /// Deletes a volunteer from the system. The volunteer must not be currently handling any calls.
     /// </summary>
     /// <param name="volunteerId">The unique identifier of the volunteer to delete.</param>
-     void DeleteVolunteer(int volunteerId);
+    public void DeleteVolunteer(int volunteerId);
+
 
     /// <summary>
     /// Adds a new volunteer to the system.
     /// </summary>
     /// <param name="volunteer">The volunteer object containing the details of the new volunteer.</param>
-     internal void AddVolunteer(BO.Volunteer volunteer);
-
+    public void AddVolunteer(BO.Volunteer volunteer);
 }

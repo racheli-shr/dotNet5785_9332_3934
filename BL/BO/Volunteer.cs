@@ -8,7 +8,7 @@ using static BO.Enums;
 
 //using Helpers;
 namespace BO;
-internal class Volunteer
+public class Volunteer
 {
     public int Id { get; init; }
     public string FullName { get; set; }

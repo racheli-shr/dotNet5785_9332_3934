@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using static BO.Enums;
 namespace BO;
 
-internal class CallInProgress
+public class CallInProgress
 {
     public int Id { get; init; } // Unique identifier for the entity
     public int CallId { get; init; } // Unique identifier for the call

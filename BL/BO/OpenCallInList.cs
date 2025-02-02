@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using static BO.Enums;
 namespace BO;
 
-internal class OpenCallInList
+public class OpenCallInList
 {
 
     public int Id { get; init; } // Unique running number for the call (from Call.DO)

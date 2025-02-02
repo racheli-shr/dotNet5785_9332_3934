@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Text.Json.Serialization;
+using System.Text.Json;
 using System.Threading.Tasks;
 //using Newtonsoft.Json.Linq;
 namespace BL.Helpers
@@ -11,45 +13,57 @@ namespace BL.Helpers
     {
         private const string ApiKey = "AIzaSyAfqbckIhPbc6rQkv7P2j711zLSfmnGxmo"; // הכניסי את ה-API Key שלך כאן
         private const string BaseUrl = "https://maps.googleapis.com/maps/api/geocode/json";
+        #region check address
         public static (double Latitude, double Longitude) GetCoordinates(string address)
         {
+            if (string.IsNullOrWhiteSpace(address))
+            {
+                throw new ArgumentException("הכתובת אינה תקינה");
+            }
+
+            string url = $"https://geocode.maps.co/search?q={Uri.EscapeDataString(address)}&api_key=679a8da6c01a6853187846vomb04142";
+
             try
             {
-                using (var client = new WebClient())
+                using (WebClient client = new WebClient())
                 {
-                    // צור את כתובת ה-URL לשאילתה
-                    string requestUrl = $"{BaseUrl}?address={Uri.EscapeDataString(address)}&key={ApiKey}";
+                    string response = client.DownloadString(url);
+                    //Console.WriteLine("Response from server: " + response); // הדפסה לבדיקה
 
-                    // שלח את הבקשה והחזר את התשובה בצורה סינכרונית
-                    string json = client.DownloadString(requestUrl);
+                    var result = JsonSerializer.Deserialize<GeocodeResponse[]>(response);
+                    Console.WriteLine(result.ToString()); // הדפסה לבדיקה
 
-                    var data = JObject.Parse(json);
 
-                    if (data["status"].ToString() == "OK")
+
+                    if (result == null || result.Length == 0)
                     {
-                        var location = data["results"][0]["geometry"]["location"];
-                        double latitude = (double)location["lat"];
-                        double longitude = (double)location["lng"];
-
-                        return (latitude, longitude);
-                    }
-                    else
-                    {
-                        throw new Exception($"Error: {data["status"]}");
+                        throw new Exception("לא נמצאו קואורדינטות לכתובת זו");
                     }
 
+                    double latitude = double.Parse(result[0].Latitude);
+                    double longitude = double.Parse(result[0].Longitude);
+
+                    Console.WriteLine($"נבחרה הכתובת: {result[0].DisplayName}");
+                    return (latitude, longitude);
                 }
-            }
-            catch (WebException webEx)
-            {
-                throw new Exception("Web error occurred: " + webEx.Message);
             }
             catch (Exception ex)
             {
-                // טיפול בשגיאות אחרות
-                throw new Exception("An error occurred: invalid format address " + ex.Message);
+                throw new Exception("שגיאה בעת שליפת קואורדינטות: " + ex.Message);
             }
         }
+        private class GeocodeResponse
+        {
+            [JsonPropertyName("lat")]
+            public string Latitude { get; set; } // מוגדר כמחרוזת
+
+            [JsonPropertyName("lon")]
+            public string Longitude { get; set; } // מוגדר כמחרוזת
+
+            [JsonPropertyName("display_name")]
+            public string DisplayName { get; set; }
+        }
+        #endregion
     }
 }
 

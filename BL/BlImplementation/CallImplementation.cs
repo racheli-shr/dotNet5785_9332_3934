@@ -1,12 +1,6 @@
 ﻿using BL.Helpers;
-using BlApi;
 using BLApi;
-using BO;
 using Helpers;
-using Microsoft.VisualBasic;
-using System;
-using System.Linq;
-using static BO.Enums;
 namespace BLImplementation;
 
 
@@ -38,7 +32,7 @@ internal class CallImplementation : ICall
     {
         try
         {
-            var DOcall = _dal.Call.Read(c=>c.Id==callId);
+            var DOcall = _dal.Call.Read(c => c.Id == callId);
             var BOcall = Read(DOcall.Id);
 
             if (BOcall == null)
@@ -46,39 +40,41 @@ internal class CallImplementation : ICall
                 throw new BO.Exceptions.BlDoesNotExistException($"Call with ID {callId} does not exist.");
             }
 
-            // בדיקת סטטוס הקריאה
+            // Check if the call status allows deletion
             if (BOcall.Status != BO.Enums.CallStatus.Open)
             {
                 throw new BO.Exceptions.BLInvalidDataException("Only calls with status 'Open' can be deleted.");
             }
-            // בדיקת הקצאות
+
+            // Check if the call has assignments
             var assignments = _dal.Assignment.ReadAll(assignment => assignment.CallId == callId);
             if (assignments.Any())
             {
                 throw new BO.Exceptions.BLInvalidDataException("Cannot delete the call because it has been assigned to volunteers.");
             }
-            // מחיקה משכבת הנתונים
+
+            // Delete the call from the data layer
             _dal.Call.Delete(callId);
         }
         catch (BO.Exceptions.BlDoesNotExistException ex)
         {
-            // לוג והתאמת חריגה
-            //Console.WriteLine($"DAL error: {ex.Message}");
+            // Log and rethrow exception with a modified message
             throw new BO.Exceptions.BlDoesNotExistException($"The call with ID {callId} does not exist in the data layer.");
         }
         catch (BO.Exceptions.BLInvalidDataException ex)
         {
-            // לוג עבור שגיאה ידועה
+            // Log validation error
             Console.WriteLine($"Validation error: {ex.Message}");
             throw;
         }
         catch (Exception ex)
         {
-            // טיפול כללי לשגיאות לא צפויות
+            // Handle unexpected errors
             Console.WriteLine($"Unexpected error: {ex.Message}");
             throw new BO.Exceptions.BLGeneralException("An unexpected error occurred while attempting to delete the call.", ex);
         }
     }
+
 
     public int[] GetCallCountsByStatus()
     {
@@ -299,17 +295,10 @@ internal class CallImplementation : ICall
                 break;
         }
 
-
-        // עבור כל קריאה, מבצע סינון כך שכל קריאה תופיע רק פעם אחת עם ההקצאה האחרונה שלה
-        //var filteredCalls = calls
-        //    .GroupBy(call => call.Id)
-        //    .Select(group => group.OrderByDescending(call => call.OpenDate).First()) // ממיין לפי תאריך פתיחה ומחזיר את הקריאה האחרונה
-        //    .ToList();
-
         return callInLists;
     }
 
-    public IEnumerable<BO.OpenCallInList> GetOpenCalls(int volunteerId, BO.Enums.TypeHosting? callType, Enum? sortByField)
+    public IEnumerable<BO.OpenCallInList> GetOpenCalls(int volunteerId, BO.Enums.CallType? callType, Enum? sortByField)
     {
         throw new NotImplementedException();
     }

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using static BO.Enums;
 namespace BO;
 
-internal class ClosedCallInList
+public class ClosedCallInList
 {
     public int Id { get; init; } // Unique running number for the call (from Call.DO)
     public CallType CallType { get; set; } // Type of the call (ENUM, from Call.DO)

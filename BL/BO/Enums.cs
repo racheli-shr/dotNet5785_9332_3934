@@ -15,13 +15,13 @@ public class Enums
         CALL_ID,                       // Sort by call ID
         CALL_TYPE                      // Sort by type of call
     }
-    public enum TypeHosting
-    {
-        TEMPORARY_LIVING,   // Temporary accommodation for volunteers
-        EMERGENCY_SHELTER,  // Shelter provided during emergencies
-        SHABBAT_NEAR_HOSPITALS, // Accommodation for volunteers near hospitals during Shabbat
-        SHORT_TERM_LODGING   // Short-term lodging for volunteers
-    }
+    //public enum TypeHosting
+    //{
+    //    TEMPORARY_LIVING,   // Temporary accommodation for volunteers
+    //    EMERGENCY_SHELTER,  // Shelter provided during emergencies
+    //    SHABBAT_NEAR_HOSPITALS, // Accommodation for volunteers near hospitals during Shabbat
+    //    SHORT_TERM_LODGING   // Short-term lodging for volunteers
+    //}
     public enum CallInListFields
     {
         Id,                   // Unique identifier for the call
