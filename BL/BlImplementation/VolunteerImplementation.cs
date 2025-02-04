@@ -134,6 +134,7 @@ internal class VolunteerImplementation : IVolunteer
     /// </summary>
     public BO.Enums.Role Login(string fullName, string password)
     {
+        Console.WriteLine(  fullName,password);
         var volunteer = _dal.Volunteer.Read(v => v.FullName == fullName && v.Password == password);
         if (volunteer == null)
         {

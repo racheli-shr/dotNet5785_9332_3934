@@ -16,7 +16,7 @@ namespace Helpers
     {
         Id=call.Id,
         CallType=(DO.Enums.CallType)call.CallType,
-        FullAdress=call.Address,
+        FullAdress=call.Address!,
         Latitude=call.Latitude,
         Longitude=call.Longitude,
         OpeningCallTime=call.OpeningTime,

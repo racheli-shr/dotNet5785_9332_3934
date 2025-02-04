@@ -10,11 +10,12 @@ internal class Program
     static readonly BlApi.IBl s_bl = BlApi.Factory.Get();
     static void Main(string[] args)
     {
-        try
-        {
-            bool exit = false;
 
-            while (!exit)
+        bool exit = false;
+
+        while (!exit)
+        {
+            try
             {
 
                 Console.WriteLine("=== Main Menu ===");
@@ -52,21 +53,22 @@ internal class Program
                     Console.ReadKey();
                 }
             }
-        }
-
-        catch (Exception ex) // חריגות כלליות
-        {
-            Console.WriteLine("An unexpected error occurred:");
-            Console.WriteLine($"Exception Type: {ex.GetType().Name}");
-            Console.WriteLine($"Message: {ex.Message}");
-
-            if (ex.InnerException != null)
+            catch (Exception ex) // חריגות כלליות
             {
-                Console.WriteLine("Inner Exception:");
-                Console.WriteLine($"Type: {ex.InnerException.GetType().Name}");
-                Console.WriteLine($"Message: {ex.InnerException.Message}");
+                Console.WriteLine("An unexpected error occurred:");
+                Console.WriteLine($"Exception Type: {ex.GetType().Name}");
+                Console.WriteLine($"Message: {ex.Message}");
+
+                if (ex.InnerException != null)
+                {
+                    Console.WriteLine("Inner Exception:");
+                    Console.WriteLine($"Type: {ex.InnerException.GetType().Name}");
+                    Console.WriteLine($"Message: {ex.InnerException.Message}");
+                }
             }
         }
+
+
     }
 
     static void ManageVolunteers()
@@ -92,8 +94,20 @@ internal class Program
                     string fullname = Console.ReadLine();
                     Console.WriteLine("Enter volunteer password:");
                     string password = Console.ReadLine();
-                    BO.Enums.Role role = s_bl.Volunteer.Login(fullname, password);
-                    Console.WriteLine($"your Role is:{role}");
+                    try
+                    {
+                        Console.WriteLine(s_bl.Volunteer.Login(fullname, password));
+                        //BO.Enums.Role role = 
+                        //Console.WriteLine($"your Role is:{role}");
+                    }
+                    catch (Exception error)
+                    {
+                        Console.WriteLine(error);
+                        break;
+                    }
+
+
+
 
                     break;
                 case "2":
@@ -112,7 +126,7 @@ internal class Program
                     Console.WriteLine("8. Call Type");
 
                     int sortOption = int.Parse(Console.ReadLine());
-
+                    Console.WriteLine(sortOption);
                     // המרת בחירת המשתמש לסוג המיון המתאים
                     BO.Enums.VolunteerSortField? sortField = sortOption switch
                     {
@@ -126,7 +140,7 @@ internal class Program
                         8 => BO.Enums.VolunteerSortField.CALL_TYPE,
                         _ => null  // ברירת מחדל אם אין בחירה חוקית
                     };
-
+                    Console.WriteLine(sortField);
                     // קריאה לפונקציה עם המיון שבחר המשתמש
                     var volunteersList = s_bl.Volunteer.GetVolunteersList(isActive, sortField);
                     foreach (var volunteer in volunteersList)
@@ -186,7 +200,7 @@ internal class Program
             {
                 case "1":
                     int[] callCount = s_bl.Call.GetCallCountsByStatus();
-                    foreach (int i in callCount) Console.WriteLine(i+" ");
+                    foreach (int i in callCount) Console.WriteLine(i + " ");
                     break;
                 case "2":
 
@@ -414,7 +428,7 @@ internal class Program
                         MaxDistance = maxDistance,
                         Latitude = 0.0,
                         Longitude = 0.0,
-                        Password=password
+                        Password = password
                     };
                     s_bl.Volunteer!.AddVolunteer(newVolunteer);
                     Console.WriteLine("volunteer added successfully");
@@ -435,9 +449,9 @@ internal class Program
                         Role = role,
                         DistanceType = typeDistance,
                         MaxDistance = maxDistance ?? volunteer.MaxDistance,
-                        Latitude =  volunteer.Latitude,
+                        Latitude = volunteer.Latitude,
                         Longitude = volunteer.Longitude,
-                        Password=password?? volunteer.Password
+                        Password = password ?? volunteer.Password
                     };
 
                     // עדכון הוולונטר עם המידע החדש
@@ -495,8 +509,8 @@ internal class Program
                         Id = call.Id, // שימור ה-ID הקיים
                         CallType = callType,
                         Address = addressCall ?? call.Address,
-                        Latitude =  call.Latitude,
-                        Longitude= call.Longitude,
+                        Latitude = call.Latitude,
+                        Longitude = call.Longitude,
                         OpeningTime = openDate,
                         Description = description ?? call.Description,
                         MaxFinishTime = maxTimeFinish ?? call.MaxFinishTime,

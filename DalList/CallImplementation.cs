@@ -23,7 +23,7 @@ internal class CallImplementation : ICall
         }
         else
         {
-            throw new DO.Exceptions.DalDoesNotExistException("אובייקט מסוג Call עם ID כזה לא קיים");
+            throw new DO.Exceptions.DalDoesNotExistException("Call ids doesn't exsisting");
         }
     }
 
@@ -59,7 +59,7 @@ internal class CallImplementation : ICall
         }
         else
         {
-            throw new DO.Exceptions.DalDoesNotExistException("אובייקט מסוג Call עם ID כזה לא קיים");
+            throw new DO.Exceptions.DalDoesNotExistException("Call ids doesn't exsisting");
         }
     }
 }
