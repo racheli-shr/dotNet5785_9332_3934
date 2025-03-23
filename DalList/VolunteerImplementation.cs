@@ -34,7 +34,7 @@ namespace Dal
         {
             if (Read(a => a.Id == item.Id) != null)
             {
-                throw new DO.Exceptions.DalAlreadyExistsException("Volunteer id's doesn't exsisting");
+                throw new DO.Exceptions.DalAlreadyExistsException("Volunteer id's already exsisting");
             }
             DataSource.Volunteers.Add(item);
         }

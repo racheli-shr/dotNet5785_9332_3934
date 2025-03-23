@@ -22,7 +22,7 @@ internal class VolunteerImplementation : IVolunteer
             VolunteerManager.Validation(volunteer);
 
             bool isDirectorExists = _dal.Volunteer.ReadAll().Any(v => v.Role == DO.Enums.Role.manager);
-            if (isDirectorExists)
+            if (isDirectorExists&&volunteer.Role==BO.Enums.Role.manager)
             {
                 throw new BO.Exceptions.BlDoesNotExistException("Cannot add a new Director. Only one Director is allowed in the system.");
             }
@@ -112,19 +112,66 @@ internal class VolunteerImplementation : IVolunteer
     {
         try
         {
-            IEnumerable<DO.Volunteer> DOvolunteers = isActive == null
-                ? _dal.Volunteer.ReadAll()
-                : _dal.Volunteer.ReadAll(v => v.IsActive == isActive);
-
-            return DOvolunteers.Select(v => new BO.VolunteerInList
+            IEnumerable<DO.Volunteer> DOvolunteers;
+            if (isActive == null)
             {
-                Id = v.Id,
-                FullName = v.FullName,
-                IsActive = v.IsActive
-            });
+                // Retrieve all volunteers if isActive is null (no filtering by availability)
+                DOvolunteers = _dal.Volunteer.ReadAll()
+                    ?? throw new BO.Exceptions.BlDoesNotExistException("No volunteers exist in the system.");
+            }
+            else
+            {
+                // Retrieve volunteers based on their availability status
+                DOvolunteers = _dal.Volunteer.ReadAll(v => v.IsActive == isActive)
+                    ?? throw new BO.Exceptions.BlDoesNotExistException("No volunteers match the specified availability.");
+            }
+            var volunteersInList = from v in DOvolunteers
+                                   let BOvolunteer = Read(v.Id) // Retrieve volunteer details by ID
+                                   select new BO.VolunteerInList
+                                   {
+                                       Id = BOvolunteer.Id,
+                                       FullName = BOvolunteer.FullName,
+                                       IsActive = BOvolunteer.IsActive,
+                                       SumTreatedCalls = BOvolunteer.NumberOfCalls,
+                                        SumCallsSelfCancelled= BOvolunteer.NumberOfCanceledCalls,
+                                       SumExpiredCalls = BOvolunteer.NumberOfexpiredCalls,
+                                       CallId = BOvolunteer.CurrentCallInProgress?.CallId,
+                                       CallType = BOvolunteer.CurrentCallInProgress?.CallType ?? BO.Enums.CallType.NONE
+                                   };
+            // Apply sorting based on the selected field
+            if (sortField == null)
+            {
+                // Default sorting by volunteer ID
+                volunteersInList = volunteersInList.OrderBy(v => v.Id);
+            }
+            else
+            {
+                // Apply sorting using query syntax
+                volunteersInList = sortField switch
+                {
+                    BO.Enums.VolunteerSortField.ID => from v in volunteersInList orderby v.Id select v,
+                    BO.Enums.VolunteerSortField.FULL_NAME => from v in volunteersInList orderby v.FullName select v,
+                    BO.Enums.VolunteerSortField.IS_AVAILABLE => from v in volunteersInList orderby v.IsActive select v,
+                    BO.Enums.VolunteerSortField.SUM_TREATED_CALLS => from v in volunteersInList orderby v.SumTreatedCalls select v,
+                    BO.Enums.VolunteerSortField.SUM_CALLS_SELF_CANCELLED => from v in volunteersInList orderby v.SumCallsSelfCancelled select v,
+                    BO.Enums.VolunteerSortField.SUM_EXPIRED_CALLS => from v in volunteersInList orderby v.SumExpiredCalls select v,
+                    BO.Enums.VolunteerSortField.CALL_ID => from v in volunteersInList orderby v.CallId select v,
+                    BO.Enums.VolunteerSortField.CALL_TYPE => from v in volunteersInList orderby v.CallType select v,
+                    _ => from v in volunteersInList orderby v.Id select v // Default sorting by ID
+                };
+
+            }
+
+            return volunteersInList;
+        }
+        catch (BO.Exceptions.BlDoesNotExistException ex)
+        {
+            // Handle cases where no volunteers exist or match the filter
+            throw new BO.Exceptions.BlDoesNotExistException("An error occurred while retrieving the volunteers list: ", ex);
         }
         catch (Exception ex)
         {
+            // General exception handling
             throw new BO.Exceptions.BLGeneralException("An unexpected error occurred while retrieving the volunteers list.", ex);
         }
     }

@@ -421,6 +421,7 @@ internal class Program
                         FullName = fullName,
                         Phone = phone,
                         Email = email,
+                        Password=password,
                         FullAddress = address,
                         IsActive = isAvailable,
                         Role = role,
@@ -428,7 +429,7 @@ internal class Program
                         MaxDistance = maxDistance,
                         Latitude = 0.0,
                         Longitude = 0.0,
-                        Password = password
+                        
                     };
                     s_bl.Volunteer!.AddVolunteer(newVolunteer);
                     Console.WriteLine("volunteer added successfully");
@@ -456,7 +457,7 @@ internal class Program
 
                     // עדכון הוולונטר עם המידע החדש
                     s_bl.Volunteer!.UpdateVolunteerDetails(Idvolunteer, updatedVolunteer);
-                    Console.WriteLine($"volunteer with id{Idvolunteer} updated successfully");
+                    Console.WriteLine($"volunteer with id {Idvolunteer} updated successfully");
                 }
 
                 break;

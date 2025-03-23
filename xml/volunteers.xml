@@ -84,4 +84,17 @@
     <MaxDistance>75</MaxDistance>
     <DistanceType>driveDistance</DistanceType>
   </Volunteer>
+  <Volunteer>
+    <Id>328183934</Id>
+    <FullName>Yael</FullName>
+    <Phone>0534183542</Phone>
+    <Email>YaelB@gmail.com</Email>
+    <FullAdress>moshe zilberg 32</FullAdress>
+    <Latitude>31.7610773</Latitude>
+    <Longitude>35.1854477</Longitude>
+    <Role>volunteer</Role>
+    <IsActive>true</IsActive>
+    <MaxDistance>40</MaxDistance>
+    <DistanceType>driveDistance</DistanceType>
+  </Volunteer>
 </ArrayOfVolunteer>

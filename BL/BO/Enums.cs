@@ -48,8 +48,8 @@ public class Enums
     {
         Emergency, // Urgent call
         Regular,   // Regular call
-        FollowUp   // Follow-up call
-                   // Add more types as needed
+        FollowUp,  // Follow-up call
+            NONE       // Add more types as needed
     }
 
     public enum CallStatus
