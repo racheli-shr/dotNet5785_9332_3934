@@ -6,13 +6,12 @@ namespace DO
 {
     public record Volunteer
     (
-        
-        int Id,
-        string FullName,
-        string Phone,
-        string Email,
-        string? Password,
-        string? FullAdress,
+    int Id,
+    string FullName,
+    string Phone,
+    string Email,
+    string? Password,
+    string? FullAdress,
         double? Latitude,
         double? Longitude,
         DO.Enums.Role Role,  // שימוש ב-enum Role
@@ -22,5 +21,26 @@ namespace DO
     )
     {
         public Volunteer() : this(0, "Unknown", "Unknown", "Unknown", null, null, null, null, DO.Enums.Role.volunteer, true, null, null) { }
+        public override string ToString()
+        {
+            return $@"
+Volunteer Details:
+-------------------
+ID: {Id}
+Full Name: {FullName}
+Phone: {Phone}
+Email: {Email}
+Password: {Password}
+Address: 
+            {(FullAdress ?? "Not Provided")}
+Role: {Role}
+Availability: {(IsActive ? "Available" : "Not Available")}
+Distance Type: {DistanceType}
+Max Distance: {(MaxDistance.HasValue ? $"{MaxDistance.Value} km" : "Not Specified")}
+Location: {(Latitude.HasValue && Longitude.HasValue ? $"({Latitude.Value}, {Longitude.Value})" : "Not Specified")}
+";
+        }
     }
+
+
 }

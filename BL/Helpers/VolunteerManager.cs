@@ -47,11 +47,8 @@ internal static class VolunteerManager
         return checksum == (id[8] - '0');
     }
 
-    internal static double GetDistance(string volAddress, string callAddress, DO.Enums.DistanceType typeDistance)
+    internal static double GetDistance(double volLatitude, double volLongitude, double callLatitude, double callLongitude, DO.Enums.DistanceType? typeDistance)
     {
-        // השגת קואורדינטות של המתנדב והקריאה
-        (double volLatitude, double volLongitude) = Tools.GetCoordinates(volAddress);
-        (double callLatitude, double callLongitude) = Tools.GetCoordinates(callAddress);
 
         switch (typeDistance)
         {

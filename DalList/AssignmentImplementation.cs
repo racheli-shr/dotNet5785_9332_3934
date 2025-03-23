@@ -3,9 +3,17 @@ namespace Dal;
 using DalApi;
 using DO;
 using System.Collections.Generic;
+using static DO.Exceptions;
 
 internal class AssignmentImplementation : IAssignment
 {
+    public Assignment? Read(int id)
+    {
+        Assignment? a = DataSource.Assignments.FirstOrDefault(a => a.Id == id); // Fetch assignment by ID
+        if (a == null)
+            throw new DalDoesNotExistException($"No assignment found with ID {id}"); // Error if not found
+        else return a;
+    }
     public void Create(Assignment item)
     {
        

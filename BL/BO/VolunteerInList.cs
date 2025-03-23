@@ -1,5 +1,7 @@
 ﻿
 
+using BL.Helpers;
+
 namespace BO;
 
 public class VolunteerInList
@@ -12,4 +14,5 @@ public class VolunteerInList
     public int TotalExpiredCalls { get; set; } // Total number of calls that expired for the volunteer
     public int? CurrentCallId { get; set; } // ID of the call currently being handled by the volunteer, if any
     public BO.Enums.CallType CallType { get; set; }
+    public override string ToString() => this.ToStringProperty();
 }

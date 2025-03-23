@@ -9,9 +9,23 @@ public record Assignment
     int VolunteerId,
     DateTime EntryTimeForTreatment,
     DateTime? ActualTreatmentEndTime,
-    DO.Enums.TypeOfTreatmentTerm? TypeOfTreatmentTermination
+    DO.Enums.AssignmentStatus? AssignmentStatus
 )
 {
     // בנאי ברירת מחדל
     public Assignment() : this(0, 0, 0, DateTime.MinValue, null, null) { }
+    public override string ToString()
+    {
+       
+        return $@"
+        Volunteer Details:
+        -------------------
+        ID: {Id}
+        Call ID: {CallId}
+        Volunteer ID: {VolunteerId}
+        Entry Time For Treatment: {EntryTimeForTreatment}
+        Actual Treatment End Time : {ActualTreatmentEndTime}
+        Assignment Status: {AssignmentStatus}
+        ";
+    }
 }

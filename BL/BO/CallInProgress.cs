@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BL.Helpers;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -18,5 +19,6 @@ public class CallInProgress
     public DateTime EntryTimeToHandle { get; set; } // Time the volunteer started handling the call
     public double DistanceFromVolunteer { get; set; } // Distance from the volunteer to the call
     public CallStatus Status { get; set; } // Current status of the call (ENUM)
+    public override string ToString() => this.ToStringProperty();
 
 }

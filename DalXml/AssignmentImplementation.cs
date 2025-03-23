@@ -6,9 +6,24 @@ using System;
 using System.Collections.Generic;
 using System.Xml.Linq;
 
+using static DO.Exceptions;
+
 internal class AssignmentImplementation : IAssignment
 {
     // convert from element to assignment object
+    public Assignment Read(int id)
+    {
+        XElement? assignmentElem = XMLTools.LoadListFromXMLElement(Config.s_assignment_xml)
+            .Elements()
+            .FirstOrDefault(a => (int?)a.Element("Id") == id);
+
+        if (assignmentElem is null)
+            throw new DalDoesNotExistException($"No assignment found with ID {id}.");
+
+        return GetAssignment(assignmentElem);
+    }
+
+
 
     static Assignment GetAssignment(XElement s)
     {
@@ -19,7 +34,7 @@ internal class AssignmentImplementation : IAssignment
             VolunteerId= s.ToIntNullable("VolunteerId") ?? 0,
             EntryTimeForTreatment= s.ToDateTimeNullable("EntryTimeForTreatment") ?? DateTime.Now,
             ActualTreatmentEndTime=s.ToDateTimeNullable("ActualTreatmentEndTime") ?? DateTime.Now,
-            TypeOfTreatmentTermination= s.ToEnumNullable<DO.Enums.TypeOfTreatmentTerm>("TypeOfTreatmentTermination") ?? DO.Enums.TypeOfTreatmentTerm.endTermCancelation,
+            AssignmentStatus= s.ToEnumNullable<DO.Enums.AssignmentStatus>("TypeOfTreatmentTermination") ?? DO.Enums.AssignmentStatus.EXPIRED,
         };
     }
     public void Create(Assignment item)

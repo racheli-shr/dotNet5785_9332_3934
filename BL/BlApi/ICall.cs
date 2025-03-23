@@ -1,4 +1,6 @@
 ﻿namespace BLApi;
+
+using BO;
 using static BO.Enums;
 
 /// <summary>
@@ -9,7 +11,7 @@ public interface ICall
     /// <summary>
     /// Retrieves an array of call counts by status.
     /// </summary>
-    int[] GetCallCountsByStatus();
+    IEnumerable<BO.StatusCounter> GetCallCountsByStatus();//TODO: chenge return value type
 
     /// <summary>
     /// Assigns a volunteer to a call.

@@ -5,9 +5,27 @@ using DO;
 using System;
 using System.Collections.Generic;
 using System.Xml.Linq;
+using static DO.Exceptions;
 
 internal class CallImplementation : ICall
 {
+    public Call Read(int id)
+    {
+        // Load the list of calls from XML
+        List<Call> calls = XMLTools.LoadListFromXMLSerializer<Call>(Config.s_call_xml);
+
+        // Try to find the call by ID
+        Call? call = calls.FirstOrDefault(c => c.Id == id);
+
+        // If no call was found, throw an exception
+        if (call == null)
+        {
+            throw new DalDoesNotExistException($"No call found with ID {id}");
+        }
+
+        return call;
+    }
+
     // convert from element to call object
     static Call GetCall(XElement s)
     {

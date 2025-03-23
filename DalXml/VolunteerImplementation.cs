@@ -3,9 +3,11 @@ using DalApi;
 using DO;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Metrics;
 using System.Numerics;
 using System.Text;
 using System.Xml.Linq;
+using static DO.Exceptions;
 
 internal class VolunteerImplementation : IVolunteer
 {
@@ -52,6 +54,7 @@ internal class VolunteerImplementation : IVolunteer
 
         volunteers.Add(item);
         XMLTools.SaveListToXMLSerializer(volunteers, Config.s_volunteer_xml);
+        
     }
     //Decrypt the Password
     public string DecryptPassword(string encryptedPassword)
@@ -118,12 +121,35 @@ internal class VolunteerImplementation : IVolunteer
 
     public Volunteer? Read(Func<Volunteer, bool> filter)
     {
-        return XMLTools.LoadListFromXMLElement(Config.s_volunteer_xml).Elements().Select(s =>
-        GetVolunteer(s)).FirstOrDefault(filter);
+        List<Volunteer> volunteers = XMLTools.LoadListFromXMLSerializer<Volunteer>(Config.s_volunteer_xml);
+        Volunteer? volunteer = volunteers.FirstOrDefault(filter);
+
+        if (volunteer == null)
+        {
+            throw new DalDoesNotExistException("No matching volunteer found.");
+        }
+
+        return volunteer;
+
+    }
+
+    public Volunteer Read(int id)
+    {
+        List<Volunteer> volunteers = XMLTools.LoadListFromXMLSerializer<Volunteer>(Config.s_volunteer_xml);
+        Volunteer? volunteer = volunteers.FirstOrDefault(v => v.Id == id);
+
+        if (volunteer == null)
+        {
+            throw new DalDoesNotExistException($"No volunteer found with ID {id}.");
+        }
+
+        return volunteer;
     }
 
 
-    public IEnumerable<Volunteer> ReadAll(Func<Volunteer, bool>? filter = null)
+
+
+        public IEnumerable<Volunteer> ReadAll(Func<Volunteer, bool>? filter = null)
     {
         var volunteers = XMLTools.LoadListFromXMLSerializer<Volunteer>(Config.s_volunteer_xml);
         return filter == null ? volunteers : volunteers.Where(filter);

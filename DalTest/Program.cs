@@ -549,10 +549,10 @@
                 DateTime entryTime = DateTime.Parse(Console.ReadLine());
                 Console.Write("Enter Actual Treatment End Time (yyyy-mm-dd hh:mm): ");
                 DateTime endTime = DateTime.Parse(Console.ReadLine());
-                Console.Write("Enter Type of Treatment Termination (e.g., endTermCancelation): ");
-                DO.Enums.TypeOfTreatmentTerm terminationType = (DO.Enums.TypeOfTreatmentTerm)Enum.Parse(typeof(DO.Enums.TypeOfTreatmentTerm), Console.ReadLine());
+                Console.Write("Enter Type of AssignmentmStatus (e.g., selfCanceled): ");
+                DO.Enums.AssignmentStatus assignmentStatus = (DO.Enums.AssignmentStatus)Enum.Parse(typeof(DO.Enums.AssignmentStatus), Console.ReadLine());
 
-                var assignment = new Assignment(id, callId, volunteerId, entryTime, endTime, terminationType);
+                var assignment = new Assignment(id, callId, volunteerId, entryTime, endTime, assignmentStatus);
                 s_dal.Assignment?.Create(assignment);
             }
             catch (Exception ex)
@@ -609,10 +609,10 @@
                     DateTime entryTime = DateTime.Parse(Console.ReadLine());
                     Console.Write("Enter Actual Treatment End Time (yyyy-mm-dd hh:mm): ");
                     DateTime endTime = DateTime.Parse(Console.ReadLine());
-                    Console.Write("Enter Type of Treatment Termination (e.g., endTermCancelation): ");
-                    DO.Enums.TypeOfTreatmentTerm terminationType = (DO.Enums.TypeOfTreatmentTerm)Enum.Parse(typeof(DO.Enums.TypeOfTreatmentTerm), Console.ReadLine());
+                    Console.Write("Enter Type of Status (e.g., endTermCancelation): ");
+                    DO.Enums.AssignmentStatus status = (DO.Enums.AssignmentStatus)Enum.Parse(typeof(DO.Enums.AssignmentStatus), Console.ReadLine());
 
-                    assignment = assignment with { CallId = callId, VolunteerId = volunteerId, EntryTimeForTreatment = entryTime, ActualTreatmentEndTime = endTime, TypeOfTreatmentTermination = terminationType };
+                    assignment = assignment with { CallId = callId, VolunteerId = volunteerId, EntryTimeForTreatment = entryTime, ActualTreatmentEndTime = endTime, AssignmentStatus = status };
                     s_dal.Assignment?.Update(assignment);
                 }
                 else

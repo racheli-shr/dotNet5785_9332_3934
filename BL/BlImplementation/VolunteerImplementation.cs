@@ -50,7 +50,7 @@ internal class VolunteerImplementation : IVolunteer
             }
 
             var assignments = _dal.Assignment.ReadAll(a => a.VolunteerId == volunteerId);
-            bool isCurrentlyHandlingCall = assignments.Any(a => a.TypeOfTreatmentTermination == DO.Enums.TypeOfTreatmentTerm.finished);
+            bool isCurrentlyHandlingCall = assignments.Any(a => a.AssignmentStatus == DO.Enums.AssignmentStatus.TREATED);
 
             if (isCurrentlyHandlingCall)
             {
@@ -58,9 +58,9 @@ internal class VolunteerImplementation : IVolunteer
             }
 
             bool hasHandledCallsBefore = assignments.Any(a =>
-                a.TypeOfTreatmentTermination != DO.Enums.TypeOfTreatmentTerm.selfCancelation &&
-                a.TypeOfTreatmentTermination != DO.Enums.TypeOfTreatmentTerm.endTermCancelation &&
-                a.TypeOfTreatmentTermination != DO.Enums.TypeOfTreatmentTerm.managerCancelation);
+                a.AssignmentStatus != DO.Enums.AssignmentStatus.SELF_CANCELLED &&
+                a.AssignmentStatus != DO.Enums.AssignmentStatus.EXPIRED &&
+                a.AssignmentStatus != DO.Enums.AssignmentStatus.MANAGER_CANCELLED);
 
             if (hasHandledCallsBefore)
             {
@@ -134,8 +134,8 @@ internal class VolunteerImplementation : IVolunteer
     /// </summary>
     public BO.Enums.Role Login(string fullName, string password)
     {
-        Console.WriteLine(  fullName,password);
-        var volunteer = _dal.Volunteer.Read(v => v.FullName == fullName && v.Password == password);
+        
+        var volunteer = _dal.Volunteer.Read(v => v.FullName == fullName && v.Password == _dal.Volunteer.EncryptPassword(password));
         if (volunteer == null)
         {
             throw new BO.Exceptions.BlDoesNotExistException("Incorrect username or password");

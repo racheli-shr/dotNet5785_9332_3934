@@ -58,6 +58,8 @@ internal class AdminImplementation : IAdmin
     {
         _dal.ResetDB(); // Call the reset method in DAL
         ClockManager.UpdateClock(ClockManager.Now); // Update the clock to the current time
+        Console.WriteLine("Reset successfully");
+
     }
 
     // Initialize the database

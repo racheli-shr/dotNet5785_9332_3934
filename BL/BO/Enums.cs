@@ -69,15 +69,27 @@ public class Enums
         Expired     // Expired without completion
                     // Add more finish types as needed
     }
-    public enum AssignmentEndType
+    /// <summary>
+    /// Enum representing different statuses an assignment can have.
+    /// </summary>
+    public enum AssignmentStatus
     {
-        Completed,       // The call handling was successfully completed
-        Cancelled,       // The call was cancelled
-        Expired,         // The call expired without handling
-        ArtificialCancel // Artificially created assignment due to expiration or other reasons
-                         // Add more end types as needed
+        TREATED,           // The call was treated on time
+        SELF_CANCELLED,    // The volunteer canceled the call
+        MANAGER_CANCELLED, // The manager canceled the call
+        EXPIRED    ,        // The call expired and was automatically canceled
+            NONE
     }
-    
+    public enum OpenCallInListFields
+    {
+        Id,                   // Unique identifier for the call
+        CallType,             // The type of the call
+        Description,          // A textual description of the call
+        FullAddress,          // The full address of the call
+        OpenTime,             // The time the call was opened
+        MaxEndTime,           // The maximum allowed time to close the call
+        DistanceFromVolunteer // The distance of the call from the current location of the volunteer
+    }
     public enum TimeUnit
     {
         MINUTE, // Minute unit

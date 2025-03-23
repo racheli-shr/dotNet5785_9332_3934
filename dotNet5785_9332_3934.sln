@@ -20,15 +20,16 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DalXml", "DalXml\DalXml.csp
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "xml", "xml", "{BAC87DCD-1A2C-4D07-AD99-39CE976AF56D}"
 	ProjectSection(SolutionItems) = preProject
-		Assignment.xml = Assignment.xml
-		Call.xml = Call.xml
+		xml\assignments.xml = xml\assignments.xml
+		xml\calls.xml = xml\calls.xml
 		xml\dal-config.xml = xml\dal-config.xml
-		Volunteer.xml = Volunteer.xml
+		xml\data-config.xml = xml\data-config.xml
+		xml\volunteers.xml = xml\volunteers.xml
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BL", "BL\BL.csproj", "{850A271F-6B78-4299-B0A7-4CFA05EB8DD8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BL", "BL\BL.csproj", "{850A271F-6B78-4299-B0A7-4CFA05EB8DD8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlTest", "BlTest\BlTest.csproj", "{8FA67330-7159-459A-A0D1-8E8B00C7DA1B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlTest", "BlTest\BlTest.csproj", "{8FA67330-7159-459A-A0D1-8E8B00C7DA1B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

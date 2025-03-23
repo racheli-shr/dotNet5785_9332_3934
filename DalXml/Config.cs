@@ -9,9 +9,9 @@ namespace Dal;
 internal class Config
 {
     internal const string s_data_config_xml = "data-config.xml";
-    internal const string s_volunteer_xml = "volunteer.xml";
-    internal const string s_assignment_xml = "assignment.xml";
-    internal const string s_call_xml = "call.xml";
+    internal const string s_volunteer_xml = "volunteers.xml";
+    internal const string s_assignment_xml = "assignments.xml";
+    internal const string s_call_xml = "calls.xml";
     //...
     internal static int NextCallId
     {

@@ -1,4 +1,5 @@
 ﻿
+using BL.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,9 +22,10 @@ public class Volunteer
     public Role? Role{ get; set; }
     public bool IsActive { get; set; }
     public double? MaxDistance { get; set; }
-    public DistanceType DistanceType { get; set; }
+    public DistanceType? DistanceType { get; set; }
     public int NumberOfCalls { get; set; }
     public int NumberOfCanceledCalls { get; set; }
     public int NumberOfexpiredCalls { get; set; }
     public BO.CallInProgress? CurrentCallInProgress { get; set; }
+    public override string ToString() => this.ToStringProperty();
 }

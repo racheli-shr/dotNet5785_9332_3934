@@ -6,12 +6,57 @@ using System.Text;
 using System.Text.Json.Serialization;
 using System.Text.Json;
 using System.Threading.Tasks;
+using System.Reflection;
 //using Newtonsoft.Json.Linq;
 namespace BL.Helpers
 {
     internal static class Tools
     {
         private const string ApiKey = "AIzaSyAfqbckIhPbc6rQkv7P2j711zLSfmnGxmo"; // הכניסי את ה-API Key שלך כאן
+
+
+
+        public static string ToStringProperty<T>(this T obj)
+        {
+            if (obj == null)
+                return "null";
+
+            Type type = obj.GetType();
+            var properties = type.GetProperties(BindingFlags.Public | BindingFlags.Instance);
+
+            var result = new StringBuilder();
+
+            result.AppendLine($"{type.Name}:");
+            result.AppendLine(new string('-', type.Name.Length));
+
+            foreach (var property in properties)
+            {
+                try
+                {
+                    var value = property.GetValue(obj, null);
+
+                    if (value is IEnumerable<object> collection)
+                    {
+                        result.AppendLine($"{property.Name}:");
+                        foreach (var item in collection)
+                        {
+                            result.AppendLine($"  - {item}");
+                        }
+                    }
+                    else
+                    {
+                        result.AppendLine($"{property.Name}: {value ?? "Not Provided"}");
+                    }
+                }
+                catch
+                {
+                    result.AppendLine($"{property.Name}: <unable to retrieve>");
+                }
+            }
+
+            return result.ToString();
+        }
+
         private const string BaseUrl = "https://maps.googleapis.com/maps/api/geocode/json";
         #region check address
         public static (double Latitude, double Longitude) GetCoordinates(string address)
@@ -43,13 +88,13 @@ namespace BL.Helpers
                     double latitude = double.Parse(result[0].Latitude);
                     double longitude = double.Parse(result[0].Longitude);
 
-                    Console.WriteLine($"נבחרה הכתובת: {result[0].DisplayName}");
+                    Console.WriteLine($"Adress was chose: {result[0].DisplayName}");
                     return (latitude, longitude);
                 }
             }
             catch (Exception ex)
             {
-                throw new Exception("שגיאה בעת שליפת קואורדינטות: " + ex.Message);
+                throw new Exception("Error during getting coordinates: " + ex.Message);
             }
         }
         private class GeocodeResponse
@@ -65,5 +110,7 @@ namespace BL.Helpers
         }
         #endregion
     }
+   
+
 }
 

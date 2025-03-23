@@ -1,4 +1,5 @@
-﻿using BO;
+﻿using BL.Helpers;
+using BO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,5 +20,6 @@ public class CallInList
     public TimeSpan? HandlingDuration { get; set; } // Duration of the call handling; relevant only for completed calls
     public CallStatus Status { get; set; } // Enum representing the current status of the call
     public int AssignmentCount { get; set; } // Total number of assignments related to this call
+    public override string ToString() => this.ToStringProperty();
 
 }

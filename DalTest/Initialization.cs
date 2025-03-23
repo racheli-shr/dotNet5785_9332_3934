@@ -3,6 +3,7 @@ using DalApi;
 using DO;
 using System.Data;
 using System.Security.Principal;
+using static DO.Exceptions;
 
 public static class Initialization
 {
@@ -19,14 +20,14 @@ public static class Initialization
             int VolunteerId = VolList[s_rand.Next(0, VolList.Count)].Id;
             DateTime EntryTimeForTreatment = s_dal!.Config.Clock;
             DateTime? ActualTreatmentEndTime = s_dal!.Config.Clock.AddDays(14);
-            DO.Enums.TypeOfTreatmentTerm? TypeOfTreatmentTermination = i % 2 == 0 ? i % 4 == 0 ? DO.Enums.TypeOfTreatmentTerm.endTermCancelation : DO.Enums.TypeOfTreatmentTerm.selfCancelation : i % 3 == 0 ? DO.Enums.TypeOfTreatmentTerm.selfCancelation : DO.Enums.TypeOfTreatmentTerm.finished;
-            s_dal!.Assignment.Create(new(0, CallId, VolunteerId, EntryTimeForTreatment, ActualTreatmentEndTime, TypeOfTreatmentTermination));
+            DO.Enums.AssignmentStatus? assignmentStatus =  DO.Enums.AssignmentStatus.NONE;
+            s_dal!.Assignment.Create(new(0, CallId, VolunteerId, EntryTimeForTreatment, ActualTreatmentEndTime,assignmentStatus));
         }
     }
     private static void createVolunteer()
     {
-        int MIN_ID = 200000000;
-        int MAX_ID = 400000000;
+        int MIN_ID = 20000000;
+        int MAX_ID = 40000000;
         int MIN_PHONE = 64000000;
         int MAX_PHONE = 65999999;
 
@@ -36,11 +37,7 @@ public static class Initialization
         int i = 0;
         foreach (string name in fullName)
         {
-            int Id = s_rand.Next(MIN_ID, MAX_ID);
-            while (s_dal!.Volunteer.Read(a => a.Id == Id) != null)
-            {
-                Id = s_rand.Next(MIN_ID, MAX_ID);
-            }
+
             string FullName = name;
             int phoneNumber = s_rand.Next(MIN_PHONE, MAX_PHONE);
             string phone = $"02-{phoneNumber}";
@@ -54,7 +51,23 @@ public static class Initialization
             bool isIative = (i % 2 == 0) ? false : true;
             double maxDistance = i * i + 50;
             DO.Enums.DistanceType distanceType = (i % 2 == 0 ? DO.Enums.DistanceType.walkDistance : i % 3 == 0 ? DO.Enums.DistanceType.airDistance : DO.Enums.DistanceType.driveDistance);
-            s_dal!.Volunteer.Create(new(Id, FullName, phone, email, encriptedPassword, fullAdress, latitude, longtitude, role, isIative, maxDistance, distanceType));
+            int Id;
+            do
+            {
+                Id = GetValidIsraeliID(s_rand.Next(MIN_ID, MAX_ID));
+                try
+                {
+                    s_dal.Volunteer!.Read(Id); // Check if a volunteer with this ID already exists
+                }
+                catch (DalDoesNotExistException) // If the ID does not exist, it's available
+                {
+                    break; // Exit the loop since we found a free ID
+                }
+            } while (true);
+
+
+            
+            s_dal.Volunteer!.Create(new(Id, FullName, phone, email, encriptedPassword, fullAdress, latitude, longtitude, role, isIative, maxDistance, distanceType));
             i += 1;
 
         }
@@ -74,6 +87,26 @@ public static class Initialization
             DateTime? MaxTimeToEnd = s_dal!.Config.Clock.AddDays(i + 14);
             s_dal!.Call.Create(new(0, CallType, Description, FullAdress, Latitude, Longitude, OpeningCallTime, MaxTimeToEnd));
         }
+    }
+    public static int GetValidIsraeliID(int id)
+    {
+        if (id < 10000000 || id > 99999999)
+            throw new ArgumentException("ID must contain 8 digits");
+
+        int sum = 0;
+        int tempId = id;
+
+        for (int i = 7; i >= 0; i--)
+        {
+            int digit = tempId % 10;
+            int factor = (i % 2 == 0) ? 1 : 2;
+            int product = digit * factor;
+            sum += (product > 9) ? product - 9 : product;
+            tempId /= 10;
+        }
+
+        int checkDigit = (10 - (sum % 10)) % 10;
+        return id * 10 + checkDigit;
     }
     public static void Do()
     {

@@ -57,16 +57,16 @@ namespace Helpers
             }
 
             // Case 2: Call has an assignment, determine status based on AssignmentStatus
-            switch (assignment.TypeOfTreatmentTermination)
+            switch (assignment.AssignmentStatus)
             {
-                case DO.Enums.TypeOfTreatmentTerm.finished:
+                case DO.Enums.AssignmentStatus.TREATED:
                     return BO.Enums.CallStatus.Closed; // Call was treated successfully
 
-                case DO.Enums.TypeOfTreatmentTerm.selfCancelation:
-                case DO.Enums.TypeOfTreatmentTerm.managerCancelation:
+                case DO.Enums.AssignmentStatus.SELF_CANCELLED:
+                case DO.Enums.AssignmentStatus.MANAGER_CANCELLED:
                     return BO.Enums.CallStatus.Open; // Call was reopened after cancellation
 
-                case DO.Enums.TypeOfTreatmentTerm.endTermCancelation:
+                case DO.Enums.AssignmentStatus.EXPIRED:
                     return BO.Enums.CallStatus.Expired; // Call expired without being handled
             }
 

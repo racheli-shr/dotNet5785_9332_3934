@@ -199,8 +199,8 @@ internal class Program
             switch (choice)
             {
                 case "1":
-                    int[] callCount = s_bl.Call.GetCallCountsByStatus();
-                    foreach (int i in callCount) Console.WriteLine(i + " ");
+                    var callCount = s_bl.Call.GetCallCountsByStatus();
+                    foreach (var item in callCount) Console.WriteLine(item);
                     break;
                 case "2":
 
@@ -479,7 +479,8 @@ internal class Program
                 string description = Console.ReadLine();
 
                 Console.Write("Enter Max Time to Finish (yyyy-MM-dd, optional): ");
-                DateTime? maxTimeFinish = string.IsNullOrWhiteSpace(Console.ReadLine()) ? null : DateTime.Parse(Console.ReadLine());
+                string date = Console.ReadLine();
+                DateTime? maxTimeFinish = string.IsNullOrWhiteSpace(date) ? null : DateTime.Parse(date);
 
                 if (isCreate)
                 {

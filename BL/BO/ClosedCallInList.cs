@@ -1,4 +1,5 @@
-﻿using BO;
+﻿using BL.Helpers;
+using BO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,5 +17,6 @@ public class ClosedCallInList
     public DateTime EntryTimeToHandle { get; set; } // Time when the call entered handling (from Assignment.DO)
     public DateTime? ActualFinishTime { get; set; } // Actual finish time of the call (nullable, from Assignment.DO)
     public TypeOfTreatmentTerm? FinishType { get; set; } // Type of finish for the call (nullable ENUM, from Assignment.DO)
+    public override string ToString() => this.ToStringProperty();
 
 }

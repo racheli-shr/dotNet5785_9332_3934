@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using BL.Helpers;
 
 namespace BO;
 
@@ -20,4 +21,6 @@ public class Call
     public DateTime? MaxFinishTime { get; set; } // Maximum time to finish the call; must be validated in logic layer
     public CallStatus Status { get; set; } // Status of the call; computed based on logic conditions
     public List<CallAssignInList>? Assignments { get; set; } // List of assignments for this call; nullable if none exist
+    public override string ToString() => this.ToStringProperty();
+
 }

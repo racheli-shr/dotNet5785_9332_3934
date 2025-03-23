@@ -28,6 +28,5 @@ sealed internal class DalXml : IDal
         Assignment.DeleteAll(); 
         Volunteer.DeleteAll();
         Config.Reset();
-
     }
 }

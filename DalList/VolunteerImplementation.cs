@@ -8,9 +8,18 @@ namespace Dal
     using System.ComponentModel;
     using System.Text;
     using System.Xml.Linq;
+    using static DO.Exceptions;
 
     internal class VolunteerImplementation : IVolunteer
     {
+        public Volunteer? Read(int id)
+        {
+            Volunteer? v = DataSource.Volunteers.FirstOrDefault(x => x.Id == id); // Fetch volunteer by ID
+            if (v == null)
+                throw new DalDoesNotExistException($"No volunteer found with ID {id}"); // Error if not found
+            else return v;
+        }
+
         public bool checkPassword(string password)//checking password strongth
         {
             if (string.IsNullOrEmpty(password) || password.Length != 8 )
@@ -50,6 +59,7 @@ namespace Dal
         public Volunteer? Read(Func<Volunteer, bool> filter)
         
         {
+
             Volunteer? v = DataSource.Volunteers.FirstOrDefault(filter);
 
             if (v != null)

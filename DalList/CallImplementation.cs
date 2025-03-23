@@ -3,9 +3,18 @@ namespace Dal;
 using DalApi;
 using DO;
 using System.Collections.Generic;
+using static DO.Exceptions;
 
 internal class CallImplementation : ICall
 {
+    public Call? Read(int id)
+    {
+        Call? c = DataSource.Calls.FirstOrDefault(x => x.Id == id); // Fetch call by ID
+        if (c == null)
+            throw new DalDoesNotExistException($"No call found with ID {id}"); // Error if not found
+        else return c;
+    }
+
     public void Create(Call item)
     {
         int newId = Config.NextCallId;
