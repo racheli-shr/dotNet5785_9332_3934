@@ -1,7 +1,7 @@
 ﻿namespace BO;
 public class Enums
 {
-    public enum Role { volunteer, manager };
+    public enum Role { volunteer, manager, IsNotDefined };
     public enum DistanceType { walkDistance, driveDistance, airDistance };
     public enum TypeOfTreatmentTerm { finished, selfCancelation, managerCancelation, endTermCancelation };
     public enum VolunteerSortField
@@ -13,7 +13,8 @@ public class Enums
         SUM_CALLS_SELF_CANCELLED,      // Sort by total calls canceled by volunteer
         SUM_EXPIRED_CALLS,             // Sort by total expired calls
         CALL_ID,                       // Sort by call ID
-        CALL_TYPE                      // Sort by type of call
+        CALL_TYPE  ,                   // Sort by type of call
+        NONE                           //show by default
     }
     //public enum TypeHosting
     //{
@@ -44,13 +45,13 @@ public class Enums
         ActualEndTime,        // The actual time the call handling ended
         EndType               // The type of closure (e.g., treated, expired)
     }
-    public enum CallType
-    {
-        Emergency, // Urgent call
-        Regular,   // Regular call
-        FollowUp,  // Follow-up call
-            NONE       // Add more types as needed
-    }
+    public enum CallType 
+    { salad, 
+      desert, 
+      mainMeal, 
+      pastry, 
+      NONE 
+    };
 
     public enum CallStatus
     {

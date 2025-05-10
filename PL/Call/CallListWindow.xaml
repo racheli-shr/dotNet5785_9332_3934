@@ -1,0 +1,119 @@
+﻿<Window x:Class="PL.Call.CallListWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:PL.Call"
+        mc:Ignorable="d"
+        Title="CallListWindow" Height="450" Width="800"
+        DataContext="{Binding RelativeSource={RelativeSource Mode=Self}}">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="40*"/>
+            <RowDefinition Height="500*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <!--Internal, Upper Grid-->
+        <Grid HorizontalAlignment="Stretch" Height="auto" Grid.Row="0" VerticalAlignment="Stretch" Width="auto">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Label Content="{Binding Path=Error}" HorizontalAlignment="Left" Margin="60,0,0,0" VerticalAlignment="Center" Grid.Column="0"/>
+            <ComboBox ItemsSource="{Binding Source={StaticResource CallTypeCollectionKey}}" SelectedValue="{Binding Path=FilterByCallType, Mode=TwoWay}" SelectionChanged="CallType_SelectionChanged" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+        </Grid>
+        <ListView Margin="5" Grid.Row="1" ItemsSource="{Binding Path=CallList}" 
+          SelectedItem="{Binding SelectedCall}"  MouseDoubleClick="lsvCallList_MouseDoubleClick">
+            <ListView.View>
+                <GridView>
+                    <!-- Delete -->
+                    <GridViewColumn Width="40">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <Button Click="DeleteCall_Click" Tag="{Binding}" Background="Transparent" BorderThickness="0" Padding="2" ToolTip="Delete call">
+                                    <TextBlock Text="🗑" FontSize="14"/>
+                                </Button>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <!-- Call ID -->
+                    <GridViewColumn Header="Call ID" Width="80">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding CallId}"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+
+                    <!-- Call Type (enum) -->
+                    <GridViewColumn Header="Call Type" Width="100">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding CallType}"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+
+                    <!-- Opening Time (DateTime) -->
+                    <GridViewColumn Header="Opened At" Width="130">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding OpeningTime, StringFormat=dd/MM/yyyy HH:mm}"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+
+                    <!-- Remaining Time -->
+                    <GridViewColumn Header="Remaining" Width="100">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding RemainingTime}" 
+                                   Foreground="DarkRed"
+                                   FontWeight="Bold"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+
+                    <!-- Last Volunteer Name -->
+                    <GridViewColumn Header="Last Volunteer" Width="150">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding LastVolunteerName}" 
+                                   Foreground="DarkGreen"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+
+                    <!-- Handling Duration -->
+                    <GridViewColumn Header="Handled Duration" Width="120">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding HandlingDuration}" />
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+
+                    <!-- Status (enum) -->
+                    <GridViewColumn Header="Status" Width="100">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Status}" FontWeight="Bold"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+
+                    <!-- Assignment Count -->
+                    <GridViewColumn Header="Assignments" Width="90">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding AssignmentCount}" />
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                </GridView>
+            </ListView.View>
+        </ListView>
+        <Button Click="AddButton_Click" Content="Add" Grid.Row="2" HorizontalAlignment="Center" Height="50" Width="100"/>
+
+    </Grid>
+</Window>

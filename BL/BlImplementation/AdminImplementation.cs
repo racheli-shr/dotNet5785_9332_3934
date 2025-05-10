@@ -19,7 +19,7 @@ internal class AdminImplementation : IAdmin
     // Retrieve the current time
     public DateTime GetClock()
     {
-        return ClockManager.Now;
+        return AdminManager.Now;
     }
 
     // Advance the clock by a specified time unit
@@ -28,13 +28,13 @@ internal class AdminImplementation : IAdmin
         switch (unit)
         {
             case TimeUnit.MINUTE:
-                ClockManager.UpdateClock(ClockManager.Now.AddMinutes(1));
+                AdminManager.UpdateClock(AdminManager.Now.AddMinutes(1));
                 break;
             case TimeUnit.HOUR:
-                ClockManager.UpdateClock(ClockManager.Now.AddHours(1));
+                AdminManager.UpdateClock(AdminManager.Now.AddHours(1));
                 break;
             case TimeUnit.DAY:
-                ClockManager.UpdateClock(ClockManager.Now.AddDays(1));
+                AdminManager.UpdateClock(AdminManager.Now.AddDays(1));
                 break;
             default:
                 throw new ArgumentOutOfRangeException(nameof(unit), "Unsupported time unit.");
@@ -52,28 +52,36 @@ internal class AdminImplementation : IAdmin
     {
         _riskTimeSpan = riskTimeSpan;
     }
-
-    // Reset the database
-    public void ResetDB()
-    {
-        _dal.ResetDB(); // Call the reset method in DAL
-        ClockManager.UpdateClock(ClockManager.Now); // Update the clock to the current time
-        Console.WriteLine("Reset successfully");
-
-    }
-
-    // Initialize the database
     public void InitializeDB()
     {
-        _dal.ResetDB(); // Call the reset method in DAL
-        DalTest.Initialization.Do(); // Initialize the database
-        ClockManager.UpdateClock(ClockManager.Now); // Update the clock to the current time
+        AdminManager.InitializeDB();
     }
+    public void ResetDB()
+    {
+        AdminManager.ResetDB();
+    }
+
+    // Reset the database
+    //public void ResetDB()
+    //{
+    //    AdminManager.re(); // Call the reset method in DAL
+    //    AdminManager.UpdateClock(AdminManager.Now); // Update the clock to the current time
+    //    Console.WriteLine("Reset successfully");
+
+    //}
+
+    //// Initialize the database
+    //public void InitializeDB()
+    //{
+    //    AdminManager.ResetDB(); // Call the reset method in DAL
+    //    AdminManager.InitializeDB(); // Initialize the database
+    //    AdminManager.UpdateClock(AdminManager.Now); // Update the clock to the current time
+    //}
 
     // Retrieve the maximum range
     public TimeSpan GetMaxRange()
     {
-        return _dal.Config.RiskRange; // Use IDal.Config
+        return AdminManager.MaxRange; // Use IDal.Config
     }
 
     // Set the maximum range
@@ -84,6 +92,17 @@ internal class AdminImplementation : IAdmin
             throw new ArgumentException("Max range must be a positive value.");
         }
         _maxRange = maxRange; // Update local range variable
-        _dal.Config.RiskRange = maxRange; // Update value in DAL
+        AdminManager.MaxRange = maxRange; // Update value in DAL
     }
+    #region Stage 5
+    public void AddClockObserver(Action clockObserver) =>
+    AdminManager.ClockUpdatedObservers += clockObserver;
+    public void RemoveClockObserver(Action clockObserver) =>
+    AdminManager.ClockUpdatedObservers -= clockObserver;
+    public void AddConfigObserver(Action configObserver) =>
+   AdminManager.ConfigUpdatedObservers += configObserver;
+    public void RemoveConfigObserver(Action configObserver) =>
+    AdminManager.ConfigUpdatedObservers -= configObserver;
+    #endregion Stage 5
+
 }

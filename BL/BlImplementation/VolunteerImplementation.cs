@@ -1,5 +1,6 @@
 ﻿using BL.Helpers;
 using BLApi;
+using BO;
 using Helpers;
 namespace BLImplementation;
 internal class VolunteerImplementation : IVolunteer
@@ -22,13 +23,14 @@ internal class VolunteerImplementation : IVolunteer
             VolunteerManager.Validation(volunteer);
 
             bool isDirectorExists = _dal.Volunteer.ReadAll().Any(v => v.Role == DO.Enums.Role.manager);
-            if (isDirectorExists&&volunteer.Role==BO.Enums.Role.manager)
+            if (isDirectorExists && volunteer.Role == BO.Enums.Role.manager)
             {
                 throw new BO.Exceptions.BlDoesNotExistException("Cannot add a new Director. Only one Director is allowed in the system.");
             }
 
             DO.Volunteer newVolunteer = VolunteerManager.ConvertBOToDO(volunteer);
             _dal.Volunteer.Create(newVolunteer);
+            VolunteerManager.Observers.NotifyListUpdated(); //stage 5  
         }
         catch (Exception ex)
         {
@@ -68,10 +70,12 @@ internal class VolunteerImplementation : IVolunteer
             }
 
             _dal.Volunteer.Delete(volunteerId);
+            VolunteerManager.Observers.NotifyItemUpdated(volunteerId);  //stage 5
+
         }
         catch (Exception ex)
         {
-            throw new BO.Exceptions.BLGeneralException("An error occurred while trying to delete the volunteer.", ex);
+            throw new BO.Exceptions.BLGeneralException($"An error occurred while trying to delete the volunteer.{ex.Message}", ex);
         }
     }
 
@@ -133,7 +137,7 @@ internal class VolunteerImplementation : IVolunteer
                                        FullName = BOvolunteer.FullName,
                                        IsActive = BOvolunteer.IsActive,
                                        SumTreatedCalls = BOvolunteer.NumberOfCalls,
-                                        SumCallsSelfCancelled= BOvolunteer.NumberOfCanceledCalls,
+                                       SumCallsSelfCancelled = BOvolunteer.NumberOfCanceledCalls,
                                        SumExpiredCalls = BOvolunteer.NumberOfexpiredCalls,
                                        CallId = BOvolunteer.CurrentCallInProgress?.CallId,
                                        CallType = BOvolunteer.CurrentCallInProgress?.CallType ?? BO.Enums.CallType.NONE
@@ -181,7 +185,7 @@ internal class VolunteerImplementation : IVolunteer
     /// </summary>
     public BO.Enums.Role Login(string fullName, string password)
     {
-        
+
         var volunteer = _dal.Volunteer.Read(v => v.FullName == fullName && v.Password == _dal.Volunteer.EncryptPassword(password));
         if (volunteer == null)
         {
@@ -215,10 +219,31 @@ internal class VolunteerImplementation : IVolunteer
 
             DO.Volunteer updatedVolunteer = VolunteerManager.ConvertBOToDO(volunteer);
             _dal.Volunteer.Update(updatedVolunteer);
+            VolunteerManager.Observers.NotifyItemUpdated(updatedVolunteer.Id);  //stage 5
+            VolunteerManager.Observers.NotifyListUpdated();  //stage 5
+
         }
         catch (Exception ex)
         {
             throw new BO.Exceptions.BLInvalidDataException($"An error occurred while updating Volunteer ID={requesterId}: {ex.Message}");
         }
+
     }
+    public void AddObserver(Action listObserver) =>
+VolunteerManager.Observers.AddListObserver(listObserver); //stage 5
+    public void AddObserver(int id, Action observer) =>
+VolunteerManager.Observers.AddObserver(id, observer); //stage 5
+    public void RemoveObserver(Action listObserver) =>
+VolunteerManager.Observers.RemoveListObserver(listObserver); //stage 5
+    public void RemoveObserver(int id, Action observer) =>
+VolunteerManager.Observers.RemoveObserver(id, observer); //stage 5
+
+    #region Stage 5
+    
+
+    public IDisposable Subscribe(IObserver<Volunteer> observer)
+    {
+        throw new NotImplementedException();
+    }
+    #endregion Stage 5
 }

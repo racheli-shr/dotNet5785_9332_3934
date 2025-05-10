@@ -10,7 +10,8 @@ namespace Helpers;
 internal static class VolunteerManager
 {
     private static IDal v_dal = Factory.Get; //stage 4
-                                             // Define the delegate for converting BO.Volunteer to DO.Volunteer
+    internal static ObserverManager Observers = new(); //stage 5
+    // Define the delegate for converting BO.Volunteer to DO.Volunteer
     public static DO.Volunteer ConvertBOToDO(BO.Volunteer input) =>
         new DO.Volunteer
         {
@@ -158,4 +159,17 @@ internal static class VolunteerManager
             throw new BO.Exceptions.BLInvalidDataException("One or more numeric fields in the volunteer object contain invalid data.");
         }
     }
+//    internal static void PeriodicVolunteersUpdates(DateTime oldClock, DateTime newClock) //stage 4
+//    {
+//        var list = v_dal.Volunteer.ReadAll().ToList();
+//        foreach (var doVolunteer in list)
+//        {
+//            //if student study for more than MaxRange years
+//            //then student should be automatically updated to 'not active'
+//            if (AdminManager.Now.Year - doVolunteer.registrationDate?.Year >= AdminManager.MaxRange)
+//            {
+//                v_dal.Volunteer.Update(doVolunteer with { IsActive = false });
+//            }
+//        }
+//    }
 }

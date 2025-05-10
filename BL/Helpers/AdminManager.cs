@@ -1,20 +1,63 @@
-﻿using BL.Helpers;
-//using BlImplementation;
+﻿using BlImplementation;
 using BO;
+using DalApi;
+using System.Threading;
 namespace Helpers;
 
 /// <summary>
 /// Internal BL manager for all Application's Clock logic policies
 /// </summary>
-internal static class ClockManager //stage 4
+internal static class AdminManager //stage 4
 {
     #region Stage 4
-    private static readonly DalApi.IDal _dal = DalApi.Factory.Get; //stage 4
+    private static readonly DalApi.IDal s_dal = DalApi.Factory.Get; //stage 4
+    #endregion Stage 4
+
+    #region Stage 5
+    internal static event Action? ConfigUpdatedObservers; //prepared for stage 5 - for config update observers
+    internal static event Action? ClockUpdatedObservers; //prepared for stage 5 - for clock update observers
+    #endregion Stage 5
+
+    #region Stage 4
+    /// <summary>
+    /// Property for providing/setting current configuration variable value for any BL class that may need it
+    /// </summary>
+    private static TimeSpan _maxRange;
+
+    internal static TimeSpan MaxRange
+    {
+        get => _maxRange;
+        set
+        {
+            _maxRange = value;
+            ConfigUpdatedObservers?.Invoke();
+        }
+    }
+    private static readonly object BlMutex = new object();
+
+    internal static void InitializeDB()
+    {
+        lock (BlMutex) //stage 7
+        {
+            DalTest.Initialization.Do();
+            AdminManager.UpdateClock(AdminManager.Now);  // stage 5 - needed for update the PL
+            AdminManager.MaxRange = AdminManager.MaxRange; // stage 5 - needed for update the PL
+        }
+    }
+    internal static void ResetDB()
+    {
+        lock (BlMutex) //stage 7
+        {
+            s_dal.ResetDB();
+            AdminManager.UpdateClock(AdminManager.Now); //stage 5 - needed for update PL
+            AdminManager.MaxRange = AdminManager.MaxRange; //stage 5 - needed for update PL
+        }
+    }
 
     /// <summary>
     /// Property for providing current application's clock value for any BL class that may need it
     /// </summary>
-    internal static DateTime Now { get => _dal.Config.Clock; } //stage 4
+    internal static DateTime Now { get => s_dal.Config.Clock; } //stage 4
 
     /// <summary>
     /// Method to perform application's clock from any BL class as may be required
@@ -29,8 +72,8 @@ internal static class ClockManager //stage 4
 
     private static void updateClock(DateTime newClock) // prepared for stage 7 as DRY to eliminate needless repetition
     {
-        var oldClock = _dal.Config.Clock; //stage 4
-        _dal.Config.Clock = newClock; //stage 4
+        var oldClock = s_dal.Config.Clock; //stage 4
+        s_dal.Config.Clock = newClock; //stage 4
 
         //TO_DO:
         //Add calls here to any logic method that should be called periodically,
@@ -39,7 +82,7 @@ internal static class ClockManager //stage 4
         //Go through all students to update properties that are affected by the clock update
         //(students becomes not active after 5 years etc.)
 
-        //VolunteerManager.PeriodicStudentsUpdates(oldClock, newClock); //stage 4
+        //VolunteerManager.PeriodicVolunteersUpdates(oldClock, newClock); //stage 4
         //etc ...
 
         //Calling all the observers of clock update
@@ -47,20 +90,12 @@ internal static class ClockManager //stage 4
     }
     #endregion Stage 4
 
-
-    #region Stage 5
-
-    internal static event Action? ClockUpdatedObservers; //prepared for stage 5 - for clock update observers
-
-    #endregion Stage 5
-
-
     #region Stage 7 base
     internal static readonly object blMutex = new();
     private static Thread? s_thread;
     private static int s_interval { get; set; } = 1; //in minutes by second    
     private static volatile bool s_stop = false;
-    private static object mutex = new();
+    private static readonly object mutex = new();
 
     internal static void Start(int interval)
     {

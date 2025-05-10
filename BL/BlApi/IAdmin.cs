@@ -30,6 +30,12 @@ public interface IAdmin
 
     // Method to set the maximum range value
     public void SetMaxRange(TimeSpan maxRange);
+    #region Stage 5
+    void AddConfigObserver(Action configObserver);
+    void RemoveConfigObserver(Action configObserver);
+    void AddClockObserver(Action clockObserver);
+    void RemoveClockObserver(Action clockObserver);
+    #endregion Stage 5
 }
 
 

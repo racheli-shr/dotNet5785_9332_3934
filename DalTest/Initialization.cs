@@ -78,7 +78,7 @@ public static class Initialization
         string[] sortOfFood = { "I want to prepare a lemomCake", "Hi mazal tov! i prepare a creamy champinion pasta", "harbe nahat! i bring a cheesy salad", "oh a new baby! i bring the family a chocolate pai" };
         for (int i = 0; i < 4; i++)
         {
-            DO.Enums.CallType CallType = i % 2 == 0 ? i % 4 == 0 ? DO.Enums.CallType.desert : DO.Enums.CallType.mainMeal : i % 3 == 0 ? DO.Enums.CallType.salade : DO.Enums.CallType.pastry;
+            DO.Enums.CallType CallType = i % 2 == 0 ? i % 4 == 0 ? DO.Enums.CallType.desert : DO.Enums.CallType.mainMeal : i % 3 == 0 ? DO.Enums.CallType.salad : DO.Enums.CallType.pastry;
             string? Description = sortOfFood[i];
             string FullAdress = adress[i + 1];
             double Latitude = (s_rand.NextDouble() * 180) - 90;

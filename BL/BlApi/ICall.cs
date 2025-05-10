@@ -6,7 +6,7 @@ using static BO.Enums;
 /// <summary>
 /// Interface for handling call-related operations.
 /// </summary>
-public interface ICall
+public interface ICall:BlApi.IObservable
 {
     /// <summary>
     /// Retrieves an array of call counts by status.

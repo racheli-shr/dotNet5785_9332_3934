@@ -1,9 +1,11 @@
-﻿namespace BLApi;
+﻿using BO;
+
+namespace BLApi;
 
 /// <summary>
 /// Interface for managing volunteer-related operations in the business logic layer.
 /// </summary>
-public interface IVolunteer
+public interface IVolunteer:BlApi.IObservable //stage 5 הרחבת ממשק
 {
     /// <summary>
     /// Authenticates a user and returns their role.
@@ -48,4 +50,5 @@ public interface IVolunteer
     /// </summary>
     /// <param name="volunteer">The volunteer object containing the details of the new volunteer.</param>
     public void AddVolunteer(BO.Volunteer volunteer);
+
 }

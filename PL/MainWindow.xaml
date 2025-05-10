@@ -1,0 +1,45 @@
+﻿<Window x:Class="PL.MainWindow"
+        
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:PL"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800"
+        DataContext="{Binding RelativeSource={RelativeSource Mode=Self}}"
+        Loaded="MainWindow_Loaded"
+        Closed="MainWindow_Closed">
+    <Grid>
+
+        <Grid>
+            <Grid.RowDefinitions >
+                <RowDefinition Height="*" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions >
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Label Content="{Binding CurrentTime}" FontWeight="Bold" FontSize="20" Grid.Row="0" Grid.Column="1" Height="30" Margin="24,20,34,166" />
+            <Button Content="Add One Minute" Click="BtnAddOneMinute_Click" Grid.Row="0" Grid.Column="1" Height="28" Margin="15,57,15,131" />
+            <Button Content="Add One Day" Click="BtnAddOneDay_Click" Grid.Row="0" Grid.Column="1" Height="28" Margin="15,87,15,101" />
+            <Button Content="Add One Hour" Click="BtnAddOneHour_Click" Grid.Row="0" Grid.Column="1" Height="28" Margin="15,117,15,71" />
+            <Button Content="Add One Month" Click="BtnAddOneMonth_Click" Grid.Row="0" Grid.Column="1" Height="28" Margin="15,147,15,41"  />
+            <Button Content="Add One Year" Click="BtnAddOneYear_Click" Grid.Row="0" Grid.Column="1" Height="28" Margin="15,178,15,10"  />
+            <!--go to volunteer list-->
+            <Button Content="Hundle Volunteer" Click="HandleVolunteer_Click" Grid.Row="1" Grid.Column="1" Margin="32,70,32,107"  />
+            <!--go to Call list-->
+            <Button Content="Hundle Call" Click="HandleCall_click" Grid.Row="1" Grid.Column="1" Margin="32,127,32,49"  />
+            <Button Content="Reset DB" Grid.Row="1" Margin="32,70,32,106" RenderTransformOrigin="19.875,145.65" Click="BtnResetDB" />
+            <Button Content="Initialize DB" Grid.Row="1" Margin="32,127,32,49" Click="BtnInitializeDB" />
+            <TextBox Text="{Binding RiskRange}" Margin="10,49,165,131" TextChanged="TextBox_TextChanged" />
+            <Label Margin="88,20,88,160" Content="RiskRange"/>
+            <Button Click="BtnUpdateRiskRange_Click" Content="update the Risk Range" Margin="107,49,10,131"/>
+
+        </Grid>
+
+    </Grid>
+    
+</Window>

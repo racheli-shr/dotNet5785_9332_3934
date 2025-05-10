@@ -123,7 +123,7 @@ internal class VolunteerImplementation : IVolunteer
     {
         List<Volunteer> volunteers = XMLTools.LoadListFromXMLSerializer<Volunteer>(Config.s_volunteer_xml);
         Volunteer? volunteer = volunteers.FirstOrDefault(filter);
-
+        Console.WriteLine(volunteers.FirstOrDefault(filter));
         if (volunteer == null)
         {
             throw new DalDoesNotExistException("No matching volunteer found.");

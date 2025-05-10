@@ -1,43 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ArrayOfCall xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Call>
-    <Id>1000</Id>
-    <CallType>desert</CallType>
-    <Description>I want to prepare a lemomCake</Description>
-    <FullAdress>orange 56</FullAdress>
-    <Latitude>64.84886741277509</Latitude>
-    <Longitude>-71.35475225773075</Longitude>
-    <OpeningCallTime>2025-03-23T18:13:38</OpeningCallTime>
-    <MaxTimeToEnd>2025-04-06T18:13:38</MaxTimeToEnd>
-  </Call>
-  <Call>
-    <Id>1001</Id>
-    <CallType>pastry</CallType>
-    <Description>Hi mazal tov! i prepare a creamy champinion pasta</Description>
-    <FullAdress>ananas 12</FullAdress>
-    <Latitude>-42.50390066461288</Latitude>
-    <Longitude>48.37496900495535</Longitude>
-    <OpeningCallTime>2025-03-24T19:13:38</OpeningCallTime>
-    <MaxTimeToEnd>2025-04-07T18:13:38</MaxTimeToEnd>
-  </Call>
-  <Call>
-    <Id>1002</Id>
-    <CallType>mainMeal</CallType>
-    <Description>harbe nahat! i bring a cheesy salad</Description>
-    <FullAdress>kiwi 88</FullAdress>
-    <Latitude>-62.97115987157051</Latitude>
-    <Longitude>-48.41025131226144</Longitude>
-    <OpeningCallTime>2025-03-25T20:13:38</OpeningCallTime>
-    <MaxTimeToEnd>2025-04-08T18:13:38</MaxTimeToEnd>
-  </Call>
-  <Call>
-    <Id>1003</Id>
-    <CallType>salade</CallType>
-    <Description>oh a new baby! i bring the family a chocolate pai</Description>
-    <FullAdress>apple 2</FullAdress>
-    <Latitude>36.30337776907621</Latitude>
-    <Longitude>-4.132552675517601</Longitude>
-    <OpeningCallTime>2025-03-26T18:13:38</OpeningCallTime>
-    <MaxTimeToEnd>2025-04-09T18:13:38</MaxTimeToEnd>
-  </Call>
+  
+	<!--
+	<Call>
+    <Id>1004</Id>
+    <CallType>salad</CallType>
+    <Description>ewerew</Description>
+    <FullAdress>moshe zilberg 32</FullAdress>
+    <Latitude>31.7610773</Latitude>
+    <Longitude>35.1854477</Longitude>
+    <OpeningCallTime>2025-04-05T00:00:00</OpeningCallTime>
+    <MaxTimeToEnd>2025-11-05T00:00:00</MaxTimeToEnd>
+  </Call>-->
+  
 </ArrayOfCall>

@@ -2,10 +2,10 @@
 
 public class Enums
 {
-    public enum Role { volunteer, manager };
+    public enum Role { volunteer, manager,IsNotDefined };
     public enum DistanceType { walkDistance, driveDistance, airDistance };
     
-    public enum CallType { salade, desert, mainMeal, pastry, NONE };
+    public enum CallType { salad, desert, mainMeal, pastry, NONE };
     /// <summary>
     /// Enum representing different statuses an assignment can have.
     /// </summary>

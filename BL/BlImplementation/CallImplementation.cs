@@ -1,5 +1,6 @@
 ﻿using BL.Helpers;
 using BLApi;
+using BO;
 using Helpers;
 namespace BLImplementation;
 
@@ -27,7 +28,7 @@ internal class CallImplementation : ICall
 
             // Save updated volunteer to DAL
             _dal.Call.Create(updatedCall);
-
+            CallManager.Observers.NotifyListUpdated(); //stage 5  
         }
 
         catch (BO.Exceptions.BLInvalidDataException ex)
@@ -60,7 +61,7 @@ internal class CallImplementation : ICall
                 throw new BO.Exceptions.BLGeneralException("The call is already being handled or has expired.");
 
             // Check if the call has expired based on the max finish time
-            if (call.MaxTimeToEnd < ClockManager.Now)
+            if (call.MaxTimeToEnd < AdminManager.Now)
                 throw new BO.Exceptions.BLGeneralException("The call has expired.");
 
             double Latitude = volunteer.Latitude ?? 0;
@@ -75,13 +76,14 @@ internal class CallImplementation : ICall
                 CallId = callId,
                 VolunteerId = volunteerId,
                 AssignmentStatus = null,
-                EntryTimeForTreatment = ClockManager.Now,
+                EntryTimeForTreatment = AdminManager.Now,
                 ActualTreatmentEndTime = null,// Not known at this stage
 
             };
 
             // Add the new assignment to the data layer
             _dal.Assignment.Create(newAssignment);
+            CallManager.Observers.NotifyListUpdated();  //stage 5  
         }
         catch (Exception ex)
         {
@@ -116,12 +118,14 @@ internal class CallImplementation : ICall
                 CallId = assignment.CallId,
                 VolunteerId = volunteerId,
                 EntryTimeForTreatment = assignment.EntryTimeForTreatment,
-                ActualTreatmentEndTime = ClockManager.Now,
+                ActualTreatmentEndTime = AdminManager.Now,
                 AssignmentStatus = AssignmentStatus
             };
             // Create the updated assignment object with the new status and end time
             _dal.Assignment.Update(updatedAssignment);
+            CallManager.Observers.NotifyItemUpdated(updatedAssignment.Id);  //stage 5
 
+            CallManager.Observers.NotifyListUpdated();  //stage 5  
 
         }
         catch (Exception ex)
@@ -154,11 +158,13 @@ internal class CallImplementation : ICall
                 CallId = assignment.CallId,
                 VolunteerId = volunteerId,
                 EntryTimeForTreatment = assignment.EntryTimeForTreatment,
-                ActualTreatmentEndTime = ClockManager.Now,
+                ActualTreatmentEndTime = AdminManager.Now,
                 AssignmentStatus = DO.Enums.AssignmentStatus.TREATED
             };
             // Update the assignment in the database
             _dal.Assignment.Update(updatedAssignment);
+            CallManager.Observers.NotifyItemUpdated(updatedAssignment.Id);  //stage 5
+            CallManager.Observers.NotifyListUpdated();  //stage 5  
         }
         catch (Exception ex)
         {
@@ -193,6 +199,7 @@ internal class CallImplementation : ICall
 
             // Delete the call from the data layer
             _dal.Call.Delete(callId);
+            CallManager.Observers.NotifyListUpdated();  //stage 5    
         }
         catch (BO.Exceptions.BlDoesNotExistException ex)
         {
@@ -343,9 +350,10 @@ internal class CallImplementation : ICall
         IEnumerable<BO.CallInList> callInLists = BOCall.Select(bocall =>
         {
             var assignments = _dal.Assignment.ReadAll(assignment => assignment.CallId == bocall.Id);
+            Console.WriteLine(assignments.Count());
             var orderedAssignments = assignments.OrderByDescending(assignment => assignment.EntryTimeForTreatment);
-            DateTime currentTime = ClockManager.Now;
-            var volunteerId = orderedAssignments.FirstOrDefault().Id;
+            DateTime currentTime = AdminManager.Now;
+            var volunteerId = orderedAssignments.FirstOrDefault()?.Id;
             var volunteerById = _dal.Volunteer.Read(v => v.Id == volunteerId);
             TimeSpan? TotalHandlingTime = null;
             int totalAssignments = orderedAssignments.Count();
@@ -534,6 +542,8 @@ internal class CallImplementation : ICall
 
             // Save updated volunteer to DAL
             _dal.Call.Update(updatedCall);
+            CallManager.Observers.NotifyItemUpdated(updatedCall.Id);  //stage 5
+            CallManager.Observers.NotifyListUpdated();  //stage 5
 
         }
 
@@ -546,4 +556,20 @@ internal class CallImplementation : ICall
             throw new BO.Exceptions.BLGeneralException($"An error occurred while updating Volunteer : {ex.Message}");
         }
     }
+    public void AddObserver(Action listObserver) =>
+CallManager.Observers.AddListObserver(listObserver); //stage 5
+    public void AddObserver(int id, Action observer) =>
+CallManager.Observers.AddObserver(id, observer); //stage 5
+    public void RemoveObserver(Action listObserver) =>
+CallManager.Observers.RemoveListObserver(listObserver); //stage 5
+    public void RemoveObserver(int id, Action observer) =>
+CallManager.Observers.RemoveObserver(id, observer); //stage 5
+
+    #region Stage 5
+    
+    public IDisposable Subscribe(IObserver<Call> observer)
+    {
+        throw new NotImplementedException();
+    }
+    #endregion Stage 5
 }
