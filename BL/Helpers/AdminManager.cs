@@ -22,14 +22,15 @@ internal static class AdminManager //stage 4
     /// <summary>
     /// Property for providing/setting current configuration variable value for any BL class that may need it
     /// </summary>
-    private static TimeSpan _maxRange;
+    //private static TimeSpan _maxRange;
 
     internal static TimeSpan MaxRange
     {
-        get => _maxRange;
+        get => s_dal.Config.RiskRange;
         set
         {
-            _maxRange = value;
+            //_maxRange = value;
+            s_dal.Config.RiskRange = value;
             ConfigUpdatedObservers?.Invoke();
         }
     }

@@ -346,7 +346,7 @@ internal class CallImplementation : ICall
 
         var DOCalls = _dal.Call.ReadAll();
         var BOCall = DOCalls.Select(call => Read(call.Id));
-
+        var nextId = 1;
         IEnumerable<BO.CallInList> callInLists = BOCall.Select(bocall =>
         {
             var assignments = _dal.Assignment.ReadAll(assignment => assignment.CallId == bocall.Id);
@@ -354,7 +354,9 @@ internal class CallImplementation : ICall
             var orderedAssignments = assignments.OrderByDescending(assignment => assignment.EntryTimeForTreatment);
             DateTime currentTime = AdminManager.Now;
             var volunteerId = orderedAssignments.FirstOrDefault()?.Id;
-            var volunteerById = _dal.Volunteer.Read(v => v.Id == volunteerId);
+            string lastVolunteerName = "no assignment";
+            if (volunteerId != null)
+                lastVolunteerName = _dal.Volunteer.Read(v => v.Id == volunteerId).FullName;
             TimeSpan? TotalHandlingTime = null;
             int totalAssignments = orderedAssignments.Count();
             if (bocall.Status == BO.Enums.CallStatus.Closed)
@@ -362,12 +364,12 @@ internal class CallImplementation : ICall
 
             return new BO.CallInList
             {
-                Id = orderedAssignments.FirstOrDefault().Id,
+                Id = nextId++,//orderedAssignments.FirstOrDefault().Id,
                 CallId = bocall.Id,
                 CallType = bocall.CallType,
                 OpeningTime = bocall.OpeningTime,
                 RemainingTime = bocall.MaxFinishTime - currentTime,
-                LastVolunteerName = volunteerById.FullName,
+                LastVolunteerName = lastVolunteerName,
                 HandlingDuration = TotalHandlingTime,
                 Status = bocall.Status,
                 AssignmentCount = totalAssignments

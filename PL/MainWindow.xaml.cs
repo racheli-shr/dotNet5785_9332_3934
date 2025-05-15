@@ -59,8 +59,8 @@ public partial class MainWindow : Window
     }
     private void BtnUpdateRiskRange_Click(object sender, RoutedEventArgs e)
     {
-        TimeSpan twoHours = TimeSpan.FromHours(2);
-        s_bl.Admin.SetMaxRange(twoHours);
+        //TimeSpan twoHours = TimeSpan.FromHours(2);
+        s_bl.Admin.SetMaxRange(RiskRange);
     }
 
     private void ClockObserver()

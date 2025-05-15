@@ -34,7 +34,7 @@
             <Button Content="Hundle Call" Click="HandleCall_click" Grid.Row="1" Grid.Column="1" Margin="32,127,32,49"  />
             <Button Content="Reset DB" Grid.Row="1" Margin="32,70,32,106" RenderTransformOrigin="19.875,145.65" Click="BtnResetDB" />
             <Button Content="Initialize DB" Grid.Row="1" Margin="32,127,32,49" Click="BtnInitializeDB" />
-            <TextBox Text="{Binding RiskRange}" Margin="10,49,165,131" TextChanged="TextBox_TextChanged" />
+            <TextBox Text="{Binding RiskRange, Mode=TwoWay}" Margin="10,49,165,131" TextChanged="TextBox_TextChanged" />
             <Label Margin="88,20,88,160" Content="RiskRange"/>
             <Button Click="BtnUpdateRiskRange_Click" Content="update the Risk Range" Margin="107,49,10,131"/>
 

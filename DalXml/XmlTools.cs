@@ -104,16 +104,27 @@ static class XMLTools
     public static TimeSpan GetConfigTimeVal(string xmlFileName, string elemName)
     {
         XElement root = XMLTools.LoadListFromXMLElement(xmlFileName);
-        DateTime? dateTimeValue = root.ToDateTimeNullable(elemName);
 
-        if (!dateTimeValue.HasValue)
-        {
-            throw new FormatException($"Can't convert: {xmlFileName}, {elemName}");
-        }
+        TimeSpan dateTimeValue = root.ToTimeSpanNullable(elemName) ?? TimeSpan.MinValue;
+
 
         // Assuming the TimeSpan is the difference from now to the dateTimeValue
-        return DateTime.Now - dateTimeValue.Value;
+        return dateTimeValue;
     }
+
+    //public static TimeSpan GetConfigRiskRenge(string xmlFileName, string elemName)
+    //{
+    //    XElement root = XMLTools.LoadListFromXMLElement(xmlFileName);
+    //    DateTime? dateTimeValue = root.ToDateTimeNullable(elemName);
+
+    //    if (!dateTimeValue.HasValue)
+    //    {
+    //        throw new FormatException($"Can't convert: {xmlFileName}, {elemName}");
+    //    }
+
+    //    // Assuming the TimeSpan is the difference from now to the dateTimeValue
+    //    return DateTime.Now - dateTimeValue.Value;
+    //}
     public static void SetConfigIntVal(string xmlFileName, string elemName, int elemVal)
     {
         XElement root = XMLTools.LoadListFromXMLElement(xmlFileName);
@@ -140,6 +151,8 @@ static class XMLTools
         Enum.TryParse<T>((string?)element.Element(name), out var result) ? (T?)result : null;
     public static DateTime? ToDateTimeNullable(this XElement element, string name) =>
         DateTime.TryParse((string?)element.Element(name), out var result) ? (DateTime?)result : null;
+    public static TimeSpan? ToTimeSpanNullable(this XElement element, string name) =>
+        TimeSpan.TryParse((string?)element.Element(name), out var result) ? (TimeSpan?)result : null;
     public static double? ToDoubleNullable(this XElement element, string name) =>
         double.TryParse((string?)element.Element(name), out var result) ? (double?)result : null;
     public static int? ToIntNullable(this XElement element, string name) =>

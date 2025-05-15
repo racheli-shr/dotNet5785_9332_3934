@@ -1,16 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ArrayOfCall xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  
-	<!--
-	<Call>
-    <Id>1004</Id>
-    <CallType>salad</CallType>
-    <Description>ewerew</Description>
+  <Call>
+    <Id>1005</Id>
+    <CallType>desert</CallType>
+    <Description>ראראקר</Description>
+    <FullAdress>Moshe Zilberg 32, Jerusalem</FullAdress>
+    <Latitude>31.921909</Latitude>
+    <Longitude>11.956797</Longitude>
+    <OpeningCallTime>0001-01-01T00:00:00</OpeningCallTime>
+    <MaxTimeToEnd xsi:nil="true" />
+  </Call>
+  <Call>
+    <Id>1006</Id>
+    <CallType>mainMeal</CallType>
+    <Description>potato and meat</Description>
     <FullAdress>moshe zilberg 32</FullAdress>
     <Latitude>31.7610773</Latitude>
     <Longitude>35.1854477</Longitude>
-    <OpeningCallTime>2025-04-05T00:00:00</OpeningCallTime>
-    <MaxTimeToEnd>2025-11-05T00:00:00</MaxTimeToEnd>
-  </Call>-->
-  
+    <OpeningCallTime>2025-12-05T00:00:00</OpeningCallTime>
+    <MaxTimeToEnd xsi:nil="true" />
+  </Call>
 </ArrayOfCall>
