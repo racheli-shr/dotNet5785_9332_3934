@@ -36,7 +36,7 @@ internal class CallImplementation : ICall
             Description = (string?)s.Element("Description") ?? "",
             FullAdress = (string?)s.Element("FullAdress") ?? "",
             Latitude = (double?)s.Element("Latitude") ?? 0.0,
-            longtitude = (double?)s.Element("Longtitude") ?? 0.0,
+            longtitude = (double?)s.Element("longtitude") ?? 0.0,
             OpeningCallTime = s.ToDateTimeNullable("OpeningCallTime") ?? DateTime.Now,
             MaxTimeToEnd = s.ToDateTimeNullable("MaxTimeToEnd") ?? DateTime.Now,
         };

@@ -59,8 +59,6 @@ public partial class CallListWindow : Window
     private void CallListWindow_Loaded(object sender, RoutedEventArgs e)
     {
         s_bl.Call.AddObserver(callListObserver);
-
-
     }
 
 

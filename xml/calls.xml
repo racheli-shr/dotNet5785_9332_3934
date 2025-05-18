@@ -15,29 +15,9 @@
     <CallType>pastry</CallType>
     <Description>Hi mazal tov! i prepare a creamy champinion pasta</Description>
     <FullAdress>ananas 12</FullAdress>
-    <Latitude>-52.382426153520015</Latitude>
-    <longtitude>36.5738847775832</longtitude>
-    <OpeningCallTime>2025-05-16T18:49:01</OpeningCallTime>
+    <Latitude>52.1097976</Latitude>
+    <longtitude>5.1021478</longtitude>
+    <OpeningCallTime>2025-03-09T00:00:00</OpeningCallTime>
     <MaxTimeToEnd>2025-05-30T17:49:01</MaxTimeToEnd>
-  </Call>
-  <Call>
-    <Id>1002</Id>
-    <CallType>mainMeal</CallType>
-    <Description>harbe nahat! i bring a cheesy salad</Description>
-    <FullAdress>kiwi 88</FullAdress>
-    <Latitude>-54.39527288054308</Latitude>
-    <longtitude>65.37030729759317</longtitude>
-    <OpeningCallTime>2025-05-17T19:49:01</OpeningCallTime>
-    <MaxTimeToEnd>2025-05-31T17:49:01</MaxTimeToEnd>
-  </Call>
-  <Call>
-    <Id>1003</Id>
-    <CallType>salad</CallType>
-    <Description>oh a new baby! i bring the family a chocolate pai</Description>
-    <FullAdress>apple 2</FullAdress>
-    <Latitude>-64.76674346688097</Latitude>
-    <longtitude>-13.482617829652312</longtitude>
-    <OpeningCallTime>2025-05-18T17:49:01</OpeningCallTime>
-    <MaxTimeToEnd>2025-06-01T17:49:01</MaxTimeToEnd>
   </Call>
 </ArrayOfCall>
