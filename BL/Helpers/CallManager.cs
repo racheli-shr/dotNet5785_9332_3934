@@ -18,9 +18,9 @@ internal static class CallManager
 {
     Id=call.Id,
     CallType=(DO.Enums.CallType)call.CallType,
-    FullAdress=call.Address!,
+    FullAdress=call.FullAddress!,
     Latitude=call.Latitude,
-    Longitude=call.Longitude,
+    longtitude=call.longtitude,
     OpeningCallTime=call.OpeningTime,
     Description = call.Description,
     MaxTimeToEnd=call.MaxFinishTime

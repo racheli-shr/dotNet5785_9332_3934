@@ -59,7 +59,7 @@ namespace BL.Helpers
 
         private const string BaseUrl = "https://maps.googleapis.com/maps/api/geocode/json";
         #region check address
-        public static (double Latitude, double Longitude) GetCoordinates(string address)
+        public static (double Latitude, double longtitude) GetCoordinates(string address)
         {
             if (string.IsNullOrWhiteSpace(address))
             {
@@ -86,10 +86,10 @@ namespace BL.Helpers
                     }
 
                     double latitude = double.Parse(result[0].Latitude);
-                    double longitude = double.Parse(result[0].Longitude);
+                    double longtitude = double.Parse(result[0].longtitude);
 
                     Console.WriteLine($"Adress was chose: {result[0].DisplayName}");
-                    return (latitude, longitude);
+                    return (latitude, longtitude);
                 }
             }
             catch (Exception ex)
@@ -103,7 +103,7 @@ namespace BL.Helpers
             public string Latitude { get; set; } // מוגדר כמחרוזת
 
             [JsonPropertyName("lon")]
-            public string Longitude { get; set; } // מוגדר כמחרוזת
+            public string longtitude { get; set; } // מוגדר כמחרוזת
 
             [JsonPropertyName("display_name")]
             public string DisplayName { get; set; }

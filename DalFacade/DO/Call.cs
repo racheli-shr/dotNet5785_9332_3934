@@ -13,7 +13,7 @@ namespace DO;
 /// <param name="Description"></param>
 /// <param name="FullAdress"></param>
 /// <param name="Latitude"></param>
-/// <param name="Longitude"></param>
+/// <param name="longtitude"></param>
 /// <param name="OpeningCallTime"></param>
 /// <param name="MaxTimeToEnd"></param>
 public record Call
@@ -23,7 +23,7 @@ public record Call
     string? Description,
     string FullAdress,
     double Latitude,
-    double Longitude,
+    double longtitude,
     DateTime OpeningCallTime,
     DateTime? MaxTimeToEnd  // כאן הערך יכול להיות null
 )
@@ -46,7 +46,7 @@ public record Call
         //Availability: {(isAvailable ? "Available" : "Not Available")}
         //Distance Type: {typeDistance}
         //Max Distance: {(maxDistance.HasValue ? $"{maxDistance.Value} km" : "Not Specified")}
-        //Location: {(Latitude.HasValue && Longitude.HasValue ? $"({Latitude.Value}, {Longitude.Value})" : "Not Specified")}
+        //Location: {(Latitude.HasValue && longtitude.HasValue ? $"({Latitude.Value}, {longtitude.Value})" : "Not Specified")}
         //";
     }
 }

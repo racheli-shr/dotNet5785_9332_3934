@@ -26,7 +26,7 @@ internal static class VolunteerManager
             DistanceType = (DO.Enums.DistanceType)input.DistanceType, // Mapping typeDistance
             MaxDistance = input.MaxDistance,  // Mapping maxDistance
             Latitude = input.Latitude,        // Mapping Latitude
-            Longitude = input.Longitude       // Mapping Longitude
+            longtitude = input.longtitude       // Mapping longtitude
         };
     internal static bool IsValidIsraeliID(string id)
     {
@@ -48,19 +48,19 @@ internal static class VolunteerManager
         return checksum == (id[8] - '0');
     }
 
-    internal static double GetDistance(double volLatitude, double volLongitude, double callLatitude, double callLongitude, DO.Enums.DistanceType? typeDistance)
+    internal static double GetDistance(double volLatitude, double vollongtitude, double callLatitude, double calllongtitude, DO.Enums.DistanceType? typeDistance)
     {
 
         switch (typeDistance)
         {
             case DO.Enums.DistanceType.airDistance:
-                return CalculateHaversineDistance(volLatitude, volLongitude, callLatitude, callLongitude);
+                return CalculateHaversineDistance(volLatitude, vollongtitude, callLatitude, calllongtitude);
 
             case DO.Enums.DistanceType.walkDistance:
-                return SimulatedWalkingDistance(volLatitude, volLongitude, callLatitude, callLongitude);
+                return SimulatedWalkingDistance(volLatitude, vollongtitude, callLatitude, calllongtitude);
 
             case DO.Enums.DistanceType.driveDistance:
-                return SimulatedDrivingDistance(volLatitude, volLongitude, callLatitude, callLongitude);
+                return SimulatedDrivingDistance(volLatitude, vollongtitude, callLatitude, calllongtitude);
 
             default:
                 return 0.0;

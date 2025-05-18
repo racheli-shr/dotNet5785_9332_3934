@@ -244,7 +244,7 @@
                     int longtitude = int.Parse(Console.ReadLine());
                     Console.Write("Enter Volunteer maxDistance in km: ");
                     int maxDistance = int.Parse(Console.ReadLine());
-                    volunteer = volunteer with { FullName = name, Phone = $"02-{phone}", Email = email, Password = encriptedPassword, FullAdress = adress, Latitude = latitude, Longitude = longtitude, MaxDistance = maxDistance };
+                    volunteer = volunteer with { FullName = name, Phone = $"02-{phone}", Email = email, Password = encriptedPassword, FullAdress = adress, Latitude = latitude, longtitude = longtitude, MaxDistance = maxDistance };
                     s_dal.Volunteer?.Update(volunteer);
                 }
                 else
@@ -352,15 +352,15 @@
                 string fullAdress = Console.ReadLine();
                 Console.Write("Enter Latitude: ");
                 double latitude = double.Parse(Console.ReadLine());
-                Console.Write("Enter Longitude: ");
-                double longitude = double.Parse(Console.ReadLine());
+                Console.Write("Enter longtitude: ");
+                double longtitude = double.Parse(Console.ReadLine());
                 Console.Write("Enter Opening Call Time (yyyy-MM-dd HH:mm:ss): ");
                 DateTime openingCallTime = DateTime.Parse(Console.ReadLine());
                 Console.Write("Enter Max Time to End (yyyy-MM-dd HH:mm:ss): ");
                 DateTime maxTimeToEnd = DateTime.Parse(Console.ReadLine());
 
                 // Create a new call object
-                var call = new Call(id, callType, description, fullAdress, latitude, longitude, openingCallTime, maxTimeToEnd);
+                var call = new Call(id, callType, description, fullAdress, latitude, longtitude, openingCallTime, maxTimeToEnd);
                 s_dal.Call?.Create(call);
                 Console.WriteLine("Call added successfully!");
             }
@@ -430,8 +430,8 @@
                     string fullAdress = Console.ReadLine();
                     Console.Write("Enter new Latitude: ");
                     double latitude = double.Parse(Console.ReadLine());
-                    Console.Write("Enter new Longitude: ");
-                    double longitude = double.Parse(Console.ReadLine());
+                    Console.Write("Enter new longtitude: ");
+                    double longtitude = double.Parse(Console.ReadLine());
                     Console.Write("Enter new Opening Call Time (yyyy-MM-dd HH:mm:ss): ");
                     DateTime openingCallTime = DateTime.Parse(Console.ReadLine());
                     Console.Write("Enter new Max Time to End (yyyy-MM-dd HH:mm:ss): ");
@@ -444,7 +444,7 @@
                         Description = description,
                         FullAdress = fullAdress,
                         Latitude = latitude,
-                        Longitude = longitude,
+                        longtitude = longtitude,
                         OpeningCallTime = openingCallTime,
                         MaxTimeToEnd = maxTimeToEnd
                     };

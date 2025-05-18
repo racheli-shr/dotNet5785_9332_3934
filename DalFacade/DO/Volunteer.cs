@@ -13,7 +13,7 @@ namespace DO
     string? Password,
     string? FullAdress,
         double? Latitude,
-        double? Longitude,
+        double? longtitude,
         DO.Enums.Role Role,  // שימוש ב-enum Role
         bool IsActive,
         double? MaxDistance,
@@ -37,7 +37,7 @@ Role: {Role}
 Availability: {(IsActive ? "Available" : "Not Available")}
 Distance Type: {DistanceType}
 Max Distance: {(MaxDistance.HasValue ? $"{MaxDistance.Value} km" : "Not Specified")}
-Location: {(Latitude.HasValue && Longitude.HasValue ? $"({Latitude.Value}, {Longitude.Value})" : "Not Specified")}
+Location: {(Latitude.HasValue && longtitude.HasValue ? $"({Latitude.Value}, {longtitude.Value})" : "Not Specified")}
 ";
         }
     }

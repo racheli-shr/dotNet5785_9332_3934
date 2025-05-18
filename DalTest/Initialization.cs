@@ -13,6 +13,7 @@ public static class Initialization
 
     private static void createAssignment()
     {
+        
         for (int i = 0; i < 10; i++)
         {
             List<Volunteer> VolList = s_dal.Volunteer.ReadAll().ToList();
@@ -28,8 +29,8 @@ public static class Initialization
     {
         int MIN_ID = 20000000;
         int MAX_ID = 40000000;
-        int MIN_PHONE = 64000000;
-        int MAX_PHONE = 65999999;
+        int MIN_PHONE = 500000000;
+        int MAX_PHONE = 599999999;
 
         string[] fullName = { "Yael Bar", "Racheli Tal ", "Hadas Shay", "Shira Or", "Daniel Zohar", "David Mor" };
         string[] adress = { "mango 32", "orange 15", "ananas 66", "kiwi 46", "apple 21", "cherry 10" };
@@ -37,10 +38,10 @@ public static class Initialization
         int i = 0;
         foreach (string name in fullName)
         {
-
+            
             string FullName = name;
             int phoneNumber = s_rand.Next(MIN_PHONE, MAX_PHONE);
-            string phone = $"02-{phoneNumber}";
+            string phone = $"0{phoneNumber}";
             string email = $"{name.Trim().Replace(" ", "")}@gmail.com";
             string password = s_dal!.Volunteer.GenerateStrongPassword();
             string encriptedPassword = s_dal!.Volunteer.EncryptPassword(password);
@@ -82,10 +83,10 @@ public static class Initialization
             string? Description = sortOfFood[i];
             string FullAdress = adress[i + 1];
             double Latitude = (s_rand.NextDouble() * 180) - 90;
-            double Longitude = (s_rand.NextDouble() * 180) - 90;
+            double longtitude = (s_rand.NextDouble() * 180) - 90;
             DateTime OpeningCallTime = s_dal!.Config.Clock.AddDays(i).AddHours(i % 3);
             DateTime? MaxTimeToEnd = s_dal!.Config.Clock.AddDays(i + 14);
-            s_dal!.Call.Create(new(0, CallType, Description, FullAdress, Latitude, Longitude, OpeningCallTime, MaxTimeToEnd));
+            s_dal!.Call.Create(new(0, CallType, Description, FullAdress, Latitude, longtitude, OpeningCallTime, MaxTimeToEnd));
         }
     }
     public static int GetValidIsraeliID(int id)

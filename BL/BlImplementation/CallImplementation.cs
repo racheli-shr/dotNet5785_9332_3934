@@ -18,9 +18,9 @@ internal class CallImplementation : ICall
 
 
             // Validate and retrieve coordinates
-            var (latitude, longitude) = Tools.GetCoordinates(call.Address);
+            var (latitude, longtitude) = Tools.GetCoordinates(call.FullAddress);
             call.Latitude = latitude;
-            call.Longitude = longitude;
+            call.longtitude = longtitude;
             CallManager.Validation(call);
 
             // Update originalVolunteer with allowed changes
@@ -65,8 +65,8 @@ internal class CallImplementation : ICall
                 throw new BO.Exceptions.BLGeneralException("The call has expired.");
 
             double Latitude = volunteer.Latitude ?? 0;
-            double Longitude = volunteer.Longitude ?? 0;
-            var distanceBetweenVolToCall = VolunteerManager.GetDistance(Latitude, Longitude, call.Latitude, call.Longitude, volunteer.DistanceType);
+            double longtitude = volunteer.longtitude ?? 0;
+            var distanceBetweenVolToCall = VolunteerManager.GetDistance(Latitude, longtitude, call.Latitude, call.longtitude, volunteer.DistanceType);
             if (volunteer.MaxDistance < distanceBetweenVolToCall)
                 throw new BO.Exceptions.BLInvalidDataException("The call is further from volunteer max distance .");
 
@@ -269,8 +269,9 @@ internal class CallImplementation : ICall
                 Id = callId,
                 CallType = (BO.Enums.CallType)DOCall.CallType,
                 Description = DOCall.Description,
+                FullAddress = DOCall.FullAdress,
                 Latitude = DOCall.Latitude,
-                Longitude = DOCall.Longitude,
+                longtitude = DOCall.longtitude,
                 OpeningTime = DOCall.OpeningCallTime,
                 MaxFinishTime = DOCall.MaxTimeToEnd,
                 Status = callStatus,
@@ -308,7 +309,7 @@ internal class CallImplementation : ICall
             {
                 Id = c.Id,
                 CallType = c.CallType,
-                Address = c.Address,
+                Address = c.FullAddress,
                 OpeningTime = c.OpeningTime,
                 EntryTimeToHandle = assignment.EntryTimeForTreatment,  // Use the assignment data if available
                 ActualFinishTime = assignment.ActualTreatmentEndTime,  // Use the assignment data if available
@@ -467,7 +468,7 @@ internal class CallImplementation : ICall
             .ToList(); // Store as a list to optimize further operations
 
         double Latitude = volunteer.Latitude ?? 0;
-        double Longitude = volunteer.Longitude ?? 0;
+        double longtitude = volunteer.longtitude ?? 0;
 
         // Step 4: Map open calls to OpenCallInList DTO
         var openCallInList = openCalls.Select(c => new BO.OpenCallInList
@@ -475,10 +476,10 @@ internal class CallImplementation : ICall
             Id = c.Id,
             CallType = c.CallType,
             Description = c.Description,
-            Address = c.Address,
+            Address = c.FullAddress,
             OpeningTime = c.OpeningTime,
             MaxFinishTime = c.MaxFinishTime,
-            DistanceFromVolunteer = VolunteerManager.GetDistance(Latitude, Longitude, c.Latitude, c.Longitude, volunteer.DistanceType)
+            DistanceFromVolunteer = VolunteerManager.GetDistance(Latitude, longtitude, c.Latitude, c.longtitude, volunteer.DistanceType)
         }).ToList(); // Store in a list to avoid multiple IEnumerable evaluations
 
         // Step 5: Filter by call type if a specific type is provided
@@ -534,9 +535,9 @@ internal class CallImplementation : ICall
 
 
             // Validate and retrieve coordinates
-            var (latitude, longitude) = Tools.GetCoordinates(call.Address);
+            var (latitude, longtitude) = Tools.GetCoordinates(call.FullAddress);
             call.Latitude = latitude;
-            call.Longitude = longitude;
+            call.longtitude = longtitude;
             CallManager.Validation(call);
 
             // Update originalVolunteer with allowed changes

@@ -428,7 +428,7 @@ internal class Program
                         DistanceType = typeDistance,
                         MaxDistance = maxDistance,
                         Latitude = 0.0,
-                        Longitude = 0.0,
+                        longtitude = 0.0,
                         
                     };
                     s_bl.Volunteer!.AddVolunteer(newVolunteer);
@@ -451,7 +451,7 @@ internal class Program
                         DistanceType = typeDistance,
                         MaxDistance = maxDistance ?? volunteer.MaxDistance,
                         Latitude = volunteer.Latitude,
-                        Longitude = volunteer.Longitude,
+                        longtitude = volunteer.longtitude,
                         Password = password ?? volunteer.Password
                     };
 
@@ -490,9 +490,9 @@ internal class Program
                     {
                         Id = idCall,
                         CallType = callType,
-                        Address = addressCall,
+                        FullAddress = addressCall,
                         Latitude = 0.0,
-                        Longitude = 0.0,
+                        longtitude = 0.0,
                         OpeningTime = openDate,
                         Description = description,
                         MaxFinishTime = maxTimeFinish,
@@ -510,9 +510,9 @@ internal class Program
                     {
                         Id = call.Id, // שימור ה-ID הקיים
                         CallType = callType,
-                        Address = addressCall ?? call.Address,
+                        FullAddress = addressCall ?? call.FullAddress,
                         Latitude = call.Latitude,
-                        Longitude = call.Longitude,
+                        longtitude = call.longtitude,
                         OpeningTime = openDate,
                         Description = description ?? call.Description,
                         MaxFinishTime = maxTimeFinish ?? call.MaxFinishTime,

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -24,17 +25,31 @@ namespace PL.Volunteer
         public string ButtonText { get; set; }
         public string password { get; set; } = "";
         
+        public int sender_Id = 0;
+
         public VolunteerWindow(int id)
         {
+            sender_Id = id;
             ButtonText = id == 0 ? "Add" : "Update";
-
             InitializeComponent();
             CurrentVolunteer = (id != 0) ? s_bl.Volunteer.Read(id)! : new BO.Volunteer() { Id = 0 };
 
         }
         public BO.Enums.Role Role { get; set; } = BO.Enums.Role.IsNotDefined;
         public BO.Enums.DistanceType distanceType { get; set; } = BO.Enums.DistanceType.airDistance;
-        
+
+
+        public string status_message
+        {
+            get { return (string)GetValue(status_messageProperty); }
+            set { SetValue(status_messageProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for status_message.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty status_messageProperty =
+            DependencyProperty.Register("status_message", typeof(string), typeof(VolunteerWindow), new PropertyMetadata(""));
+
+
 
         public BO.Volunteer? CurrentVolunteer
         {
@@ -47,16 +62,20 @@ namespace PL.Volunteer
 
         private void AddUpdate_btn(object sender, RoutedEventArgs e)
         {
+            status_message = ButtonText == "Add" ? "Adding..." : "Updating";
             try
             {
+                
                 if (ButtonText == "Add")
                 {
+                    //status_message = "Adding...";
                     Console.WriteLine(  CurrentVolunteer);
                     s_bl.Volunteer.AddVolunteer(CurrentVolunteer!);
                     MessageBox.Show("The Volunteer was been added successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
                 else
                 {
+                    //status_message = "Updating...";
                     s_bl.Volunteer.UpdateVolunteerDetails(CurrentVolunteer!.Id, CurrentVolunteer!);
                     MessageBox.Show("The Volunteer was been Updated successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
 
@@ -93,5 +112,7 @@ namespace PL.Volunteer
                 CurrentVolunteer.Password = passwordBox.Password;
             }
         }
+
+        
     }
 }

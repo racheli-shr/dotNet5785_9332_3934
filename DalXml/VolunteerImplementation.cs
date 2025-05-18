@@ -24,7 +24,7 @@ internal class VolunteerImplementation : IVolunteer
             Password = (string?)s.Element("Password"),
             FullAdress = (string?)s.Element("FullAdress"),
             Latitude=(double?)s.Element("Latitude")?? 0.0,
-            Longitude= (double?)s.Element("Longtitude") ?? 0.0,
+            longtitude= (double?)s.Element("Longtitude") ?? 0.0,
             Role= s.ToEnumNullable <DO.Enums.Role >("Role")?? DO.Enums.Role.volunteer,
             MaxDistance=(double?)s.Element("MaxDistance") ?? 0.0,
             DistanceType= s.ToEnumNullable<DO.Enums.DistanceType>("Role") ?? DO.Enums.DistanceType.airDistance

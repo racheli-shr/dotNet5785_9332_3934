@@ -17,9 +17,9 @@ internal class VolunteerImplementation : IVolunteer
             if (volunteer == null)
                 throw new BO.Exceptions.BLInvalidDataException("Cannot add null object");
 
-            var (latitude, longitude) = Tools.GetCoordinates(volunteer.FullAddress);
+            var (latitude, longtitude) = Tools.GetCoordinates(volunteer.FullAddress);
             volunteer.Latitude = latitude;
-            volunteer.Longitude = longitude;
+            volunteer.longtitude = longtitude;
             VolunteerManager.Validation(volunteer);
 
             bool isDirectorExists = _dal.Volunteer.ReadAll().Any(v => v.Role == DO.Enums.Role.manager);
@@ -97,7 +97,7 @@ internal class VolunteerImplementation : IVolunteer
                 Email = doVolunteer.Email,
                 FullAddress = doVolunteer.FullAdress,
                 Latitude = doVolunteer.Latitude,
-                Longitude = doVolunteer.Longitude,
+                longtitude = doVolunteer.longtitude,
                 Role = (BO.Enums.Role)doVolunteer.Role,
                 IsActive = doVolunteer.IsActive,
                 DistanceType = (BO.Enums.DistanceType)doVolunteer.DistanceType
@@ -209,9 +209,9 @@ internal class VolunteerImplementation : IVolunteer
                 throw new BO.Exceptions.BLUnauthorizedException("Requester is not authorized to update this volunteer.");
             }
 
-            var (latitude, longitude) = Tools.GetCoordinates(volunteer.FullAddress);
+            var (latitude, longtitude) = Tools.GetCoordinates(volunteer.FullAddress);
             volunteer.Latitude = latitude;
-            volunteer.Longitude = longitude;
+            volunteer.longtitude = longtitude;
             VolunteerManager.Validation(volunteer);
 
             DO.Volunteer originalVolunteer = _dal.Volunteer.Read(v => v.Id == volunteer.Id)

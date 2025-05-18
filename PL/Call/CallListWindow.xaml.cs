@@ -74,7 +74,7 @@ public partial class CallListWindow : Window
     private void lsvCallList_MouseDoubleClick(object sender, MouseButtonEventArgs e)
     {
         if (SelectedCall != null)
-            new CallWindow(SelectedCall.Id).Show();
+            new CallWindow(SelectedCall.CallId).Show();
     }
 
     private void DeleteCall_Click(object sender, RoutedEventArgs e)
@@ -91,7 +91,8 @@ public partial class CallListWindow : Window
             {
                 try
                 {
-                    s_bl.Call.DeleteCall(call.Id);
+                    Console.WriteLine(call.CallId);
+                    s_bl.Call.DeleteCall(call.CallId);
                     MessageBox.Show("call deleted successfully.", "Deleted", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
                 catch (Exception ex)

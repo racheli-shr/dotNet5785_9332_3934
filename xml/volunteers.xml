@@ -1,87 +1,69 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ArrayOfVolunteer xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <Volunteer>
-    <Id>312954613</Id>
-    <FullName>Yael Bar</FullName>
-    <Phone>02-64019503</Phone>
-    <Email>YaelBar@gmail.com</Email>
-    <Password>:hArpzEM</Password>
-    <FullAdress>mango 32</FullAdress>
-    <Latitude>87.2818686230643</Latitude>
-    <Longitude>175.32480904962057</Longitude>
-    <Role>manager</Role>
-    <IsActive>false</IsActive>
-    <MaxDistance>50</MaxDistance>
-    <DistanceType>walkDistance</DistanceType>
-  </Volunteer>
-  <Volunteer>
-    <Id>278691704</Id>
+    <Id>238431480</Id>
     <FullName>Racheli Tal </FullName>
-    <Phone>02-65712189</Phone>
+    <Phone>0522597273</Phone>
     <Email>RacheliTal@gmail.com</Email>
-    <Password>&amp;SZW|m2w</Password>
+    <Password>m:uKsAu|</Password>
     <FullAdress>orange 15</FullAdress>
-    <Latitude>52.71877032708255</Latitude>
-    <Longitude>-123.61604210362755</Longitude>
+    <Latitude>16.113895576951663</Latitude>
+    <longtitude>179.96063975241185</longtitude>
     <Role>volunteer</Role>
     <IsActive>true</IsActive>
     <MaxDistance>51</MaxDistance>
     <DistanceType>driveDistance</DistanceType>
   </Volunteer>
   <Volunteer>
-    <Id>381804129</Id>
+    <Id>289884710</Id>
+    <FullName>Yael Bar</FullName>
+    <Phone>0548999593</Phone>
+    <Email>YaelBar@gmail.com</Email>
+    <FullAdress>mango 32</FullAdress>
+    <Latitude>54.9394845</Latitude>
+    <longtitude>23.8920115</longtitude>
+    <Role>manager</Role>
+    <IsActive>true</IsActive>
+    <MaxDistance>20</MaxDistance>
+    <DistanceType>walkDistance</DistanceType>
+  </Volunteer>
+  <Volunteer>
+    <Id>252959200</Id>
     <FullName>Hadas Shay</FullName>
-    <Phone>02-64539241</Phone>
+    <Phone>0579425487</Phone>
     <Email>HadasShay@gmail.com</Email>
-    <Password>j3F\,uzY</Password>
     <FullAdress>ananas 66</FullAdress>
-    <Latitude>-31.011246569667584</Latitude>
-    <Longitude>-179.6805442038169</Longitude>
-    <Role>volunteer</Role>
-    <IsActive>false</IsActive>
-    <MaxDistance>54</MaxDistance>
-    <DistanceType>walkDistance</DistanceType>
-  </Volunteer>
-  <Volunteer>
-    <Id>379827827</Id>
-    <FullName>Shira Or</FullName>
-    <Phone>02-64828547</Phone>
-    <Email>ShiraOr@gmail.com</Email>
-    <Password>9Oe&amp;'&amp;Yy</Password>
-    <FullAdress>kiwi 46</FullAdress>
-    <Latitude>-24.816079760093913</Latitude>
-    <Longitude>-137.96973182982572</Longitude>
+    <Latitude>52.0657487</Latitude>
+    <longtitude>4.2513769</longtitude>
     <Role>volunteer</Role>
     <IsActive>true</IsActive>
-    <MaxDistance>59</MaxDistance>
-    <DistanceType>airDistance</DistanceType>
-  </Volunteer>
-  <Volunteer>
-    <Id>315978429</Id>
-    <FullName>Daniel Zohar</FullName>
-    <Phone>02-64901787</Phone>
-    <Email>DanielZohar@gmail.com</Email>
-    <Password>('2z3jBQ</Password>
-    <FullAdress>apple 21</FullAdress>
-    <Latitude>-83.71114564838669</Latitude>
-    <Longitude>-27.778607247278416</Longitude>
-    <Role>volunteer</Role>
-    <IsActive>false</IsActive>
-    <MaxDistance>66</MaxDistance>
+    <MaxDistance>30</MaxDistance>
     <DistanceType>walkDistance</DistanceType>
   </Volunteer>
   <Volunteer>
-    <Id>214559395</Id>
+    <Id>268552296</Id>
     <FullName>David Mor</FullName>
-    <Phone>02-64575325</Phone>
+    <Phone>0550268400</Phone>
     <Email>DavidMor@gmail.com</Email>
-    <Password>;h(5AN8n</Password>
     <FullAdress>cherry 10</FullAdress>
-    <Latitude>-81.45151328067811</Latitude>
-    <Longitude>130.01231989337168</Longitude>
+    <Latitude>44.70311705</Latitude>
+    <longtitude>-63.47192306284613</longtitude>
+    <Role>volunteer</Role>
+    <IsActive>false</IsActive>
+    <MaxDistance>12</MaxDistance>
+    <DistanceType>driveDistance</DistanceType>
+  </Volunteer>
+  <Volunteer>
+    <Id>293856928</Id>
+    <FullName>Daniel Zohar</FullName>
+    <Phone>0514998354</Phone>
+    <Email>DanielZohar@gmail.com</Email>
+    <FullAdress>apple 21</FullAdress>
+    <Latitude>53.4807919</Latitude>
+    <longtitude>-2.582717457472178</longtitude>
     <Role>volunteer</Role>
     <IsActive>true</IsActive>
-    <MaxDistance>75</MaxDistance>
-    <DistanceType>driveDistance</DistanceType>
+    <MaxDistance>10</MaxDistance>
+    <DistanceType>walkDistance</DistanceType>
   </Volunteer>
 </ArrayOfVolunteer>
