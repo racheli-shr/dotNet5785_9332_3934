@@ -11,7 +11,7 @@ namespace PL
     {
 
         static readonly IEnumerable<BO.Enums.CallType> s_enums =
- (Enum.GetValues(typeof(BO.Enums.CallType)) as IEnumerable<BO.Enums.CallType>)!;
+        (Enum.GetValues(typeof(BO.Enums.CallType)) as IEnumerable<BO.Enums.CallType>)!;
 
         public IEnumerator GetEnumerator() => s_enums.GetEnumerator();
 

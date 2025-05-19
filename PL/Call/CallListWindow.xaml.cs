@@ -39,7 +39,8 @@ public partial class CallListWindow : Window
 
     private void CallType_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-        CallList = (FilterByCallType == BO.Enums.CallType.NONE) ? s_bl?.Call.GetFilteredAndCallList(null, null)! : s_bl?.Call.GetFilteredAndCallList(null, FilterByCallType)!;
+        Console.WriteLine(FilterByCallType);
+        CallList = (FilterByCallType == BO.Enums.CallType.NONE) ? s_bl?.Call.GetFilteredAndCallList(null, null)! : s_bl?.Call.GetFilteredAndCallList(Enums.CallInListFields.CallType, FilterByCallType)!;
 
     }
     private void queryCallList()
