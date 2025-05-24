@@ -5,6 +5,8 @@ namespace Dal;
 
 internal class ConfigImplementation : IConfig
 {
+    // Clock: Gets or sets the current system clock value from the configuration.
+
     public DateTime Clock
     {
         get => Config.Clock;

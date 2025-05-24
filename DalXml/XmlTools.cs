@@ -6,13 +6,15 @@ using System.Xml.Linq;
 using System.Xml.Serialization;
 
 static class XMLTools
-{
+{// Static constructor: Ensures the XML directory exists, creates it if missing.
+
     const string s_xmlDir = @"..\xml\";
     static XMLTools()
     {
         if (!Directory.Exists(s_xmlDir))
             Directory.CreateDirectory(s_xmlDir);
     }
+    // SaveListToXMLSerializer: Serializes and saves a list of objects to an XML file using XmlSerializer.
 
     #region SaveLoadWithXMLSerializer
     public static void SaveListToXMLSerializer<T>(List<T> list, string xmlFileName) where T : class
@@ -29,6 +31,8 @@ static class XMLTools
             throw new DO.Exceptions.DalXMLFileLoadCreateException($"fail to create xml file: {s_xmlDir + xmlFilePath}, {ex.Message}");
         }
     }
+    // LoadListFromXMLSerializer: Loads and deserializes a list of objects from an XML file; returns empty list if file missing.
+
     public static List<T> LoadListFromXMLSerializer<T>(string xmlFileName) where T : class
     {
         string xmlFilePath = s_xmlDir + xmlFileName;
@@ -46,6 +50,7 @@ static class XMLTools
         }
     }
     #endregion
+    // SaveListToXMLElement: Saves an XElement (XML tree) to an XML file.
 
     #region SaveLoadWithXElement
     public static void SaveListToXMLElement(XElement rootElem, string xmlFileName)
@@ -61,6 +66,8 @@ static class XMLTools
             throw new DO.Exceptions.DalXMLFileLoadCreateException($"fail to create xml file: {s_xmlDir + xmlFilePath}, {ex.Message}");
         }
     }
+    // LoadListFromXMLElement: Loads an XElement from an XML file; creates and saves a new empty XElement if file missing.
+
     public static XElement LoadListFromXMLElement(string xmlFileName)
     {
         string xmlFilePath = s_xmlDir + xmlFileName;
@@ -80,6 +87,8 @@ static class XMLTools
     }
     #endregion
 
+    // GetAndIncreaseConfigIntVal: Retrieves an integer config value from XML, increments it, saves, and returns the original value.
+
     #region XmlConfig
     public static int GetAndIncreaseConfigIntVal(string xmlFileName, string elemName)
     {
@@ -89,18 +98,24 @@ static class XMLTools
         XMLTools.SaveListToXMLElement(root, xmlFileName);
         return nextId;
     }
+    // GetConfigIntVal: Retrieves an integer config value from XML without changing it.
+
     public static int GetConfigIntVal(string xmlFileName, string elemName)
     {
         XElement root = XMLTools.LoadListFromXMLElement(xmlFileName);
         int num = root.ToIntNullable(elemName) ?? throw new FormatException($"can't convert:  {xmlFileName}, {elemName}");
         return num;
     }
+    // GetConfigDateVal: Retrieves a DateTime config value from XML.
+
     public static DateTime GetConfigDateVal(string xmlFileName, string elemName)
     {
         XElement root = XMLTools.LoadListFromXMLElement(xmlFileName);
         DateTime dt = root.ToDateTimeNullable(elemName) ?? throw new FormatException($"can't convert:  {xmlFileName}, {elemName}");
         return dt;
     }
+    // GetConfigTimeVal: Retrieves a TimeSpan config value from XML; returns TimeSpan.MinValue if missing.
+
     public static TimeSpan GetConfigTimeVal(string xmlFileName, string elemName)
     {
         XElement root = XMLTools.LoadListFromXMLElement(xmlFileName);
@@ -125,6 +140,9 @@ static class XMLTools
     //    // Assuming the TimeSpan is the difference from now to the dateTimeValue
     //    return DateTime.Now - dateTimeValue.Value;
     //}
+
+    // SetConfigDateVal: Sets and saves a DateTime config value in the XML file.
+
     public static void SetConfigIntVal(string xmlFileName, string elemName, int elemVal)
     {
         XElement root = XMLTools.LoadListFromXMLElement(xmlFileName);
@@ -137,6 +155,8 @@ static class XMLTools
         root.Element(elemName)?.SetValue((elemVal).ToString());
         XMLTools.SaveListToXMLElement(root, xmlFileName);
     }
+    // SetConfigTimeVal: Sets and saves a TimeSpan config value in the XML file.
+
     public static void SetConfigTimeVal(string xmlFileName, string elemName, TimeSpan elemVal)
     {
         XElement root = XMLTools.LoadListFromXMLElement(xmlFileName);
@@ -144,7 +164,8 @@ static class XMLTools
         XMLTools.SaveListToXMLElement(root, xmlFileName);
     }
     #endregion
-
+    // Extension functions (ToEnumNullable, ToDateTimeNullable, ToTimeSpanNullable, ToDoubleNullable, ToIntNullable):
+    //    Safely parse XML element values to nullable types, returning null if parsing fai
 
     #region ExtensionFuctions
     public static T? ToEnumNullable<T>(this XElement element, string name) where T : struct, Enum =>
