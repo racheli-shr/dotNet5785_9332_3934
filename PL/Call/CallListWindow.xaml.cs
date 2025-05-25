@@ -33,7 +33,7 @@ public partial class CallListWindow : Window
         get { return (IEnumerable<BO.CallInList>)GetValue(CallListProperty); }
         set { SetValue(CallListProperty, value); }
     }
-
+    
     public static readonly DependencyProperty CallListProperty =
         DependencyProperty.Register("CallList", typeof(IEnumerable<BO.CallInList>), typeof(CallListWindow), new PropertyMetadata(null));
 

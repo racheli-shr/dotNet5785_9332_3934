@@ -29,10 +29,10 @@
             <Button Content="Add One Month" Click="BtnAddOneMonth_Click" Grid.Row="0" Grid.Column="1" Height="28" Margin="15,147,15,41"  />
             <Button Content="Add One Year" Click="BtnAddOneYear_Click" Grid.Row="0" Grid.Column="1" Height="28" Margin="15,178,15,10"  />
             <!--go to volunteer list-->
-            <Button Content="Hundle Volunteer" Click="HandleVolunteer_Click" Grid.Row="1" Grid.Column="1" Margin="32,70,32,107"  />
+            <Button Content="Hundle Volunteer" Name="BtnHandleVolunteer" Click="HandleVolunteer_Click" Grid.Row="1" Grid.Column="1" Margin="32,70,32,107"  />
             <!--go to Call list-->
-            <Button Content="Hundle Call" Click="HandleCall_click" Grid.Row="1" Grid.Column="1" Margin="32,127,32,49"  />
-            <Button Content="Reset DB" Grid.Row="1" Margin="32,70,32,106" RenderTransformOrigin="19.875,145.65" Click="BtnResetDB" />
+            <Button Content="Hundle Call" Name="BtnHandleCall" Click="HandleCall_click" Grid.Row="1" Grid.Column="1" Margin="32,127,32,49"  />
+            <Button Content="Reset DB" Grid.Row="1"  Margin="32,70,32,106" RenderTransformOrigin="19.875,145.65" Click="BtnResetDB" />
             <Button Content="Initialize DB" Grid.Row="1" Margin="32,127,32,49" Click="BtnInitializeDB" />
             <TextBox Text="{Binding RiskRange, Mode=TwoWay}" Margin="10,49,165,131" TextChanged="TextBox_TextChanged" />
             <Label Margin="88,20,88,160" Content="RiskRange"/>

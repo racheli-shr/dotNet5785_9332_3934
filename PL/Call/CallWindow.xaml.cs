@@ -30,9 +30,7 @@ namespace PL.Call
 
             InitializeComponent();
             CurrentCall = (id != 0) ? s_bl.Call.Read(id)! : new BO.Call() { Id = 0 };
-            Console.WriteLine(CurrentCall);
-            Console.WriteLine(CurrentCall.longtitude);
-            Console.WriteLine(CurrentCall.MaxFinishTime);
+            
         }
         public BO.Enums.CallType callType { get; set; } = BO.Enums.CallType.NONE;
 

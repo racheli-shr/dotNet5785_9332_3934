@@ -181,15 +181,15 @@ internal class VolunteerImplementation : IVolunteer
     }
 
     /// <summary>
-    /// Authenticates a volunteer using their name and password.
+    /// Authenticates a volunteer using his id and password.
     /// </summary>
-    public BO.Enums.Role Login(string fullName, string password)
+    public BO.Enums.Role Login(int id, string password)
     {
 
-        var volunteer = _dal.Volunteer.Read(v => v.FullName == fullName && v.Password == _dal.Volunteer.EncryptPassword(password));
+        var volunteer = _dal.Volunteer.Read(v => v.Id == id && v.Password == _dal.Volunteer.EncryptPassword(password));
         if (volunteer == null)
         {
-            throw new BO.Exceptions.BlDoesNotExistException("Incorrect username or password");
+            throw new BO.Exceptions.BlDoesNotExistException("Incorrect userId or password");
         }
         return (BO.Enums.Role)volunteer.Role;
     }

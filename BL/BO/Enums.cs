@@ -1,7 +1,7 @@
 ﻿namespace BO;
 public class Enums
 {
-    public enum Role { volunteer, manager, IsNotDefined };
+    public enum Role { volunteer, manager, NONE };
     public enum DistanceType { walkDistance, driveDistance, airDistance };
     public enum TypeOfTreatmentTerm { finished, selfCancelation, managerCancelation, endTermCancelation };
     public enum VolunteerSortField

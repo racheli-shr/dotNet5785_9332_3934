@@ -35,7 +35,7 @@ namespace PL.Volunteer
             CurrentVolunteer = (id != 0) ? s_bl.Volunteer.Read(id)! : new BO.Volunteer() { Id = 0 };
 
         }
-        public BO.Enums.Role Role { get; set; } = BO.Enums.Role.IsNotDefined;
+        public BO.Enums.Role Role { get; set; } = BO.Enums.Role.NONE;
         public BO.Enums.DistanceType distanceType { get; set; } = BO.Enums.DistanceType.airDistance;
 
 

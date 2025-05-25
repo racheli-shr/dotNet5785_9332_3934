@@ -91,12 +91,12 @@ internal class Program
             {
                 case "1":
                     Console.WriteLine("Enter volunteer fullname:");
-                    string fullname = Console.ReadLine();
+                    int id =int.Parse(Console.ReadLine());
                     Console.WriteLine("Enter volunteer password:");
                     string password = Console.ReadLine();
                     try
                     {
-                        Console.WriteLine(s_bl.Volunteer.Login(fullname, password));
+                        Console.WriteLine(s_bl.Volunteer.Login(id, password));
                         //BO.Enums.Role role = 
                         //Console.WriteLine($"your Role is:{role}");
                     }

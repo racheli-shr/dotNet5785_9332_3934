@@ -10,10 +10,10 @@ public interface IVolunteer:BlApi.IObservable //stage 5 הרחבת ממשק
     /// <summary>
     /// Authenticates a user and returns their role.
     /// </summary>
-    /// <param name="fullName">The fullName of the volunteer.</param>
+    /// <param id="id">The id of the volunteer.</param>
     /// <param name="password">The password of the volunteer.</param>
     /// <returns>The role of the authenticated volunteer.</returns>
-    public BO.Enums.Role Login(string fullName, string password);
+    public BO.Enums.Role Login(int id, string password);
 
 
     /// <summary>
