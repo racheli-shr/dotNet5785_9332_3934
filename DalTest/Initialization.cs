@@ -13,15 +13,16 @@ public static class Initialization
 
     private static void createAssignment()
     {
-        
+        List<Volunteer> VolList = s_dal.Volunteer.ReadAll().ToList();
+        List<Call> CallList = s_dal.Call.ReadAll().ToList();
         for (int i = 0; i < 10; i++)
         {
-            List<Volunteer> VolList = s_dal.Volunteer.ReadAll().ToList();
-            int CallId = s_rand.Next(1000, 100000);
+
+            int CallId = CallList[s_rand.Next(0, CallList.Count)].Id;
             int VolunteerId = VolList[s_rand.Next(0, VolList.Count)].Id;
             DateTime EntryTimeForTreatment = s_dal!.Config.Clock;
-            DateTime? ActualTreatmentEndTime = s_dal!.Config.Clock.AddDays(14);
-            DO.Enums.AssignmentStatus? assignmentStatus =  DO.Enums.AssignmentStatus.NONE;
+            DateTime? ActualTreatmentEndTime = s_dal!.Config.Clock.AddDays(7);
+            DO.Enums.AssignmentStatus? assignmentStatus = CallId%3==0? DO.Enums.AssignmentStatus.TREATED:CallId%2==0? DO.Enums.AssignmentStatus.MANAGER_CANCELLED:CallId%1==0? DO.Enums.AssignmentStatus.SELF_CANCELLED: DO.Enums.AssignmentStatus.EXPIRED;
             s_dal!.Assignment.Create(new(0, CallId, VolunteerId, EntryTimeForTreatment, ActualTreatmentEndTime,assignmentStatus));
         }
     }

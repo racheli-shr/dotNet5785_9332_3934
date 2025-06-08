@@ -37,9 +37,10 @@
             <TextBox Text="{Binding RiskRange, Mode=TwoWay}" Margin="10,49,165,131" TextChanged="TextBox_TextChanged" />
             <Label Margin="88,20,88,160" Content="RiskRange"/>
             <Button Click="BtnUpdateRiskRange_Click" Content="update the Risk Range" Margin="107,49,10,131"/>
+            <TextBlock Text="{Binding volunteer.FullName}" Grid.Column="1" HorizontalAlignment="Left" Margin="32,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="28" Width="200"/>
 
         </Grid>
 
     </Grid>
-    
+
 </Window>

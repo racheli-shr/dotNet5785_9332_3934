@@ -20,11 +20,13 @@ namespace PL;
 public partial class MainWindow : Window
 {
     static readonly BlApi.IBl s_bl = BlApi.Factory.Get();
-    BO.Enums.Role Role { get;  set; }
-    public MainWindow()
+    public BO.Enums.Role Role { get;  set; }
+    public BO.Volunteer volunteer;
+    public MainWindow(BO.Enums.Role r,BO.Volunteer vol)
     {
         InitializeComponent();
-       
+        Role = r;
+        volunteer = vol;
     }
     public DateTime CurrentTime
     {
@@ -82,36 +84,14 @@ public partial class MainWindow : Window
     DependencyProperty.Register("RiskRange", typeof(TimeSpan), typeof(MainWindow), new PropertyMetadata(TimeSpan.Zero));
     private void MainWindow_Loaded(object sender, RoutedEventArgs e)
     {
-        var login = new LoginDialog();
-        bool? result = login.ShowDialog();
-
-        if (result != true)
-        {
-            this.Close(); // המשתמש סגר את ההתחברות או נכשל – נסגור את האפליקציה
-            return;
-        }
-
-        Role = login.Role;
+        
         CurrentTime = s_bl.Admin.GetClock();
         RiskRange = s_bl.Admin.GetMaxRange();
         s_bl.Admin.AddConfigObserver(ConfigObserver);
         s_bl.Admin.AddClockObserver(ClockObserver);
-        if (Role == BO.Enums.Role.manager)
-        {
-            MessageBox.Show($"Hello manager: {login.userId}");
-        }
-        else if (Role == BO.Enums.Role.volunteer)
-        {
-            MessageBox.Show($"Hello volunteer: {login.userId}");
-            BtnHandleVolunteer.Visibility = Visibility.Collapsed;
-            BtnHandleCall.Visibility = Visibility.Collapsed;
-        }
-
-
+        MessageBox.Show($"Hello manager: {volunteer.FullName}");
     }
-    /**
-    
-     **/
+   
     private void MainWindow_Closed(object sender, EventArgs e)
     {
         s_bl.Admin.RemoveClockObserver(ClockObserver);

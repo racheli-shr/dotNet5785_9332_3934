@@ -8,27 +8,23 @@
         Title="VolunteerWindow" Height="650" Width="1200"
         DataContext="{Binding RelativeSource={RelativeSource Mode=Self}}">
     <Grid>
-        <Label Content="ID" HorizontalAlignment="Left" Margin="458,50,0,0" VerticalAlignment="Top"/>
-        <TextBox Text="{Binding CurrentVolunteer.Id, Mode=TwoWay, NotifyOnValidationError=true,  ValidatesOnExceptions=true}" HorizontalAlignment="Left" Margin="588,53,0,0" VerticalAlignment="Top" Height="25" Width="142"/>
+        <Label Content="ID" HorizontalAlignment="Left" Margin="458,108,0,0" VerticalAlignment="Top"/>
+        <TextBox Text="{Binding CurrentVolunteer.Id, Mode=TwoWay, NotifyOnValidationError=true,  ValidatesOnExceptions=true}" HorizontalAlignment="Left" Margin="588,111,0,0" VerticalAlignment="Top" Height="25" Width="142"/>
 
-        <Label Content="Full Name" HorizontalAlignment="Left" Margin="458,79,0,0" VerticalAlignment="Top"/>
-        <TextBox  Text="{Binding CurrentVolunteer.FullName, Mode=TwoWay, NotifyOnValidationError=true,  ValidatesOnExceptions=true}" HorizontalAlignment="Left" Margin="588,83,0,0" VerticalAlignment="Top" Height="25" Width="142"/>
-        <Label Content="Phone"  HorizontalAlignment="Left" Margin="458,109,0,0" VerticalAlignment="Top"/>
-        <Label Content="Email" HorizontalAlignment="Left" Margin="458,139,0,0" VerticalAlignment="Top"/>
-        <Label Content="Password" HorizontalAlignment="Left" Margin="458,169,0,0" VerticalAlignment="Top"/>
-        <Label Content="Full Address" HorizontalAlignment="Left" Margin="458,199,0,0" VerticalAlignment="Top"/>
-        <Label Content="Latitude" HorizontalAlignment="Left" Margin="458,228,0,0" VerticalAlignment="Top"/>
-        <Label Content="Longtitude" HorizontalAlignment="Left" Margin="458,259,0,0" VerticalAlignment="Top"/>
+        <Label Content="Full Name" HorizontalAlignment="Left" Margin="458,137,0,0" VerticalAlignment="Top"/>
+        <TextBox  Text="{Binding CurrentVolunteer.FullName, Mode=TwoWay, NotifyOnValidationError=true,  ValidatesOnExceptions=true}" HorizontalAlignment="Left" Margin="588,141,0,0" VerticalAlignment="Top" Height="25" Width="142"/>
+        <Label Content="Phone"  HorizontalAlignment="Left" Margin="458,167,0,0" VerticalAlignment="Top"/>
+        <Label Content="Email" HorizontalAlignment="Left" Margin="458,197,0,0" VerticalAlignment="Top"/>
+        <Label Content="Password" HorizontalAlignment="Left" Margin="458,227,0,0" VerticalAlignment="Top"/>
+        <Label Content="Full Address" HorizontalAlignment="Left" Margin="458,257,0,0" VerticalAlignment="Top"/>
         <Label Content="Role" HorizontalAlignment="Left" Margin="458,289,0,0" VerticalAlignment="Top"/>
         <Label Content="Is Active" HorizontalAlignment="Left" Margin="458,319,0,0" VerticalAlignment="Top"/>
         <Label Content="Max Distance" HorizontalAlignment="Left" Margin="458,355,0,0" VerticalAlignment="Top"/>
         <Label Content="Distance Type" HorizontalAlignment="Left" Margin="457,386,0,0" VerticalAlignment="Top"/>
-        <TextBox Text="{Binding CurrentVolunteer.Phone, Mode=TwoWay, NotifyOnValidationError=true,  ValidatesOnExceptions=true}" HorizontalAlignment="Left" Margin="588,113,0,0" VerticalAlignment="Top" Height="25" Width="142" />
-        <TextBox Text="{Binding CurrentVolunteer.Email, Mode=TwoWay, NotifyOnValidationError=true,  ValidatesOnExceptions=true}" HorizontalAlignment="Left" Margin="588,143,0,0" VerticalAlignment="Top" Height="25" Width="142"/>
-        <PasswordBox PasswordChanged="PasswordBox_PasswordChanged" HorizontalAlignment="Left" Margin="588,175,0,0" VerticalAlignment="Top" Height="25" Width="142" />
-        <TextBox Text="{Binding CurrentVolunteer.FullAddress, Mode=TwoWay, NotifyOnValidationError=true,  ValidatesOnExceptions=true}" HorizontalAlignment="Left" Margin="588,205,0,0" VerticalAlignment="Top" Height="25" Width="142"/>
-        <TextBox Text="{Binding CurrentVolunteer.Latitude, Mode=TwoWay, NotifyOnValidationError=true,  ValidatesOnExceptions=true}" HorizontalAlignment="Left" Margin="588,234,0,0" VerticalAlignment="Top" Height="25"  Width="142"/>
-        <TextBox Text="{Binding CurrentVolunteer.longtitude, Mode=TwoWay, NotifyOnValidationError=true,  ValidatesOnExceptions=true}" HorizontalAlignment="Left" Margin="588,263,0,0" VerticalAlignment="Top" Height="25" Width="142"/>
+        <TextBox Text="{Binding CurrentVolunteer.Phone, Mode=TwoWay, NotifyOnValidationError=true,  ValidatesOnExceptions=true}" HorizontalAlignment="Left" Margin="588,171,0,0" VerticalAlignment="Top" Height="25" Width="142" />
+        <TextBox Text="{Binding CurrentVolunteer.Email, Mode=TwoWay, NotifyOnValidationError=true,  ValidatesOnExceptions=true}" HorizontalAlignment="Left" Margin="588,201,0,0" VerticalAlignment="Top" Height="25" Width="142"/>
+        <PasswordBox PasswordChanged="PasswordBox_PasswordChanged" HorizontalAlignment="Left" Margin="588,233,0,0" VerticalAlignment="Top" Height="25" Width="142" />
+        <TextBox Text="{Binding CurrentVolunteer.FullAddress, Mode=TwoWay, NotifyOnValidationError=true,  ValidatesOnExceptions=true}" HorizontalAlignment="Left" Margin="588,263,0,0" VerticalAlignment="Top" Height="25" Width="142"/>
         <ComboBox SelectionChanged="Selected_Role" ItemsSource="{Binding Source={StaticResource VolunteerRoleCollectionKey}}" SelectedValue="{Binding Path=Role, Mode=TwoWay}"  HorizontalAlignment="Left" Margin="588,293,0,0" VerticalAlignment="Top" Height="25" Width="142" />
         <CheckBox IsChecked="{Binding CurrentVolunteer.IsActive, Mode=TwoWay, NotifyOnValidationError=true,  ValidatesOnExceptions=true}" IsEnabled="True" Margin="640,330,498,248" RenderTransformOrigin="1.038,0.799" />
         <TextBox Text="{Binding CurrentVolunteer.MaxDistance, Mode=TwoWay, NotifyOnValidationError=true,  ValidatesOnExceptions=true}" HorizontalAlignment="Left" Margin="588,355,0,0" VerticalAlignment="Top" Height="25" Width="142"/>
