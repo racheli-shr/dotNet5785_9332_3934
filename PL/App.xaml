@@ -9,5 +9,7 @@
         <local:VolunteerRoleCollection x:Key="VolunteerRoleCollectionKey" />
         <local:distanceTypeCollection x:Key="distanceTypeCollectionKey" />
         <local:callTypeCollection x:Key="callTypeCollectionKey" />
+        <local:BoolToVisibilityConverter x:Key="BoolToVisibility"/>
+        <local:InverseBoolConverter x:Key="InverseBoolConverter"/>
     </Application.Resources>
 </Application>

@@ -88,7 +88,7 @@
                     <GridViewColumn Header="Handled Duration" Width="120">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBlock Text="{Binding OpeningTime}" />
+                                <TextBlock Text="{Binding HandlingDuration}" />
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>

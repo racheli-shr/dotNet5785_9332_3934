@@ -20,6 +20,19 @@ namespace PL
     public partial class VolunteerMainWindow : Window
     {
         BO.Volunteer volunteer;
+
+
+        public BO.Volunteer CurrentVolunteer
+        {
+            get { return (BO.Volunteer)GetValue(CurrentVolunteerProperty); }
+            set { SetValue(CurrentVolunteerProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for CurrentVolunteer.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty CurrentVolunteerProperty =
+            DependencyProperty.Register("CurrentVolunteer", typeof(BO.Volunteer), typeof(VolunteerMainWindow), new PropertyMetadata(0));
+
+
         BO.Enums.Role role;
         public VolunteerMainWindow(BO.Enums.Role r,BO.Volunteer v)
         {

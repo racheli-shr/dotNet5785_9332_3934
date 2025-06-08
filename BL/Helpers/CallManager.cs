@@ -1,4 +1,5 @@
 ﻿using DalApi;
+using DO;
 using Helpers;
 using System;
 using System.Collections.Generic;
@@ -33,7 +34,8 @@ internal static class CallManager
             ?? throw new BO.Exceptions.BlDoesNotExistException($"Call with ID={id} does not exist");
 
         // Retrieve the assignment associated with the call (null if not assigned yet)
-        DO.Assignment? assignment = s_dal.Assignment.Read(a => a.CallId == call.Id);
+        DO.Assignment? assignment = s_dal.Assignment.ReadAll(a => a.CallId == call.Id)
+            .OrderByDescending(assignment => assignment.EntryTimeForTreatment).FirstOrDefault();
 
         // Get the current time
         DateTime currentTime = AdminManager.Now;
