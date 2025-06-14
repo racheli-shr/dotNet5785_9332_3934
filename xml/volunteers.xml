@@ -6,7 +6,6 @@
     <Phone>0522655811</Phone>
     <Email>YaelBar@gmail.com</Email>
     <Password>9USyJ'h;</Password>
-	  <!--7SQwH%f9-->
     <FullAdress>mango 32</FullAdress>
     <Latitude>68.70308037878101</Latitude>
     <longtitude>-4.84068597446057</longtitude>
@@ -14,20 +13,6 @@
     <IsActive>false</IsActive>
     <MaxDistance>50</MaxDistance>
     <DistanceType>walkDistance</DistanceType>
-  </Volunteer>
-  <Volunteer>
-    <Id>271422933</Id>
-    <FullName>Racheli Tal </FullName>
-    <Phone>0506144132</Phone>
-    <Email>RacheliTal@gmail.com</Email>
-    <Password>jhxWZ:(r</Password>
-    <FullAdress>orange 15</FullAdress>
-    <Latitude>-75.19206219238569</Latitude>
-    <longtitude>87.81585348623776</longtitude>
-    <Role>volunteer</Role>
-    <IsActive>true</IsActive>
-    <MaxDistance>51</MaxDistance>
-    <DistanceType>driveDistance</DistanceType>
   </Volunteer>
   <Volunteer>
     <Id>295874473</Id>
@@ -83,6 +68,19 @@
     <Role>volunteer</Role>
     <IsActive>true</IsActive>
     <MaxDistance>75</MaxDistance>
+    <DistanceType>driveDistance</DistanceType>
+  </Volunteer>
+  <Volunteer>
+    <Id>328183934</Id>
+    <FullName>yael bloch</FullName>
+    <Phone>0548440911</Phone>
+    <Email>Yael@gmail.com</Email>
+    <FullAdress>moshe zilberg 32</FullAdress>
+    <Latitude>31.7610773</Latitude>
+    <longtitude>35.1854477</longtitude>
+    <Role>volunteer</Role>
+    <IsActive>true</IsActive>
+    <MaxDistance>32</MaxDistance>
     <DistanceType>driveDistance</DistanceType>
   </Volunteer>
 </ArrayOfVolunteer>

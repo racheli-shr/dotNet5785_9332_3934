@@ -75,6 +75,7 @@ public class Enums
     /// </summary>
     public enum AssignmentStatus
     {
+        AssignedAndInProgress,
         TREATED,           // The call was treated on time
         SELF_CANCELLED,    // The volunteer canceled the call
         MANAGER_CANCELLED, // The manager canceled the call

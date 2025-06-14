@@ -1,6 +1,7 @@
 ﻿using BL.Helpers;
 using BLApi;
 using BO;
+using DO;
 using Helpers;
 namespace BLImplementation;
 
@@ -178,16 +179,16 @@ internal class CallImplementation : ICall
         {
             var DOcall = _dal.Call.Read(c => c.Id == callId);
             var BOcall = Read(DOcall.Id);
-
+            var HisAssignment = _dal.Assignment.Read(c => c.CallId == callId);
             if (BOcall == null)
             {
                 throw new BO.Exceptions.BlDoesNotExistException($"Call with ID {callId} does not exist.");
             }
 
             // Check if the call status allows deletion
-            if (BOcall.Status != BO.Enums.CallStatus.Open)
+            if (BOcall.Status != BO.Enums.CallStatus.Open && HisAssignment!=null)
             {
-                throw new BO.Exceptions.BLInvalidDataException("Only calls with status 'Open' can be deleted.");
+                throw new BO.Exceptions.BLInvalidDataException(" calls with status 'Open' can be deleted.");
             }
 
             // Check if the call has assignments
@@ -570,9 +571,14 @@ CallManager.Observers.RemoveObserver(id, observer); //stage 5
 
     #region Stage 5
     
-    public IDisposable Subscribe(IObserver<Call> observer)
+    public IDisposable Subscribe(IObserver<DO.Call> observer)
     {
         throw new NotImplementedException();
     }
     #endregion Stage 5
+    public void DeleteAssignmentToCall(string volunteerName,BO.Call call)
+    {
+        if (call.Status != BO.Enums.CallStatus.InProgress|| call.Status != BO.Enums.CallStatus.InProgressAtRisk) throw new BO.Exceptions.BLUnauthorizedException($"Cant delete a non opened call status");
+        var AssignmentToDelete=_dal.Assignment.ReadAll(a=>a.CallId==call.Id&&a.AssignmentStatus==BO.Enums.AssignmentStatus.AssignedAndInProgress).FirstOrDefault();
+    }
 }

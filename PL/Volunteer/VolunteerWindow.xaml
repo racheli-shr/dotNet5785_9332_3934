@@ -9,7 +9,7 @@
         DataContext="{Binding RelativeSource={RelativeSource Mode=Self}}">
     <Grid>
         <Label Content="ID" HorizontalAlignment="Left" Margin="458,108,0,0" VerticalAlignment="Top"/>
-        <TextBox Text="{Binding CurrentVolunteer.Id, Mode=TwoWay, NotifyOnValidationError=true,  ValidatesOnExceptions=true}" HorizontalAlignment="Left" Margin="588,111,0,0" VerticalAlignment="Top" Height="25" Width="142"/>
+        <TextBox Text="{Binding CurrentVolunteer.Id, Mode=TwoWay, NotifyOnValidationError=true,  ValidatesOnExceptions=true}" IsEnabled="{Binding IsTextBoxEnabled}" HorizontalAlignment="Left" Margin="588,111,0,0" VerticalAlignment="Top" Height="25" Width="142"/>
 
         <Label Content="Full Name" HorizontalAlignment="Left" Margin="458,137,0,0" VerticalAlignment="Top"/>
         <TextBox  Text="{Binding CurrentVolunteer.FullName, Mode=TwoWay, NotifyOnValidationError=true,  ValidatesOnExceptions=true}" HorizontalAlignment="Left" Margin="588,141,0,0" VerticalAlignment="Top" Height="25" Width="142"/>

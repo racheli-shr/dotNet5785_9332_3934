@@ -19,6 +19,7 @@ namespace PL
     /// </summary>
     public partial class ManagerChoosePageWindow : Window
     {
+        private MainWindow _mainWindow;
          BO.Enums.Role Role { get; set; }
          BO.Volunteer volunteer { get; set; }
         public ManagerChoosePageWindow(BO.Enums.Role r, BO.Volunteer v)
@@ -35,7 +36,9 @@ namespace PL
 
         private void managerPageBtn_Click(object sender, RoutedEventArgs e)
         {
+
             new MainWindow(Role,volunteer).Show();
+
         }
     }
 }

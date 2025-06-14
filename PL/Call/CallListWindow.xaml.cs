@@ -102,4 +102,36 @@ public partial class CallListWindow : Window
         }
 
     }
+
+    private void DeleteAssignmentsCall_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is Button btn && btn.Tag is BO.CallInList call)
+        {
+            var result = MessageBox.Show(
+                $"Are you sure you want to delete **all assignments** from call {call.CallId}?",
+                "Confirm Assignment Deletion",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Question);
+
+            if (result == MessageBoxResult.Yes)
+            {
+                try
+                {
+                    if (call.Status == BO.Enums.CallStatus.Open)
+                    {
+                        s_bl.Call.DeleteAssignmentToCall(call.LastVolunteerName,call.CallId); // קריאה לשכבת הלוגיקה
+                        MessageBox.Show("All assignments were deleted successfully.", "Assignments Removed", MessageBoxButton.OK, MessageBoxImage.Information);
+                    }
+                    else
+                    {
+                        MessageBox.Show("Cant delete assignments for not opened Call status");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Failed to delete assignments:\n{ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+        }
+    }
 }

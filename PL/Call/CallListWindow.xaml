@@ -36,6 +36,16 @@
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
+                    <!--Assignments deletion-->
+                    <GridViewColumn Width="40">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <Button Click="DeleteAssignmentsCall_Click" Tag="{Binding}" Background="Transparent" BorderThickness="0" Padding="2" ToolTip="Delete Assignment call">
+                                    <TextBlock Text="✖" FontSize="14"/>
+                                </Button>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
                     <!-- Call ID -->
                     <GridViewColumn Header="Call ID" Width="80">
                         <GridViewColumn.CellTemplate>

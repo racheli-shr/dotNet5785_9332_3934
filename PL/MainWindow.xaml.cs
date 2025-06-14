@@ -22,6 +22,8 @@ public partial class MainWindow : Window
     static readonly BlApi.IBl s_bl = BlApi.Factory.Get();
     public BO.Enums.Role Role { get;  set; }
     public BO.Volunteer volunteer;
+    private VolunteerListWindow volunteerWindow;
+    private CallListWindow callWindow;
     public MainWindow(BO.Enums.Role r,BO.Volunteer vol)
     {
         InitializeComponent();
@@ -89,7 +91,6 @@ public partial class MainWindow : Window
         RiskRange = s_bl.Admin.GetMaxRange();
         s_bl.Admin.AddConfigObserver(ConfigObserver);
         s_bl.Admin.AddClockObserver(ClockObserver);
-        MessageBox.Show($"Hello manager: {volunteer.FullName}");
     }
    
     private void MainWindow_Closed(object sender, EventArgs e)
@@ -98,17 +99,36 @@ public partial class MainWindow : Window
         s_bl.Admin.RemoveConfigObserver(ConfigObserver);
     }
     private void HandleVolunteer_Click(object sender, RoutedEventArgs e)
-    { 
-        new VolunteerListWindow().Show(); 
+    {
+        if (volunteerWindow == null || !volunteerWindow.IsLoaded)
+        {
+            volunteerWindow = new VolunteerListWindow();
+            volunteerWindow.Owner = this; 
+            volunteerWindow.Closed += (s, args) => volunteerWindow = null;
+            volunteerWindow.Show();
+        }
+        else
+        {
+            MessageBox.Show("Sorry! but the window is already open");
+        }
     }
+
+
+
+
     private void HandleCall_click(object sender, RoutedEventArgs e)
     {
-        try
+        if (callWindow == null || !callWindow.IsLoaded)
         {
-        new CallListWindow().Show();
-
+            callWindow = new CallListWindow();
+            callWindow.Owner = this;
+            callWindow.Closed += (s, args) => callWindow = null;
+            callWindow.Show();
         }
-        catch(Exception ex) { Console.WriteLine(e); }
+        else
+        {
+            MessageBox.Show("Sorry! but the window is already open");
+        }
     }
     private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
     {

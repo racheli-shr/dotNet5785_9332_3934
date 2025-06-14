@@ -17,7 +17,11 @@ public interface ICall:BlApi.IObservable
     /// Assigns a volunteer to a call.
     /// </summary>
     void AssignCallToVolunteer(int volunteerId, int callId);
-
+    /// <summary>
+    /// Assigns a volunteer to a call.
+    /// </summary>
+    void DeleteAssignmentToCall(String volunteerId, BO.Call call);
+    
     /// <summary>
     /// Retrieves a filtered and sorted list of calls.
     /// </summary>

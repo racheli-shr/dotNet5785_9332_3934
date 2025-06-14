@@ -9,7 +9,7 @@ public record Assignment
     int VolunteerId,
     DateTime EntryTimeForTreatment,
     DateTime? ActualTreatmentEndTime,
-    DO.Enums.AssignmentStatus? AssignmentStatus
+    DO.Enums.AssignmentStatus AssignmentStatus
 )
 {
     // בנאי ברירת מחדל

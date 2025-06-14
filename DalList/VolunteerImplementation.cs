@@ -48,14 +48,26 @@ namespace Dal
         public void Delete(int id)//delete
         {
             Volunteer v = Read(a => a.Id == id);
-            if (v != null)
+            if (v != null&& IsNotTreatedCalls(id))
             {
                 DataSource.Volunteers.Remove(v);
             }
             else
             {
-                throw new DO.Exceptions.DalDoesNotExistException("Volunteer id's doesn't exsisting");
+                throw new DO.Exceptions.DalDoesNotExistException("Volunteer id's doesn't existing");
             }
+        }
+        //check if the volunteer dont have call openeed the is treat them.
+        public bool IsNotTreatedCalls(int id)
+        {
+            Predicate<Assignment> containOpenedAssignments = a=> { return a.VolunteerId == id && a.AssignmentStatus == Enums.AssignmentStatus.OPENED && a.AssignmentStatus == Enums.AssignmentStatus.TREATED; };
+            List <Assignment> Ass=DataSource.Assignments.FindAll(containOpenedAssignments);
+            if(Ass.Count!=0)
+            {
+                return false;
+            }
+            return true;
+
         }
         // DeleteAll: Removes all volunteers from the data source.
 

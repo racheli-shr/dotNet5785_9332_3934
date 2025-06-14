@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PL.Call;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -20,12 +21,12 @@ namespace PL;
 /// </summary>
 public partial class LoginDialog : Window
 {
+    private ManagerChoosePageWindow mcpWindow;
     public BO.Volunteer v;
     public BO.Enums.Role Role { get; private set; }
     public int userId { get; private set; }
     public string password { get; private set; }
     static readonly BlApi.IBl s_bl = BlApi.Factory.Get();
-    private static bool _isManagerLoggedIn = false;
 
     public LoginDialog()
     {
@@ -53,12 +54,15 @@ public partial class LoginDialog : Window
                 }
                 else
                 {
-                    if (!_isManagerLoggedIn) {
-                        new ManagerChoosePageWindow(Role, v).Show();
+                    if (mcpWindow == null || !mcpWindow.IsLoaded)
+                    {
+                        mcpWindow = new ManagerChoosePageWindow(Role, v);
                         userId = 0;
                         password = "";
                         Role = BO.Enums.Role.NONE;
-                        _isManagerLoggedIn =true;
+                        mcpWindow.Owner = this;
+                        mcpWindow.Closed += (s, args) => mcpWindow = null;
+                        mcpWindow.Show();
                     }
                     else
                     {

@@ -24,14 +24,16 @@ namespace PL.Volunteer
         public BO.Volunteer Volunteer { get; set; }
         public string ButtonText { get; set; }
         public string password { get; set; } = "";
-        
+        public bool IsTextBoxEnabled { set; get; }
         public int sender_Id = 0;
 
         public VolunteerWindow(int id)
         {
+            
+            InitializeComponent();
+            IsTextBoxEnabled = id!=0 ? true : false;
             sender_Id = id;
             ButtonText = id == 0 ? "Add" : "Update";
-            InitializeComponent();
             CurrentVolunteer = (id != 0) ? s_bl.Volunteer.Read(id)! : new BO.Volunteer() { Id = 0 };
 
         }
