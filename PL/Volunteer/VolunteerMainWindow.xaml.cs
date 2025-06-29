@@ -1,4 +1,6 @@
-﻿using System;
+﻿using PL.Call;
+using PL.Volunteer;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -19,9 +21,11 @@ namespace PL
     /// </summary>
     public partial class VolunteerMainWindow : Window
     {
-        BO.Volunteer volunteer;
-
-
+        
+        BO.Call VolunteerCall;
+        static readonly BlApi.IBl s_bl = BlApi.Factory.Get();
+        public bool isChooseCallAble;
+        public bool isAssignedCallAble;
         public BO.Volunteer CurrentVolunteer
         {
             get { return (BO.Volunteer)GetValue(CurrentVolunteerProperty); }
@@ -30,21 +34,42 @@ namespace PL
 
         // Using a DependencyProperty as the backing store for CurrentVolunteer.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty CurrentVolunteerProperty =
-            DependencyProperty.Register("CurrentVolunteer", typeof(BO.Volunteer), typeof(VolunteerMainWindow), new PropertyMetadata(0));
+            DependencyProperty.Register("CurrentVolunteer", typeof(BO.Volunteer), typeof(VolunteerMainWindow), new PropertyMetadata(null));
 
 
         BO.Enums.Role role;
-        public VolunteerMainWindow(BO.Enums.Role r,BO.Volunteer v)
+        public VolunteerMainWindow(BO.Enums.Role r, BO.Volunteer v)
         {
             InitializeComponent();
-            volunteer = v;
+            
+            var call = s_bl.Volunteer.checkIfExistingAssignment(v);
+            if(call!=null) {
+                VolunteerCall = call; 
+                isAssignedCallAble = true;
+                isChooseCallAble = false;
+            }
+            
+            CurrentVolunteer = v;
             role = r;
-
+            Console.WriteLine(  CurrentVolunteer);
         }
 
-        private void Update_Click(object sender, RoutedEventArgs e)
+        private void Update_btn(object sender, RoutedEventArgs e)
         {
+            new VolunteerWindow(CurrentVolunteer.Id, "VolunteerMainWindow").Show();
+        }
 
+        private void GoToCallHistoryPage_Btn(object sender, RoutedEventArgs e)
+        {
+           new Call.CallsHistoryWindow(CurrentVolunteer).Show(); 
+            
+        }
+
+        
+
+        private void chooseCall_Click(object sender, RoutedEventArgs e)
+        {
+            new ChooseCallToTreatWindow(CurrentVolunteer).Show();
         }
     }
 }

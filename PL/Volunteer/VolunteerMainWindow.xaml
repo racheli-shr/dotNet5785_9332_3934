@@ -1,27 +1,59 @@
 ﻿<Window x:Class="PL.VolunteerMainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Volunteer Info" Height="450" Width="800">
-    <Grid Margin="10">
-        <WrapPanel>
-            <TextBlock Text="First Nam" Height="20" Width="58"/>
-            <TextBox Text="{Binding FirstName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Height="20" Width="auto"/>
+        Title="Volunteer Info" Height="480" Width="800"
+        DataContext="{Binding RelativeSource={RelativeSource Mode=Self}}">
 
-            <TextBlock Text="שם משפחה:" Width="72" Height="20" />
-            <TextBox Text="{Binding LastName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Height="20"/>
+    <Grid>
 
-            <TextBlock Text="כתובת:" Height="20"/>
-            <TextBox Text="{Binding Address, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Height="20"/>
+        <TextBlock Text="My Information:" Width="100" Height="30" Margin="60,27,640,374" >
+        </TextBlock>
+        <Label Content="ID" HorizontalAlignment="Left" Margin="10,58,0,0" VerticalAlignment="Top"/>
+        <TextBlock Text="{Binding CurrentVolunteer.Id, Mode=TwoWay, NotifyOnValidationError=true,  ValidatesOnExceptions=true}" IsEnabled="{Binding IsTextBoxEnabled}" HorizontalAlignment="Left" Margin="123,62,0,0" VerticalAlignment="Top" Height="25" Width="142"/>
 
-            <TextBlock Text="ת.ז:"/>
-            <TextBox Text="" IsEnabled="False"/>
+        <Label Content="Full Name" HorizontalAlignment="Left" Margin="13,88,0,0" VerticalAlignment="Top"/>
+        <TextBlock  Text="{Binding CurrentVolunteer.FullName, Mode=TwoWay, NotifyOnValidationError=true,  ValidatesOnExceptions=true}" HorizontalAlignment="Left" Margin="123,92,0,0" VerticalAlignment="Top" Height="25" Width="142"/>
+        <Label Content="Phone"  HorizontalAlignment="Left" Margin="13,118,0,0" VerticalAlignment="Top"/>
+        <Label Content="Email" HorizontalAlignment="Left" Margin="13,148,0,0" VerticalAlignment="Top"/>
+        <Label Content="Password" HorizontalAlignment="Left" Margin="13,178,0,0" VerticalAlignment="Top"/>
+        <Label Content="Full Address" HorizontalAlignment="Left" Margin="13,208,0,0" VerticalAlignment="Top"/>
+        <Label Content="Role" HorizontalAlignment="Left" Margin="13,239,0,0" VerticalAlignment="Top"/>
+        <Label Content="Is Active" HorizontalAlignment="Left" Margin="13,270,0,0" VerticalAlignment="Top"/>
+        <Label Content="Max Distance" HorizontalAlignment="Left" Margin="13,306,0,0" VerticalAlignment="Top"/>
+        <Label Content="Distance Type" HorizontalAlignment="Left" Margin="12,337,0,0" VerticalAlignment="Top"/>
+        <TextBlock Text="{Binding CurrentVolunteer.Phone, Mode=TwoWay, NotifyOnValidationError=true,  ValidatesOnExceptions=true}" HorizontalAlignment="Left" Margin="123,122,0,0" VerticalAlignment="Top" Height="25" Width="142" />
+        <TextBlock Text="{Binding CurrentVolunteer.Email, Mode=TwoWay, NotifyOnValidationError=true,  ValidatesOnExceptions=true}" HorizontalAlignment="Left" Margin="123,152,0,0" VerticalAlignment="Top" Height="25" Width="142"/>
+        <PasswordBox BorderThickness="0px" HorizontalAlignment="Left" Margin="123,184,0,0" VerticalAlignment="Top" Height="25" Width="142" />
+        <TextBlock Text="{Binding CurrentVolunteer.FullAddress, Mode=TwoWay, NotifyOnValidationError=true,  ValidatesOnExceptions=true}" HorizontalAlignment="Left" Margin="123,214,0,0" VerticalAlignment="Top" Height="25" Width="142"/>
+        <TextBlock Text="{Binding CurrentVolunteer.Role, Mode=TwoWay, NotifyOnValidationError=true,  ValidatesOnExceptions=true}"   HorizontalAlignment="Left" Margin="123,243,0,0" VerticalAlignment="Top" Height="25" Width="142" />
+        <CheckBox  IsChecked="{Binding CurrentVolunteer.IsActive, Mode=TwoWay, NotifyOnValidationError=true,  ValidatesOnExceptions=true}" IsEnabled="True" Margin="175,281,625,149" RenderTransformOrigin="1.038,0.799" />
+        <TextBlock Text="{Binding CurrentVolunteer.MaxDistance, Mode=TwoWay, NotifyOnValidationError=true,  ValidatesOnExceptions=true}" HorizontalAlignment="Left" Margin="123,306,0,0" VerticalAlignment="Top" Height="25" Width="142"/>
+        <TextBlock Text="{Binding CurrentVolunteer.DistanceType, Mode=TwoWay, NotifyOnValidationError=true,  ValidatesOnExceptions=true}"   HorizontalAlignment="Left" Margin="123,337,0,0" VerticalAlignment="Top" Height="25" Width="142" />
+        <Button Width="100" Content="Update" Click="Update_btn" HorizontalAlignment="Left" Margin="60,380,0,0" VerticalAlignment="Top" Height="33" />
+        <TextBlock Text="{Binding status_message,Mode=OneWay}"  Margin="588,444,470,154"/>
+        <Button Content="Show Call History" Click="GoToCallHistoryPage_Btn" Margin="400,359,245,39"></Button>
+        <Grid IsEnabled="{Binding isAssignedCallAble}" Margin="422,93,98,79">
 
-            <TextBlock Text="תפקיד:"/>
-            <ComboBox SelectedItem="{Binding Role}" IsEnabled="False"/>
+            <Label Content="ID" HorizontalAlignment="Left" Margin="10,0,0,230" VerticalAlignment="Bottom" Height="29" Width="24"/>
+            <TextBlock Text="{Binding VolunteerCall.Id, Mode=TwoWay, NotifyOnValidationError=true,  ValidatesOnExceptions=true}" IsEnabled="{Binding IsTextBoxEnabled}" HorizontalAlignment="Left" Margin="138,40,0,0" VerticalAlignment="Top" Height="25" Width="142"/>
+            <Label Content="CallType" HorizontalAlignment="Left" Margin="10,36,0,0" VerticalAlignment="Top" Height="29" Width="72"/>
+            <TextBlock  Text="{Binding VolunteerCall.CallType, Mode=TwoWay, NotifyOnValidationError=true,  ValidatesOnExceptions=true}" HorizontalAlignment="Left" Margin="138,2,0,0" VerticalAlignment="Top" Height="25" Width="142"/>
+            <Label Content="Description"  HorizontalAlignment="Left" Margin="10,71,0,0" VerticalAlignment="Top" Height="29" Width="91"/>
+            <TextBlock  Text="{Binding VolunteerCall.Description, Mode=TwoWay, NotifyOnValidationError=true,  ValidatesOnExceptions=true}" HorizontalAlignment="Left" Margin="138,76,0,0" VerticalAlignment="Top" Height="25" Width="142"/>
+            <Label Content="FullAddress"  HorizontalAlignment="Left" Margin="10,105,0,0" VerticalAlignment="Top" Height="29" Width="91"/>
+            <TextBlock  Text="{Binding VolunteerCall.FullAddress, Mode=TwoWay, NotifyOnValidationError=true,  ValidatesOnExceptions=true}" HorizontalAlignment="Left" Margin="140,104,0,0" VerticalAlignment="Top" Height="25" Width="142"/>
+            <Label Content="OpeningTime"  HorizontalAlignment="Left" Margin="10,144,0,0" VerticalAlignment="Top" Height="29" Width="105"/>
+            <TextBlock  Text="{Binding VolunteerCall.OpeningTime, Mode=TwoWay, NotifyOnValidationError=true,  ValidatesOnExceptions=true}" HorizontalAlignment="Left" Margin="140,143,0,0" VerticalAlignment="Top" Height="25" Width="142"/>
+            <Label Content="MaxFinishTime"  HorizontalAlignment="Left" Margin="10,178,0,0" VerticalAlignment="Top" Height="29" Width="105"/>
+            <TextBlock  Text="{Binding VolunteerCall.MaxFinishTime, Mode=TwoWay, NotifyOnValidationError=true,  ValidatesOnExceptions=true}" HorizontalAlignment="Left" Margin="138,177,0,0" VerticalAlignment="Top" Height="25" Width="142"/>
+            <Label Content="status"  HorizontalAlignment="Left" Margin="10,212,0,0" VerticalAlignment="Top" Height="29" Width="91"/>
+            <TextBlock  Text="{Binding VolunteerCall.Status, Mode=TwoWay, NotifyOnValidationError=true,  ValidatesOnExceptions=true}" HorizontalAlignment="Left" Margin="140,214,0,0" VerticalAlignment="Top" Height="25" Width="142"/>
 
-            <CheckBox Content="פעיל" IsChecked="{Binding IsActive}" Margin="0,10,0,0"/>
+        </Grid>
+        <TextBlock Text="Any Call was Assigned" IsEnabled="{Binding isChooseCallAble}" Margin="474,58,166,346" Foreground="red"></TextBlock>
 
-            <Button Content="עדכן" Click="Update_Click" Margin="0,10,0,0"/>
-        </WrapPanel>
+        <TextBlock Text="Assigned Call Information:" Height="30" Margin="470,25,162,376" />
+        <Button Content="Choose a Call" Click="chooseCall_Click" IsEnabled="{Binding isChooseCallAble}" Margin="583,360,98,40"></Button>
+
     </Grid>
 </Window>

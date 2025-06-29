@@ -9,6 +9,9 @@
         <local:VolunteerRoleCollection x:Key="VolunteerRoleCollectionKey" />
         <local:distanceTypeCollection x:Key="distanceTypeCollectionKey" />
         <local:callTypeCollection x:Key="callTypeCollectionKey" />
+        <local:ClosedCallInListFieldsCollection x:Key="ClosedCallInListFieldsCollectionKey" />
+        <local:EndOfTreatmentCollection x:Key="EndOfTreatmentCollectionKey" />
+        <local:OpenCallsFieldsCollection x:Key="OpenCallsFieldsCollectionKey" />
         
     </Application.Resources>
 </Application>

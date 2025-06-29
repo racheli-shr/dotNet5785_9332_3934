@@ -26,11 +26,17 @@ namespace PL.Volunteer
         public string password { get; set; } = "";
         public bool IsTextBoxEnabled { set; get; }
         public int sender_Id = 0;
-
-        public VolunteerWindow(int id)
+        //public string CameFromWindow;
+        public bool isAbleToChange = false;
+        public VolunteerWindow(int id ,string CameFromWindow)
         {
             
             InitializeComponent();
+            if (CameFromWindow == "VolunteerListWindow")
+            {
+                isAbleToChange = true;
+            }
+            //CameFromWindow = window;
             IsTextBoxEnabled = id!=0 ? true : false;
             sender_Id = id;
             ButtonText = id == 0 ? "Add" : "Update";
@@ -71,7 +77,7 @@ namespace PL.Volunteer
                 if (ButtonText == "Add")
                 {
                     //status_message = "Adding...";
-                    Console.WriteLine(  CurrentVolunteer);
+                    Console.WriteLine(CurrentVolunteer);
                     s_bl.Volunteer.AddVolunteer(CurrentVolunteer!);
                     MessageBox.Show("The Volunteer was been added successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
                 }

@@ -60,7 +60,7 @@ namespace Dal
         //check if the volunteer dont have call openeed the is treat them.
         public bool IsNotTreatedCalls(int id)
         {
-            Predicate<Assignment> containOpenedAssignments = a=> { return a.VolunteerId == id && a.AssignmentStatus == Enums.AssignmentStatus.OPENED && a.AssignmentStatus == Enums.AssignmentStatus.TREATED; };
+            Predicate<Assignment> containOpenedAssignments = a=> { return a.VolunteerId == id && a.AssignmentStatus == Enums.AssignmentStatus.AssignedAndInProgress && a.AssignmentStatus == Enums.AssignmentStatus.TREATED; };
             List <Assignment> Ass=DataSource.Assignments.FindAll(containOpenedAssignments);
             if(Ass.Count!=0)
             {

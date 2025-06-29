@@ -3,7 +3,14 @@ public class Enums
 {
     public enum Role { volunteer, manager, NONE };
     public enum DistanceType { walkDistance, driveDistance, airDistance };
-    public enum TypeOfTreatmentTerm { finished, selfCancelation, managerCancelation, endTermCancelation };
+    public enum TypeOfTreatmentTerm {
+        AssignedAndInProgress,
+        TREATED,           // The call was treated on time
+        SELF_CANCELLED,    // The volunteer canceled the call
+        MANAGER_CANCELLED, // The manager canceled the call
+        EXPIRED,        // The call expired and was automatically canceled
+        NONE
+    };
     public enum VolunteerSortField
     {
         ID,                           // Sort by volunteer ID
@@ -56,7 +63,7 @@ public class Enums
     public enum CallStatus
     {
         InProgress,         // Call currently being worked on by a volunteer
-        AtRisk,             // Call approaching the required handling time
+        OpenAtRisk,             // Call approaching the required handling time
         InProgressAtRisk,   // Call in progress and approaching risk
         Expired,            // Call expired and was canceled
         Closed,             // Call has been successfully closed
@@ -67,8 +74,8 @@ public class Enums
     {
         Completed,  // Successfully completed
         Canceled,   // Canceled by the volunteer
-        Expired     // Expired without completion
-                    // Add more finish types as needed
+        Expired,     // Expired without completion
+           NONE         // Add more finish types as needed
     }
     /// <summary>
     /// Enum representing different statuses an assignment can have.
@@ -84,6 +91,7 @@ public class Enums
     }
     public enum OpenCallInListFields
     {
+        None,
         Id,                   // Unique identifier for the call
         CallType,             // The type of the call
         Description,          // A textual description of the call

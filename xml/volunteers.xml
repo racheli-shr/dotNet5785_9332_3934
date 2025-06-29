@@ -1,20 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ArrayOfVolunteer xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <Volunteer>
-    <Id>390709137</Id>
-    <FullName>Yael Bar</FullName>
-    <Phone>0522655811</Phone>
-    <Email>YaelBar@gmail.com</Email>
-    <Password>9USyJ'h;</Password>
-    <FullAdress>mango 32</FullAdress>
-    <Latitude>68.70308037878101</Latitude>
-    <longtitude>-4.84068597446057</longtitude>
-    <Role>manager</Role>
-    <IsActive>false</IsActive>
-    <MaxDistance>50</MaxDistance>
-    <DistanceType>walkDistance</DistanceType>
-  </Volunteer>
-  <Volunteer>
     <Id>295874473</Id>
     <FullName>Hadas Shay</FullName>
     <Phone>0585749819</Phone>
@@ -74,7 +60,8 @@
     <Id>328183934</Id>
     <FullName>yael bloch</FullName>
     <Phone>0548440911</Phone>
-    <Email>Yael@gmail.com</Email>
+    <Email>Yaelbloch2023@gmail.com</Email>
+    <Password>[cgnB4245</Password>
     <FullAdress>moshe zilberg 32</FullAdress>
     <Latitude>31.7610773</Latitude>
     <longtitude>35.1854477</longtitude>
@@ -82,5 +69,19 @@
     <IsActive>true</IsActive>
     <MaxDistance>32</MaxDistance>
     <DistanceType>driveDistance</DistanceType>
+  </Volunteer>
+  <Volunteer>
+    <Id>390709137</Id>
+    <FullName>Yael Bar</FullName>
+    <Phone>0522655811</Phone>
+    <Email>YaelBar@gmail.com</Email>
+	<Password>[cgnB4245</Password>
+    <FullAdress>mango 32</FullAdress>
+    <Latitude>54.9394845</Latitude>
+    <longtitude>23.8920115</longtitude>
+    <Role>manager</Role>
+    <IsActive>true</IsActive>
+	 <MaxDistance>10</MaxDistance>
+    <DistanceType>walkDistance</DistanceType>
   </Volunteer>
 </ArrayOfVolunteer>

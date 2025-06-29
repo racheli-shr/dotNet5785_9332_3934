@@ -117,14 +117,14 @@ public partial class CallListWindow : Window
             {
                 try
                 {
-                    if (call.Status == BO.Enums.CallStatus.Open)
+                    if (s_bl.Call.closeLastAssignmentByCallId(call.CallId))
                     {
-                        s_bl.Call.DeleteAssignmentToCall(call.LastVolunteerName,call.CallId); // קריאה לשכבת הלוגיקה
-                        MessageBox.Show("All assignments were deleted successfully.", "Assignments Removed", MessageBoxButton.OK, MessageBoxImage.Information);
+                        MessageBox.Show("success");
                     }
                     else
                     {
-                        MessageBox.Show("Cant delete assignments for not opened Call status");
+                        MessageBox.Show("denied");
+
                     }
                 }
                 catch (Exception ex)

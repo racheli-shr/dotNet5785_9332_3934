@@ -50,5 +50,5 @@ public interface IVolunteer:BlApi.IObservable //stage 5 הרחבת ממשק
     /// </summary>
     /// <param name="volunteer">The volunteer object containing the details of the new volunteer.</param>
     public void AddVolunteer(BO.Volunteer volunteer);
-
+    public BO.Call? checkIfExistingAssignment(BO.Volunteer v);
 }

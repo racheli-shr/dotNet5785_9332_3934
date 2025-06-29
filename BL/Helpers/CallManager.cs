@@ -1,4 +1,5 @@
-﻿using DalApi;
+﻿using BO;
+using DalApi;
 using DO;
 using Helpers;
 using System;
@@ -16,21 +17,22 @@ internal static class CallManager
 
     internal static DO.Call ConvertBOToDO(BO.Call call) =>
     new DO.Call
-{
-    Id=call.Id,
-    CallType=(DO.Enums.CallType)call.CallType,
-    FullAdress=call.FullAddress!,
-    Latitude=call.Latitude,
-    longtitude=call.longtitude,
-    OpeningCallTime=call.OpeningTime,
-    Description = call.Description,
-    MaxTimeToEnd=call.MaxFinishTime
-};
+    {
+        Id = call.Id,
+        CallType = (DO.Enums.CallType)call.CallType,
+        FullAdress = call.FullAddress!,
+        Latitude = call.Latitude,
+        longtitude = call.longtitude,
+        OpeningCallTime = call.OpeningTime,
+        Description = call.Description,
+        MaxTimeToEnd = call.MaxFinishTime
+    };
     private static readonly IDal s_dal = Factory.Get; //stage 4
     static internal BO.Enums.CallStatus GetCallStatus(int id)
     {
+
         // Retrieve the call from the database or throw an exception if not found
-        DO.Call call = s_dal.Call.Read(v=>v.Id==id)
+        DO.Call call = s_dal.Call.Read(v => v.Id == id)
             ?? throw new BO.Exceptions.BlDoesNotExistException($"Call with ID={id} does not exist");
 
         // Retrieve the assignment associated with the call (null if not assigned yet)
@@ -55,7 +57,7 @@ internal static class CallManager
             }
             if (riskThreshold != null && currentTime >= riskThreshold)
             {
-                return BO.Enums.CallStatus.AtRisk; // Call is at risk but still open
+                return BO.Enums.CallStatus.OpenAtRisk; // Call is at risk but still open
             }
             return BO.Enums.CallStatus.Open; // Call is open and not yet at risk
         }
@@ -98,4 +100,43 @@ internal static class CallManager
             throw new BO.Exceptions.BLInvalidDataException($"invalid data entry time cannot be initialize after maxtime");
         }
     }
+
+    /// <summary>
+    /// Calculates the status of a student call based on its properties and the current time.
+    /// </summary>
+    /// <param name="studentCall">The student call to calculate the status for.</param>
+    /// <returns>The calculated status of the student call.</returns>
+    internal static BO.Enums.CallStatus CalculateCallStatus(DO.Call call)
+    {
+        var lastAssignment = s_dal.Assignment
+    .ReadAll(a => a.CallId == call.Id)
+    .OrderBy(a => a.EntryTimeForTreatment)
+    .LastOrDefault();
+        bool isCallExpired = call.MaxTimeToEnd.HasValue && call.MaxTimeToEnd < AdminManager.Now;
+        bool isCallInRisk = call.MaxTimeToEnd.HasValue && call.MaxTimeToEnd - AdminManager.Now < AdminManager.MaxRange;
+        if (isCallExpired)
+        {
+            return BO.Enums.CallStatus.Expired;
+        }
+
+        if (lastAssignment == null)
+            return isCallInRisk ? BO.Enums.CallStatus.OpenAtRisk : BO.Enums.CallStatus.Open;
+
+        if (isCallInRisk)
+            return BO.Enums.CallStatus.InProgressAtRisk;
+
+        return lastAssignment?.AssignmentStatus switch
+        {
+            DO.Enums.AssignmentStatus.TREATED => BO.Enums.CallStatus.Closed,
+            DO.Enums.AssignmentStatus.SELF_CANCELLED => BO.Enums.CallStatus.Open,
+            DO.Enums.AssignmentStatus.MANAGER_CANCELLED => BO.Enums.CallStatus.Open,
+            DO.Enums.AssignmentStatus.EXPIRED => BO.Enums.CallStatus.Expired,
+            _ or null => BO.Enums.CallStatus.InProgress
+        };
+    }
+
+
+
+
+
 }

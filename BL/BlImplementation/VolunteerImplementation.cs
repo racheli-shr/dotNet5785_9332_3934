@@ -1,6 +1,7 @@
 ﻿using BL.Helpers;
 using BLApi;
 using BO;
+using DO;
 using Helpers;
 namespace BLImplementation;
 internal class VolunteerImplementation : IVolunteer
@@ -237,11 +238,36 @@ VolunteerManager.Observers.AddObserver(id, observer); //stage 5
 VolunteerManager.Observers.RemoveListObserver(listObserver); //stage 5
     public void RemoveObserver(int id, Action observer) =>
 VolunteerManager.Observers.RemoveObserver(id, observer); //stage 5
+    public BO.Call? checkIfExistingAssignment(BO.Volunteer v)
+    {
+        var assignment = _dal.Assignment.Read(a => a.VolunteerId == v.Id);
+
+        if (assignment!=null&& assignment.AssignmentStatus == DO.Enums.AssignmentStatus.AssignedAndInProgress)
+        {
+            var doCall = _dal.Call.Read(assignment.CallId);
+
+            var boCall = new BO.Call
+            {
+                Id = doCall.Id,
+                CallType = (BO.Enums.CallType)doCall.CallType,
+                Description = doCall.Description,
+                FullAddress = doCall.FullAdress,
+                Latitude = doCall.Latitude,
+                longtitude = doCall.longtitude,
+                OpeningTime = doCall.OpeningCallTime,
+                MaxFinishTime = doCall.MaxTimeToEnd
+            };
+
+            return boCall;
+        }
+
+        return null;
+    }
 
     #region Stage 5
-    
 
-    public IDisposable Subscribe(IObserver<Volunteer> observer)
+
+    public IDisposable Subscribe(IObserver<BO.Volunteer> observer)
     {
         throw new NotImplementedException();
     }

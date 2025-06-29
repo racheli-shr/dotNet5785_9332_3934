@@ -1,14 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ArrayOfAssignment xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
- <Assignment>
-    <Id>1000</Id>
-    <CallId>1001</CallId>
-	 <VolunteerId>276980778</VolunteerId>
-    <EntryTimeForTreatment>2025-06-05T18:14:38</EntryTimeForTreatment>
-    <ActualTreatmentEndTime>2025-06-12T18:14:38</ActualTreatmentEndTime>
-    <AssignmentStatus>SELF_CANCELLED</AssignmentStatus>
-  </Assignment>
-	<Assignment>
+  <Assignment>
     <Id>1001</Id>
     <CallId>1003</CallId>
     <VolunteerId>390709137</VolunteerId>
@@ -16,13 +8,13 @@
     <ActualTreatmentEndTime>2025-06-12T18:14:38</ActualTreatmentEndTime>
     <AssignmentStatus>TREATED</AssignmentStatus>
   </Assignment>
-	<!-- <Assignment>
+  <Assignment>
     <Id>1002</Id>
     <CallId>1000</CallId>
     <VolunteerId>321340291</VolunteerId>
     <EntryTimeForTreatment>2025-06-05T18:14:38</EntryTimeForTreatment>
     <ActualTreatmentEndTime>2025-06-12T18:14:38</ActualTreatmentEndTime>
-    <AssignmentStatus>MANAGER_CANCELLED</AssignmentStatus>
+    <AssignmentStatus>AssignedAndInProgress</AssignmentStatus>
   </Assignment>
   <Assignment>
     <Id>1003</Id>
@@ -62,7 +54,7 @@
     <VolunteerId>390709137</VolunteerId>
     <EntryTimeForTreatment>2025-06-05T18:14:38</EntryTimeForTreatment>
     <ActualTreatmentEndTime>2025-06-12T18:14:38</ActualTreatmentEndTime>
-    <AssignmentStatus>TREATED</AssignmentStatus>
+    <AssignmentStatus>AssignedAndInProgress</AssignmentStatus>
   </Assignment>
   <Assignment>
     <Id>1008</Id>
@@ -79,5 +71,13 @@
     <EntryTimeForTreatment>2025-06-05T18:14:38</EntryTimeForTreatment>
     <ActualTreatmentEndTime>2025-06-12T18:14:38</ActualTreatmentEndTime>
     <AssignmentStatus>TREATED</AssignmentStatus>
-  </Assignment>-->
+  </Assignment>
+  <Assignment>
+    <Id>1000</Id>
+    <CallId>1001</CallId>
+    <VolunteerId>276980778</VolunteerId>
+    <EntryTimeForTreatment>2025-06-05T18:14:38</EntryTimeForTreatment>
+    <ActualTreatmentEndTime>2025-06-12T18:14:38</ActualTreatmentEndTime>
+    <AssignmentStatus>MANAGER_CANCELLED</AssignmentStatus>
+  </Assignment>
 </ArrayOfAssignment>

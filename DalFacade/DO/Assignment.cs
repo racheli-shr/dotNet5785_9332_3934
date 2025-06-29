@@ -13,7 +13,7 @@ public record Assignment
 )
 {
     // בנאי ברירת מחדל
-    public Assignment() : this(0, 0, 0, DateTime.MinValue, null, null) { }
+    public Assignment() : this(0, 0, 0, DateTime.MinValue, null, DO.Enums.AssignmentStatus.NONE) { }
     public override string ToString()
     {
        

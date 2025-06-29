@@ -1,12 +1,13 @@
 ﻿using BL.Helpers;
 using BLApi;
 using BO;
+using DalApi;
 using DO;
 using Helpers;
 namespace BLImplementation;
 
 
-internal class CallImplementation : ICall
+internal class CallImplementation : BLApi.ICall
 {
     private readonly DalApi.IDal _dal = DalApi.Factory.Get;
 
@@ -76,7 +77,7 @@ internal class CallImplementation : ICall
             {
                 CallId = callId,
                 VolunteerId = volunteerId,
-                AssignmentStatus = null,
+                AssignmentStatus = DO.Enums.AssignmentStatus.NONE,
                 EntryTimeForTreatment = AdminManager.Now,
                 ActualTreatmentEndTime = null,// Not known at this stage
 
@@ -186,7 +187,7 @@ internal class CallImplementation : ICall
             }
 
             // Check if the call status allows deletion
-            if (BOcall.Status != BO.Enums.CallStatus.Open && HisAssignment!=null)
+            if (BOcall.Status != BO.Enums.CallStatus.Open && HisAssignment != null)
             {
                 throw new BO.Exceptions.BLInvalidDataException(" calls with status 'Open' can be deleted.");
             }
@@ -237,7 +238,29 @@ internal class CallImplementation : ICall
         //.Select(index => blCalls.Count(call => (int)call.CallType == index)) // Count calls for each status.
         //.ToArray(); // Convert the result to an array.
     }
-
+    //if an opened assignment was found he will cancel it and sending an email- תוספת
+    public bool closeLastAssignmentByCallId(int callId)
+    {
+        var DOAssignment = _dal.Assignment.ReadAll(c => c.CallId == callId);
+        foreach (var assignment in DOAssignment)
+        {
+            if (assignment.AssignmentStatus == DO.Enums.AssignmentStatus.AssignedAndInProgress)
+            {
+                //update the manager cancelation of assignments
+                _dal.Assignment.Update(assignment with { AssignmentStatus = DO.Enums.AssignmentStatus.MANAGER_CANCELLED });
+                //searching the call
+                var call = _dal.Call.Read(c => c.Id == callId);
+                //sending an email to the concerned volunteer
+                var volunteer = _dal.Volunteer.Read(v => v.Id == assignment.VolunteerId);
+                var subject = $"Assignment Cancelled for Call #{callId}";
+                var body = $"Dear {volunteer.FullName},\n\nThe assignment for call #{callId} has been cancelled by the manager.\n\nCall details:\nType: {call.CallType}.\nLocation: {call.FullAdress}.\nDescription: {call.Description} .\n\nBest regards,\nManagement System";
+                MailHelper.SendEmail(volunteer.Email, subject, body);
+                //return success
+                return true;
+            }
+        }
+        return false;
+    }
     public BO.Call Read(int callId)
     {
         try
@@ -285,244 +308,256 @@ internal class CallImplementation : ICall
             throw new BO.Exceptions.BlDoesNotExistException($"Error fetching Call or Assignments: {ex.Message}");
         }
     }
-
-    public IEnumerable<BO.ClosedCallInList> GetClosedCallsByVolunteer(int volunteerId, BO.Enums.CallType? callType, BO.Enums.ClosedCallInListFields? sortByField)
+    public IEnumerable<BO.ClosedCallInList> GetClosedCallsByVolunteer(int volunteerId, Func<BO.ClosedCallInList, bool>? predicate = null)
     {
-        // Step 1: Fetch all assignments for the specific volunteer
-        var volunteerAssignments = _dal.Assignment.ReadAll(a => a.VolunteerId == volunteerId);
-
-        // Step 2: Create a dictionary of assignments mapped by CallId for direct access
-        var assignmentDictionary = volunteerAssignments.ToDictionary(a => a.CallId);
-
-        // Step 3: Fetch closed calls related to the volunteer's assignments
-        var closedCalls = volunteerAssignments
-            .Select(a => Read(a.CallId)) // For each assignment, fetch the corresponding call
-            .Where(c => c.Status == BO.Enums.CallStatus.Closed); // Filter by closed status
-
-        // Step 4: Create the list of ClosedCallInList objects with the necessary data
-        var closedCallInList = closedCalls.Select(c =>
-        {
-            // Get the assignment matching the current call
-            var assignment = assignmentDictionary[c.Id];
-
-            // Create the ClosedCallInList object and populate its fields
-            return new BO.ClosedCallInList
+        // Retrieve all closed calls for the tutor from the assignments table.  
+        var closedCalls = _dal.Assignment.ReadAll(a => a.VolunteerId == volunteerId && a.AssignmentStatus != null&&(a.AssignmentStatus!=DO.Enums.AssignmentStatus.AssignedAndInProgress))
+            .Join(_dal.Call.ReadAll(),
+            a => a.CallId, c => c.Id,
+            (a, c) => new BO.ClosedCallInList
             {
                 Id = c.Id,
-                CallType = c.CallType,
-                Address = c.FullAddress,
-                OpeningTime = c.OpeningTime,
-                EntryTimeToHandle = assignment.EntryTimeForTreatment,  // Use the assignment data if available
-                ActualFinishTime = assignment.ActualTreatmentEndTime,  // Use the assignment data if available
-                FinishType = (BO.Enums.TypeOfTreatmentTerm)assignment.AssignmentStatus  // Use the assignment data if available
-            };
-        });
+                CallType = (BO.Enums.CallType)c.CallType,
+                Address = c.FullAdress,
+                OpeningTime = c.OpeningCallTime,
+                EntryTimeToHandle = a.EntryTimeForTreatment,
+                ActualFinishTime = a.ActualTreatmentEndTime,
+                FinishType = a.AssignmentStatus != null ? (BO.Enums.TypeOfTreatmentTerm)a.AssignmentStatus : null
+            });
 
-        // Step 5: Filter by call type if provided
-        if (callType.HasValue)
+        // Apply the predicate filter if specified.  
+        if (predicate != null)
         {
-            closedCallInList = closedCallInList.Where(c => c.CallType == callType.Value);
+            closedCalls = closedCalls.Where(predicate);
         }
 
-        // Step 6: Sort the list by the provided field, if given
-        switch (sortByField.Value)
-        {
-            case BO.Enums.ClosedCallInListFields.Id:
-                closedCallInList = closedCallInList.OrderBy(c => c.Id); // Sort by call ID
-                break;
-            case BO.Enums.ClosedCallInListFields.ActualEndTime:
-                closedCallInList = closedCallInList.OrderBy(c => c.ActualFinishTime); // Sort by completion date
-                break;
-            case BO.Enums.ClosedCallInListFields.EndType:
-                closedCallInList = closedCallInList.OrderBy(c => c.FinishType); // Sort by status (EndType)
-                break;
-            default:
-                closedCallInList = closedCallInList.OrderBy(c => c.Id); // Default: Sort by call number (ID)
-                break;
-        }
-
-        return closedCallInList;
+        return closedCalls;
     }
-    public IEnumerable<BO.CallInList> GetFilteredAndCallList(BO.Enums.CallInListFields? filterByField = null, object? filterValue = null, BO.Enums.CallInListFields? sortByField = null)
-    {
 
-        var DOCalls = _dal.Call.ReadAll();
-        var BOCall = DOCalls.Select(call => Read(call.Id));
-        var nextId = 1;
-        IEnumerable<BO.CallInList> callInLists = BOCall.Select(bocall =>
+    public IEnumerable<BO.OpenCallInList> GetOpenCallsForVolunteer(int volunteerId, Func<BO.OpenCallInList, bool> predicate = null)
+    {
+        var volunteer = _dal.Volunteer.Read(volunteerId) ?? throw new BO.Exceptions.BlDoesNotExistException($"Tutor with ID={volunteerId} does not exist");
+
+        // Retrieve all open or open-in-risk calls for the tutor.  
+        var openCalls = _dal.Call.ReadAll(c => CallManager.CalculateCallStatus(c) == BO.Enums.CallStatus.Open ||
+            CallManager.CalculateCallStatus(c) == BO.Enums.CallStatus.OpenAtRisk)
+            .Select(c => new BO.OpenCallInList
+            {
+                Id = c.Id,
+                CallType = (BO.Enums.CallType)c.CallType,
+                Description = c.Description,
+                Address = c.FullAdress,
+                OpeningTime = c.OpeningCallTime,
+                MaxFinishTime = c.MaxTimeToEnd,
+                DistanceFromVolunteer = Tools.CalculateDistance(volunteerId, c.Latitude, c.longtitude)
+            });
+
+        // Apply predicate filter if specified.  
+        if (predicate != null)
+            openCalls = openCalls.Where(predicate);
+
+        openCalls = openCalls.Where(c => c.DistanceFromVolunteer <= volunteer.MaxDistance); // Filter out calls that are too far away.  
+
+        return openCalls;
+    }
+
+ 
+    public IEnumerable<BO.CallInList> GetFilteredAndCallList(BO.Enums.CallInListFields? filterByField = null, object? filterValue = null, BO.Enums.CallInListFields? sortByField = null)
+
+    {
+        IEnumerable<DO.Call> DOCalls = _dal.Call.ReadAll();
+        var BOCall = DOCalls.Select(call => Read(call.Id)).ToList();
+
+        IEnumerable<BO.CallInList> callInLists = BOCall.Select(call =>
         {
-            var assignments = bocall.Assignments;
-            Console.WriteLine(assignments.Count());
-            var orderedAssignments = assignments.OrderByDescending(assignment => assignment.EntryTime);
+            var assignments = _dal.Assignment.ReadAll(a => a.CallId == call.Id);
+            var lastAssignment = assignments.OrderByDescending(a => a.EntryTimeForTreatment).FirstOrDefault();
+            var lastVolunteer = lastAssignment != null
+                ? _dal.Volunteer.ReadAll().FirstOrDefault(v => v.Id == lastAssignment.VolunteerId)
+                : null;
+
+            TimeSpan? totalCompletionTime = (call.MaxFinishTime != null && call.OpeningTime != null)
+                ? call.MaxFinishTime - call.OpeningTime
+                : null;
+
             DateTime currentTime = AdminManager.Now;
-            var volunteerId = orderedAssignments.FirstOrDefault()?.VolunteerId;
-            string lastVolunteerName = "no assignment";
-            if (volunteerId != null)
-                lastVolunteerName = _dal.Volunteer.Read(v => v.Id == volunteerId).FullName;
-            TimeSpan? TotalHandlingTime = null;
-            int totalAssignments = orderedAssignments.Count();
-            if (bocall.Status == BO.Enums.CallStatus.Closed)
-                TotalHandlingTime = orderedAssignments.FirstOrDefault().CompletionTime - bocall.OpeningTime;
 
             return new BO.CallInList
             {
-                Id = nextId++,//orderedAssignments.FirstOrDefault().Id,
-                CallId = bocall.Id,
-                CallType = bocall.CallType,
-                OpeningTime = bocall.OpeningTime,
-                RemainingTime = bocall.MaxFinishTime - currentTime,
-                LastVolunteerName = lastVolunteerName,
-                HandlingDuration = TotalHandlingTime,
-                Status = bocall.Status,
-                AssignmentCount = totalAssignments
+                Id = call.Id,
+                CallId = call.Id,
+                CallType = (BO.Enums.CallType)call.CallType,
+                OpeningTime = call.OpeningTime,
+                RemainingTime = call.MaxFinishTime - currentTime,
+                LastVolunteerName = lastVolunteer?.FullName,
+                HandlingDuration= totalCompletionTime,
+                Status = CallManager.GetCallStatus(call.Id),
+                AssignmentCount = assignments.Count()
             };
         });
 
-
-
-        switch (filterByField)
+        if (filterByField != null && filterValue is string strValue)
         {
-            case BO.Enums.CallInListFields.Id:
-                callInLists = callInLists.Where(callInList => callInList.Id == (int)filterValue);
-                break;
-            case BO.Enums.CallInListFields.CallId:
-                callInLists = callInLists.Where(call => call.CallId == (int)filterValue);
-                break;
-            case BO.Enums.CallInListFields.CallType:
-                callInLists = callInLists.Where(call => call.CallType == (BO.Enums.CallType)filterValue);
-                break;
-            case BO.Enums.CallInListFields.OpeningTime:
-                callInLists = callInLists.Where(call => call.OpeningTime == (DateTime)filterValue);
-                break;
-            case BO.Enums.CallInListFields.RemainingTime:
-                callInLists = callInLists.Where(call => call.RemainingTime == (TimeSpan?)filterValue);
-                break;
-            case BO.Enums.CallInListFields.LastVolunteerName:
-                callInLists = callInLists.Where(call => call.LastVolunteerName.Contains((string)filterValue));
-                break;
-            case BO.Enums.CallInListFields.TotalHandlingTime:
-                callInLists = callInLists.Where(call => call.HandlingDuration == (TimeSpan?)filterValue);
-                break;
-            case BO.Enums.CallInListFields.CallStatus:
-                callInLists = callInLists.Where(call => call.Status == (BO.Enums.CallStatus)filterValue);
-                break;
-            case BO.Enums.CallInListFields.TotalAssignments:
-                callInLists = callInLists.Where(call => call.AssignmentCount == (int)filterValue);
-                break;
-            default:
-                callInLists = callInLists;
-                break;
+            callInLists = callInLists.Where(call => filterByField switch
+            {
+                BO.Enums.CallInListFields.Id => int.TryParse(strValue, out var id) && call.Id == id,
+                BO.Enums.CallInListFields.CallId => int.TryParse(strValue, out var callId) && call.CallId == callId,
+                BO.Enums.CallInListFields.CallType => Enum.TryParse<BO.Enums.CallType>(strValue, out var type) && call.CallType == type,
+                BO.Enums.CallInListFields.OpeningTime => DateTime.TryParse(strValue, out var date) && call.OpeningTime == date,
+                BO.Enums.CallInListFields.RemainingTime => TimeSpan.TryParse(strValue, out var remaining) && call.RemainingTime == remaining,
+                BO.Enums.CallInListFields.LastVolunteerName => call.LastVolunteerName?.Contains(strValue, StringComparison.OrdinalIgnoreCase) == true,
+                BO.Enums.CallInListFields.TotalHandlingTime => TimeSpan.TryParse(strValue, out var handling) && call.HandlingDuration == handling,
+                BO.Enums.CallInListFields.CallStatus => Enum.TryParse<BO.Enums.CallStatus>(strValue, out var status) && call.Status == status,
+                BO.Enums.CallInListFields.TotalAssignments => int.TryParse(strValue, out var total) && call.AssignmentCount == total,
+                _ => true
+            });
         }
 
 
-        switch (sortByField)
+        // מיון הרשימה
+        callInLists = sortByField switch
         {
-            case BO.Enums.CallInListFields.Id:
-                callInLists = callInLists.OrderBy(call => call.Id);
-                break;
-            case BO.Enums.CallInListFields.CallId:
-                callInLists = callInLists.OrderBy(call => call.CallId);
-                break;
-            case BO.Enums.CallInListFields.CallType:
-                callInLists = callInLists.OrderBy(call => call.CallType);
-                break;
-            case BO.Enums.CallInListFields.OpeningTime:
-                callInLists = callInLists.OrderBy(call => call.OpeningTime);
-                break;
-            case BO.Enums.CallInListFields.RemainingTime:
-                callInLists = callInLists.OrderBy(call => call.RemainingTime);
-                break;
-            case BO.Enums.CallInListFields.LastVolunteerName:
-                callInLists = callInLists.OrderBy(call => call.LastVolunteerName);
-                break;
-            case BO.Enums.CallInListFields.TotalHandlingTime:
-                callInLists = callInLists.OrderBy(call => call.HandlingDuration);
-                break;
-            case BO.Enums.CallInListFields.CallStatus:
-                callInLists = callInLists.OrderBy(call => call.Status);
-                break;
-            case BO.Enums.CallInListFields.TotalAssignments:
-                callInLists = callInLists.OrderBy(call => call.AssignmentCount);
-                break;
-            default:
-                callInLists = callInLists.OrderBy(call => call.Id);
-                break;
-        }
+            BO.Enums.CallInListFields.Id => callInLists.OrderBy(call => call.Id),
+            BO.Enums.CallInListFields.CallId => callInLists.OrderBy(call => call.CallId),
+            BO.Enums.CallInListFields.CallType => callInLists.OrderBy(call => call.CallType),
+            BO.Enums.CallInListFields.OpeningTime => callInLists.OrderBy(call => call.OpeningTime),
+            BO.Enums.CallInListFields.RemainingTime => callInLists.OrderBy(call => call.RemainingTime),
+            BO.Enums.CallInListFields.LastVolunteerName => callInLists.OrderBy(call => call.LastVolunteerName),
+            BO.Enums.CallInListFields.TotalHandlingTime => callInLists.OrderBy(call => call.HandlingDuration),
+            BO.Enums.CallInListFields.CallStatus => callInLists.OrderBy(call => call.Status),
+            BO.Enums.CallInListFields.TotalAssignments => callInLists.OrderBy(call => call.AssignmentCount
+            ),
+            _ => callInLists.OrderBy(call => call.Id)
+        };
 
         return callInLists;
-    }
 
-    public IEnumerable<BO.OpenCallInList> GetOpenCalls(int volunteerId, BO.Enums.CallType? callType, BO.Enums.OpenCallInListFields? sortByField)
+    }
+    public IEnumerable<BO.OpenCallInList> SortOpenCalls(int volunteerId, BO.Enums.OpenCallInListFields? sortField = BO.Enums.OpenCallInListFields.Id)
     {
-        var volunteer = _dal.Volunteer.Read(volunteerId);
+        // Retrieve tutors from the DAL based on the active status filter.
+        var tutor = _dal.Volunteer.Read(volunteerId) ?? throw new BO.Exceptions.BlDoesNotExistException($"Tutor with ID={volunteerId} does not exist");
 
-        // Step 1: Retrieve all assignments for the given volunteer
-        var volunteerAssignments = _dal.Assignment.ReadAll(a => a.VolunteerId == volunteerId);
-
-        // Step 2: Create a dictionary to map assignments by CallId for quick access
-        var assignmentDictionary = volunteerAssignments.ToDictionary(a => a.CallId);
-
-        // Step 3: Filter only open or at-risk calls
-        var openCalls = volunteerAssignments
-            .Select(a => Read(a.CallId)) // Convert CallId to actual Call object
-            .Where(c => c.Status == BO.Enums.CallStatus.Open || c.Status == BO.Enums.CallStatus.AtRisk) // Filter by status
-            .ToList(); // Store as a list to optimize further operations
-
-        double Latitude = volunteer.Latitude ?? 0;
-        double longtitude = volunteer.longtitude ?? 0;
-
-        // Step 4: Map open calls to OpenCallInList DTO
-        var openCallInList = openCalls.Select(c => new BO.OpenCallInList
-        {
-            Id = c.Id,
-            CallType = c.CallType,
-            Description = c.Description,
-            Address = c.FullAddress,
-            OpeningTime = c.OpeningTime,
-            MaxFinishTime = c.MaxFinishTime,
-            DistanceFromVolunteer = VolunteerManager.GetDistance(Latitude, longtitude, c.Latitude, c.longtitude, volunteer.DistanceType)
-        }).ToList(); // Store in a list to avoid multiple IEnumerable evaluations
-
-        // Step 5: Filter by call type if a specific type is provided
-        if (callType.HasValue)
-        {
-            openCallInList = openCallInList.Where(c => c.CallType == callType.Value).ToList();
-        }
-
-        // Step 6: Sort the list if a sorting field is provided
-        if (sortByField.HasValue)
-        {
-            switch (sortByField.Value)
+        // Retrieve all open or open-in-risk calls for the tutor.  
+        var openCalls = _dal.Call.ReadAll(c => CallManager.CalculateCallStatus(c) == BO.Enums.CallStatus.Open ||
+            CallManager.CalculateCallStatus(c) == BO.Enums.CallStatus.OpenAtRisk)
+            .Select(c => new BO.OpenCallInList
             {
-                case BO.Enums.OpenCallInListFields.Id:
-                    openCallInList = openCallInList.OrderBy(c => c.Id).ToList();
-                    break;
-                case BO.Enums.OpenCallInListFields.CallType:
-                    openCallInList = openCallInList.OrderBy(c => c.CallType).ToList();
-                    break;
-                case BO.Enums.OpenCallInListFields.Description:
-                    openCallInList = openCallInList.OrderBy(c => c.Description).ToList();
-                    break;
-                case BO.Enums.OpenCallInListFields.FullAddress:
-                    openCallInList = openCallInList.OrderBy(c => c.Address).ToList();
-                    break;
-                case BO.Enums.OpenCallInListFields.OpenTime:
-                    openCallInList = openCallInList.OrderBy(c => c.OpeningTime).ToList();
-                    break;
-                case BO.Enums.OpenCallInListFields.MaxEndTime:
-                    openCallInList = openCallInList.OrderBy(c => c.MaxFinishTime).ToList();
-                    break;
-                case BO.Enums.OpenCallInListFields.DistanceFromVolunteer:
-                    openCallInList = openCallInList.OrderBy(c => c.DistanceFromVolunteer).ToList();
-                    break;
-                default:
-                    openCallInList = openCallInList.OrderBy(c => c.Id).ToList();
-                    break;
-            }
-        }
-
-        return openCallInList;
+                Id = c.Id,
+                CallType = (BO.Enums.CallType)c.CallType,
+                Description = c.Description,
+                Address = c.FullAdress,
+                OpeningTime = c.OpeningCallTime,
+                MaxFinishTime = c.MaxTimeToEnd,
+                DistanceFromVolunteer = Tools.CalculateDistance(volunteerId, c.Latitude, c.longtitude)
+            });
+        return openCalls.OrderBy(item =>
+            item.GetType().GetProperty(sortField.ToString())?.GetValue(item));
     }
+    public IEnumerable<BO.OpenCallInList> FilterOpenCalls(int VolunteerId, BO.Enums.OpenCallInListFields? filterField = null, object? filterValue = null)
+    {
+        var Volunteer = _dal.Volunteer.Read(VolunteerId) ?? throw new BO.Exceptions.BlDoesNotExistException($"Tutor with ID={VolunteerId} does not exist");
+
+        // Retrieve all open or open-in-risk calls for the tutor.  
+        var openCalls = _dal.Call.ReadAll(c => CallManager.GetCallStatus(c.Id) == BO.Enums.CallStatus.Open ||
+            CallManager.GetCallStatus(c.Id) == BO.Enums.CallStatus.OpenAtRisk)
+            .Select(c => new BO.OpenCallInList
+            {
+                Id = c.Id,
+                CallType = (BO.Enums.CallType)c.CallType,
+                Description = c.Description,
+                Address = c.FullAdress,
+                OpeningTime = c.OpeningCallTime,
+                MaxFinishTime = c.MaxTimeToEnd,
+                DistanceFromVolunteer = Tools.CalculateDistance(VolunteerId, c.Latitude, c.longtitude)
+            });
+
+        if (filterValue != null)
+            openCalls = openCalls.Where(call =>
+            {
+                var prop = call.GetType().GetProperty(filterField.ToString());
+                var val = prop?.GetValue(call);
+
+                Console.WriteLine($"Checking: {val} == {filterValue} → {val?.ToString() == filterValue?.ToString()}");
+
+                return val?.ToString() == filterValue?.ToString();
+            }).ToList();
+        return openCalls;
+    }
+    //אני רוצה פונקציה שתבדוק האם לקריאה מסויימת יש הקצאות
+
+
+//public IEnumerable<BO.OpenCallInList> GetFilteredAndOpenCalls(int volunteerId, BO.Enums.CallType? callType, BO.Enums.OpenCallInListFields? sortByField)
+//    {
+//        var volunteer = _dal.Volunteer.Read(volunteerId);
+
+//        // Step 1: Retrieve all assignments for the given volunteer
+//        var volunteerAssignments = _dal.Assignment.ReadAll(a => a.VolunteerId == volunteerId);
+
+//        // Step 2: Create a dictionary to map assignments by CallId for quick access
+//        var assignmentDictionary = volunteerAssignments.ToDictionary(a => a.CallId);
+
+//        // Step 3: Filter only open or at-risk calls
+//        var openCalls = volunteerAssignments
+//            .Select(a => Read(a.CallId)) // Convert CallId to actual Call object
+//            .Where(c => c.Status == BO.Enums.CallStatus.Open || c.Status == BO.Enums.CallStatus.OpenAtRisk) // Filter by status
+//            .ToList(); // Store as a list to optimize further operations
+
+//        double Latitude = volunteer.Latitude ?? 0;
+//        double longtitude = volunteer.longtitude ?? 0;
+
+//        // Step 4: Map open calls to OpenCallInList DTO
+//        var openCallInList = openCalls.Select(c => new BO.OpenCallInList
+//        {
+//            Id = c.Id,
+//            CallType = c.CallType,
+//            Description = c.Description,
+//            Address = c.FullAddress,
+//            OpeningTime = c.OpeningTime,
+//            MaxFinishTime = c.MaxFinishTime,
+//            DistanceFromVolunteer = VolunteerManager.GetDistance(Latitude, longtitude, c.Latitude, c.longtitude, volunteer.DistanceType)
+//        }).ToList(); // Store in a list to avoid multiple IEnumerable evaluations
+
+//        // Step 5: Filter by call type if a specific type is provided
+//        if (callType.HasValue)
+//        {
+//            openCallInList = openCallInList.Where(c => c.CallType == callType.Value).ToList();
+//        }
+
+//        // Step 6: Sort the list if a sorting field is provided
+//        if (sortByField.HasValue)
+//        {
+//            switch (sortByField.Value)
+//            {
+//                case BO.Enums.OpenCallInListFields.Id:
+//                    openCallInList = openCallInList.OrderBy(c => c.Id).ToList();
+//                    break;
+//                case BO.Enums.OpenCallInListFields.CallType:
+//                    openCallInList = openCallInList.OrderBy(c => c.CallType).ToList();
+//                    break;
+//                case BO.Enums.OpenCallInListFields.Description:
+//                    openCallInList = openCallInList.OrderBy(c => c.Description).ToList();
+//                    break;
+//                case BO.Enums.OpenCallInListFields.FullAddress:
+//                    openCallInList = openCallInList.OrderBy(c => c.Address).ToList();
+//                    break;
+//                case BO.Enums.OpenCallInListFields.OpenTime:
+//                    openCallInList = openCallInList.OrderBy(c => c.OpeningTime).ToList();
+//                    break;
+//                case BO.Enums.OpenCallInListFields.MaxEndTime:
+//                    openCallInList = openCallInList.OrderBy(c => c.MaxFinishTime).ToList();
+//                    break;
+//                case BO.Enums.OpenCallInListFields.DistanceFromVolunteer:
+//                    openCallInList = openCallInList.OrderBy(c => c.DistanceFromVolunteer).ToList();
+//                    break;
+//                default:
+//                    openCallInList = openCallInList.OrderBy(c => c.Id).ToList();
+//                    break;
+//            }
+//        }
+
+//        return openCallInList;
+//    }
 
 
 
@@ -570,15 +605,16 @@ CallManager.Observers.RemoveListObserver(listObserver); //stage 5
 CallManager.Observers.RemoveObserver(id, observer); //stage 5
 
     #region Stage 5
-    
+
     public IDisposable Subscribe(IObserver<DO.Call> observer)
     {
         throw new NotImplementedException();
     }
     #endregion Stage 5
-    public void DeleteAssignmentToCall(string volunteerName,BO.Call call)
+    public void DeleteAssignmentToCall(string volunteerName, BO.CallInList call)
     {
-        if (call.Status != BO.Enums.CallStatus.InProgress|| call.Status != BO.Enums.CallStatus.InProgressAtRisk) throw new BO.Exceptions.BLUnauthorizedException($"Cant delete a non opened call status");
-        var AssignmentToDelete=_dal.Assignment.ReadAll(a=>a.CallId==call.Id&&a.AssignmentStatus==BO.Enums.AssignmentStatus.AssignedAndInProgress).FirstOrDefault();
+        if (call.Status != BO.Enums.CallStatus.InProgress || call.Status != BO.Enums.CallStatus.InProgressAtRisk) throw new BO.Exceptions.BLUnauthorizedException($"Cant delete a non opened call status");
+        var AssignmentToDelete = _dal.Assignment.ReadAll(a => a.CallId == call.Id && (BO.Enums.AssignmentStatus)a.AssignmentStatus == BO.Enums.AssignmentStatus.AssignedAndInProgress).FirstOrDefault();
+
     }
 }

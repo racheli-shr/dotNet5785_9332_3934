@@ -7,13 +7,65 @@ using System.Text.Json.Serialization;
 using System.Text.Json;
 using System.Threading.Tasks;
 using System.Reflection;
+using DalApi;
 //using Newtonsoft.Json.Linq;
 namespace BL.Helpers
 {
     internal static class Tools
     {
+        private static IDal s_dal = Factory.Get; //stage 4
         private const string ApiKey = "AIzaSyAfqbckIhPbc6rQkv7P2j711zLSfmnGxmo"; // הכניסי את ה-API Key שלך כאן
 
+
+        #region distance
+        /// <summary>
+        /// Calculates the distance in kilometers between a tutor and a student call location.
+        /// </summary>
+        /// <param name="volunteerId">The ID of the tutor.</param>
+        /// <param name="callLat">The latitude of the student call location.</param>
+        /// <param name="callLong">The longitude of the student call location.</param>
+        /// <returns>The distance in kilometers between the tutor and the student call location.</returns>
+        internal static double CalculateDistance(int volunteerId, double callLat, double callLong)
+        {
+            var volunteer = s_dal.Volunteer.Read(volunteerId);
+            if (volunteer == null)
+                throw new BO.Exceptions.BlDoesNotExistException($"Tutor with ID {volunteerId} not found");
+
+            return GetDistance(volunteer.Latitude, volunteer.longtitude, callLat, callLong);
+        }
+
+
+        /// <summary>
+        /// Calculates the distance between two geographical coordinates.
+        /// </summary>
+        /// <param name="lat1">Latitude of the first point.</param>
+        /// <param name="lon1">Longitude of the first point.</param>
+        /// <param name="lat2">Latitude of the second point.</param>
+        /// <param name="lon2">Longitude of the second point.</param>
+        /// <returns>The distance between the two points in kilometers.</returns>
+        private static double GetDistance(double? lat1, double? lon1, double? lat2, double? lon2)
+        {
+            // Haversine formula to calculate distance between two coordinates on Earth.
+            double earthRadiusKm = 6371;
+            double dLat = DegreesToRadians((double)lat2 - (double)lat1);
+            double dLon = DegreesToRadians((double)lon2 - (double)lon1);
+            double a = Math.Sin(dLat / 2) * Math.Sin(dLat / 2) +
+                       Math.Cos(DegreesToRadians((double)lat1)) * Math.Cos(DegreesToRadians((double)lat2)) *
+                       Math.Sin(dLon / 2) * Math.Sin(dLon / 2);
+            double c = 2 * Math.Atan2(Math.Sqrt(a), Math.Sqrt(1 - a));
+            return earthRadiusKm * c;
+        }
+
+        /// <summary>
+        /// Converts degrees to radians.
+        /// </summary>
+        /// <param name="degrees">The angle in degrees.</param>
+        /// <returns>The angle in radians.</returns>
+        private static double DegreesToRadians(double degrees)
+        {
+            return degrees * Math.PI / 180;
+        }
+        #endregion
 
 
         public static string ToStringProperty<T>(this T obj)

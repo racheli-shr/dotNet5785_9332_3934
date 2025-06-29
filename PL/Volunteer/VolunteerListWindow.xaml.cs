@@ -66,7 +66,7 @@ public partial class VolunteerListWindow : Window
 
     private void AddButton_Click(object sender, RoutedEventArgs e)
     {
-        new VolunteerWindow(0).ShowDialog();
+        new VolunteerWindow(0, "VolunteerListWindow").ShowDialog();
     }
 
    
@@ -74,7 +74,7 @@ public partial class VolunteerListWindow : Window
     private void lsvVolunteerList_MouseDoubleClick(object sender, MouseButtonEventArgs e)
     {
         if (SelectedVolunteer != null)
-            new VolunteerWindow(SelectedVolunteer.Id).ShowDialog();
+            new VolunteerWindow(SelectedVolunteer.Id, "VolunteerListWindow").ShowDialog();
     }
 
     private void DeleteVolunteer_Click(object sender, RoutedEventArgs e)
