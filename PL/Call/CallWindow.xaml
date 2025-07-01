@@ -9,16 +9,16 @@
         DataContext="{Binding RelativeSource={RelativeSource Mode=Self}}">
 
     <Grid>
-        <Label Content="CallType" HorizontalAlignment="Left" Margin="270,153,0,0" VerticalAlignment="Top"/>
-        <ComboBox SelectionChanged="Selected_callType" ItemsSource="{Binding Source={StaticResource callTypeCollectionKey}}" SelectedValue="{Binding Path=callType, Mode=TwoWay}"  HorizontalAlignment="Left" Margin="400,155,0,0" VerticalAlignment="Top" Height="25" Width="142" />
-        <Label Content="Description" HorizontalAlignment="Left" Margin="270,182,0,0" VerticalAlignment="Top"/>
-        <TextBox  Text="{Binding CurrentCall.Description, Mode=TwoWay, NotifyOnValidationError=true,  ValidatesOnExceptions=true}" HorizontalAlignment="Left" Margin="400,186,0,0" VerticalAlignment="Top" Height="25" Width="142"/>
-        <Label Content="FullAdress"  HorizontalAlignment="Left" Margin="270,212,0,0" VerticalAlignment="Top"/>
-        <Label Content="OpeningCallTime" HorizontalAlignment="Left" Margin="270,242,0,0" VerticalAlignment="Top"/>
-        <Label Content="MaxTimeToEnd" HorizontalAlignment="Left" Margin="270,271,0,0" VerticalAlignment="Top"/>
-        <TextBox Text="{Binding CurrentCall.FullAddress, Mode=TwoWay, NotifyOnValidationError=true,  ValidatesOnExceptions=true}" HorizontalAlignment="Left" Margin="400,216,0,0" VerticalAlignment="Top" Height="25" Width="142" />
-        <DatePicker DisplayDate="{Binding CurrentCall.OpeningTime, Mode=TwoWay, NotifyOnValidationError=true,  ValidatesOnExceptions=true}" HorizontalAlignment="Left" Margin="400,248,0,0" VerticalAlignment="Top" Height="25" Width="142" Text="05/18/2025"/>
-        <DatePicker Text="{Binding CurrentCall.MaxFinishTime, Mode=TwoWay, NotifyOnValidationError=true,  ValidatesOnExceptions=true}" HorizontalAlignment="Left" Margin="400,277,0,0" VerticalAlignment="Top" Height="25"  Width="142"/>
+        <Label IsEnabled="{Binding IsEditable}" Content="CallType" HorizontalAlignment="Left" Margin="270,153,0,0" VerticalAlignment="Top"/>
+        <ComboBox IsEnabled="{Binding IsEditable}" SelectionChanged="Selected_callType" ItemsSource="{Binding Source={StaticResource callTypeCollectionKey}}" SelectedValue="{Binding Path=callType, Mode=TwoWay}"  HorizontalAlignment="Left" Margin="400,155,0,0" VerticalAlignment="Top" Height="25" Width="142" />
+        <Label IsEnabled="{Binding IsEditable}" Content="Description" HorizontalAlignment="Left" Margin="270,182,0,0" VerticalAlignment="Top"/>
+        <TextBox IsEnabled="{Binding IsEditable}"  Text="{Binding CurrentCall.Description, Mode=TwoWay, NotifyOnValidationError=true,  ValidatesOnExceptions=true}" HorizontalAlignment="Left" Margin="400,186,0,0" VerticalAlignment="Top" Height="25" Width="142"/>
+        <Label IsEnabled="{Binding IsEditable}" Content="FullAdress"  HorizontalAlignment="Left" Margin="270,212,0,0" VerticalAlignment="Top"/>
+        <Label IsEnabled="{Binding IsUpdatingEditable}" Content="OpeningCallTime" HorizontalAlignment="Left" Margin="270,242,0,0" VerticalAlignment="Top"/>
+        <Label IsEnabled="{Binding IsMaxTimeEditable}" Content="MaxTimeToEnd" HorizontalAlignment="Left" Margin="270,271,0,0" VerticalAlignment="Top"/>
+        <TextBox IsEnabled="{Binding IsEditable}" Text="{Binding CurrentCall.FullAddress, Mode=TwoWay, NotifyOnValidationError=true,  ValidatesOnExceptions=true}" HorizontalAlignment="Left" Margin="400,216,0,0" VerticalAlignment="Top" Height="25" Width="142" />
+        <DatePicker IsEnabled="{Binding IsUpdatingEditable}" DisplayDate="{Binding CurrentCall.OpeningTime, Mode=TwoWay, NotifyOnValidationError=true,  ValidatesOnExceptions=true}" HorizontalAlignment="Left" Margin="400,248,0,0" VerticalAlignment="Top" Height="25" Width="142"/>
+        <DatePicker IsEnabled="{Binding IsMaxTimeEditable}" DisplayDate="{Binding CurrentCall.MaxFinishTime, Mode=TwoWay, NotifyOnValidationError=true,  ValidatesOnExceptions=true}" HorizontalAlignment="Left" Margin="400,277,0,0" VerticalAlignment="Top" Height="25"  Width="142"/>
         <Button Content="{Binding ButtonText}" Click="AddUpdate_btn" HorizontalAlignment="Center" Margin="0,358,0,0" VerticalAlignment="Top" Height="33" Width="62"/>
 
     </Grid>

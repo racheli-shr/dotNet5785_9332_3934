@@ -48,6 +48,16 @@
     <Latitude>31.7610773</Latitude>
     <longtitude>35.1854477</longtitude>
     <OpeningCallTime>2025-06-22T00:00:00</OpeningCallTime>
-	  <MaxTimeToEnd>2025-06-19T18:14:38</MaxTimeToEnd>
+    <MaxTimeToEnd>2025-06-19T18:14:38</MaxTimeToEnd>
+  </Call>
+  <Call>
+    <Id>1007</Id>
+    <CallType>desert</CallType>
+    <Description>wfwf</Description>
+    <FullAdress>moshe zilberg 32</FullAdress>
+    <Latitude>31.7610773</Latitude>
+    <longtitude>35.1854477</longtitude>
+    <OpeningCallTime>0010-06-01T00:00:00</OpeningCallTime>
+    <MaxTimeToEnd>2025-09-01T00:00:00</MaxTimeToEnd>
   </Call>
 </ArrayOfCall>

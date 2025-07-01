@@ -30,7 +30,7 @@
     <VolunteerId>390709137</VolunteerId>
     <EntryTimeForTreatment>2025-06-05T18:14:38</EntryTimeForTreatment>
     <ActualTreatmentEndTime>2025-06-12T18:14:38</ActualTreatmentEndTime>
-    <AssignmentStatus>MANAGER_CANCELLED</AssignmentStatus>
+    <AssignmentStatus>NONE</AssignmentStatus>
   </Assignment>
   <Assignment>
     <Id>1005</Id>
@@ -79,5 +79,29 @@
     <EntryTimeForTreatment>2025-06-05T18:14:38</EntryTimeForTreatment>
     <ActualTreatmentEndTime>2025-06-12T18:14:38</ActualTreatmentEndTime>
     <AssignmentStatus>MANAGER_CANCELLED</AssignmentStatus>
+  </Assignment>
+  <Assignment>
+    <Id>1010</Id>
+    <CallId>1007</CallId>
+    <VolunteerId>328183934</VolunteerId>
+    <EntryTimeForTreatment>2025-07-07T18:14:38</EntryTimeForTreatment>
+    <ActualTreatmentEndTime xsi:nil="true" />
+    <AssignmentStatus>SELF_CANCELLED</AssignmentStatus>
+  </Assignment>
+  <Assignment>
+    <Id>1014</Id>
+    <CallId>1007</CallId>
+    <VolunteerId>328183934</VolunteerId>
+    <EntryTimeForTreatment>2025-07-07T18:14:38</EntryTimeForTreatment>
+    <ActualTreatmentEndTime xsi:nil="true" />
+    <AssignmentStatus>SELF_CANCELLED</AssignmentStatus>
+  </Assignment>
+  <Assignment>
+    <Id>1016</Id>
+    <CallId>1007</CallId>
+    <VolunteerId>328183934</VolunteerId>
+    <EntryTimeForTreatment>2025-07-07T18:14:38</EntryTimeForTreatment>
+    <ActualTreatmentEndTime xsi:nil="true" />
+    <AssignmentStatus>AssignedAndInProgress</AssignmentStatus>
   </Assignment>
 </ArrayOfAssignment>

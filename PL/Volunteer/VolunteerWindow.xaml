@@ -18,7 +18,7 @@
         <Label Content="Password" HorizontalAlignment="Left" Margin="458,227,0,0" VerticalAlignment="Top"/>
         <Label Content="Full Address" HorizontalAlignment="Left" Margin="458,257,0,0" VerticalAlignment="Top"/>
         <Label Content="Role" HorizontalAlignment="Left" Margin="458,289,0,0" VerticalAlignment="Top"/>
-        <Label Content="Is Active" HorizontalAlignment="Left" Margin="458,319,0,0" VerticalAlignment="Top"/>
+        <Label Content="Is Active" IsEnabled="{Binding IsActiveEnabled}" HorizontalAlignment="Left" Margin="458,319,0,0" VerticalAlignment="Top"/>
         <Label Content="Max Distance" HorizontalAlignment="Left" Margin="458,355,0,0" VerticalAlignment="Top"/>
         <Label Content="Distance Type" HorizontalAlignment="Left" Margin="457,386,0,0" VerticalAlignment="Top"/>
         <TextBox Text="{Binding CurrentVolunteer.Phone, Mode=TwoWay, NotifyOnValidationError=true,  ValidatesOnExceptions=true}" HorizontalAlignment="Left" Margin="588,171,0,0" VerticalAlignment="Top" Height="25" Width="142" />
@@ -26,7 +26,7 @@
         <PasswordBox PasswordChanged="PasswordBox_PasswordChanged" HorizontalAlignment="Left" Margin="588,233,0,0" VerticalAlignment="Top" Height="25" Width="142" />
         <TextBox Text="{Binding CurrentVolunteer.FullAddress, Mode=TwoWay, NotifyOnValidationError=true,  ValidatesOnExceptions=true}" HorizontalAlignment="Left" Margin="588,263,0,0" VerticalAlignment="Top" Height="25" Width="142"/>
         <ComboBox SelectionChanged="Selected_Role" IsEnabled="{Binding isAbleToChange}" ItemsSource="{Binding Source={StaticResource VolunteerRoleCollectionKey}}" SelectedValue="{Binding Path=Role, Mode=TwoWay}"  HorizontalAlignment="Left" Margin="588,293,0,0" VerticalAlignment="Top" Height="25" Width="142" />
-        <CheckBox IsChecked="{Binding CurrentVolunteer.IsActive, Mode=TwoWay, NotifyOnValidationError=true,  ValidatesOnExceptions=true}" IsEnabled="True" Margin="640,330,498,248" RenderTransformOrigin="1.038,0.799" />
+        <CheckBox  IsChecked="{Binding CurrentVolunteer.IsActive, Mode=TwoWay, NotifyOnValidationError=true,  ValidatesOnExceptions=true}" IsEnabled="{Binding IsTextBoxEnabled}" Margin="640,330,498,248" RenderTransformOrigin="1.038,0.799" />
         <TextBox Text="{Binding CurrentVolunteer.MaxDistance, Mode=TwoWay, NotifyOnValidationError=true,  ValidatesOnExceptions=true}" HorizontalAlignment="Left" Margin="588,355,0,0" VerticalAlignment="Top" Height="25" Width="142"/>
         <ComboBox SelectionChanged="Selected_distanceType" ItemsSource="{Binding Source={StaticResource distanceTypeCollectionKey}}" SelectedValue="{Binding Path=distanceType, Mode=TwoWay}"  HorizontalAlignment="Left" Margin="588,386,0,0" VerticalAlignment="Top" Height="25" Width="142" />
         <Button Content="{Binding ButtonText}" Click="AddUpdate_btn" HorizontalAlignment="Left" Margin="465,444,0,0" VerticalAlignment="Top" Height="33" Width="74"/>

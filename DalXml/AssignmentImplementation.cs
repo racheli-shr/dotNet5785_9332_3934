@@ -27,6 +27,7 @@ internal class AssignmentImplementation : IAssignment
 
     static Assignment GetAssignment(XElement s)
     {
+        var status = s.ToEnumNullable<DO.Enums.AssignmentStatus>("AssignmentStatus");
         return new DO.Assignment()
         {
             Id = s.ToIntNullable("Id") ?? throw new FormatException("can't convert id"),
@@ -34,7 +35,7 @@ internal class AssignmentImplementation : IAssignment
             VolunteerId= s.ToIntNullable("VolunteerId") ?? 0,
             EntryTimeForTreatment= s.ToDateTimeNullable("EntryTimeForTreatment") ?? DateTime.Now,
             ActualTreatmentEndTime=s.ToDateTimeNullable("ActualTreatmentEndTime") ?? DateTime.Now,
-            AssignmentStatus= s.ToEnumNullable<DO.Enums.AssignmentStatus>("TypeOfTreatmentTermination") ?? DO.Enums.AssignmentStatus.EXPIRED,
+            AssignmentStatus= s.ToEnumNullable<DO.Enums.AssignmentStatus>("AssignmentStatus") ?? DO.Enums.AssignmentStatus.NONE,
         };
     }
     public void Create(Assignment item)
@@ -73,8 +74,9 @@ internal class AssignmentImplementation : IAssignment
 
     public Assignment? Read(Func<Assignment, bool> filter)
     {
-        return XMLTools.LoadListFromXMLElement(Config.s_assignment_xml).Elements().Select(s =>
+        var assignments= XMLTools.LoadListFromXMLElement(Config.s_assignment_xml).Elements().Select(s =>
         GetAssignment(s)).FirstOrDefault(filter);
+        return assignments;
     }
 
     public IEnumerable<Assignment> ReadAll(Func<Assignment, bool>? filter = null)

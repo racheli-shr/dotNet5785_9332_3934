@@ -1,6 +1,7 @@
 ﻿namespace BLApi;
 
 using BO;
+using DO;
 using static BO.Enums;
 
 /// <summary>
@@ -20,7 +21,7 @@ public interface ICall:BlApi.IObservable
     /// <summary>
     /// Assigns a volunteer to a call.
     /// </summary>
-    void DeleteAssignmentToCall(String volunteerId, BO.CallInList call);
+    void DeleteAssignmentToCall(int callId);
 
     /// <summary>
     /// Retrieves a filtered and sorted list of calls.
@@ -56,13 +57,14 @@ public interface ICall:BlApi.IObservable
     /// Completes the treatment of a call.
     /// </summary>
     void CompleteCallTreatment(int volunteerId, int assignmentId);
-
+    public void CompleteAssignmentToCall(int volunteerId, int callId);
+    public bool isExistingAssignmentToCall(int callId);
     /// <summary>
     /// Cancels the treatment of a call.
     /// </summary>
     void CancelCallTreatment(int requesterId, int assignmentId);
     ///
-    public bool closeLastAssignmentByCallId(int callId);
+    public bool closeLastAssignmentByCallId(int callId,DO.Enums.AssignmentStatus canceledBy);
     //public IEnumerable<BO.OpenCallInList> GetOpenCallsForVolunteer(int volunteerId, Func<BO.OpenCallInList, bool> predicate = null);
     //public IEnumerable<BO.OpenCallInList> GetFilteredAndOpenCalls(int volunteerId, BO.Enums.CallType? callType, BO.Enums.OpenCallInListFields? sortByField);
     public IEnumerable<BO.OpenCallInList> GetOpenCallsForVolunteer(int volunteerId, Func<BO.OpenCallInList, bool> predicate = null);

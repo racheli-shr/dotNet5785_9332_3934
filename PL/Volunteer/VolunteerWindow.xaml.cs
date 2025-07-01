@@ -25,6 +25,8 @@ namespace PL.Volunteer
         public string ButtonText { get; set; }
         public string password { get; set; } = "";
         public bool IsTextBoxEnabled { set; get; }
+        public bool IsActiveEnabled { set; get; }
+        
         public int sender_Id = 0;
         //public string CameFromWindow;
         public bool isAbleToChange = false;
@@ -41,7 +43,8 @@ namespace PL.Volunteer
             sender_Id = id;
             ButtonText = id == 0 ? "Add" : "Update";
             CurrentVolunteer = (id != 0) ? s_bl.Volunteer.Read(id)! : new BO.Volunteer() { Id = 0 };
-
+            var call=s_bl.Volunteer.checkIfExistingAssignment(CurrentVolunteer);
+            IsActiveEnabled = call!=null?true:false;
         }
         public BO.Enums.Role Role { get; set; } = BO.Enums.Role.NONE;
         public BO.Enums.DistanceType distanceType { get; set; } = BO.Enums.DistanceType.airDistance;

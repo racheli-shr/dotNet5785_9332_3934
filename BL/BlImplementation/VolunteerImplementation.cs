@@ -240,9 +240,9 @@ VolunteerManager.Observers.RemoveListObserver(listObserver); //stage 5
 VolunteerManager.Observers.RemoveObserver(id, observer); //stage 5
     public BO.Call? checkIfExistingAssignment(BO.Volunteer v)
     {
-        var assignment = _dal.Assignment.Read(a => a.VolunteerId == v.Id);
+        var assignment = _dal.Assignment.Read(a => a.VolunteerId == v.Id && a.AssignmentStatus == DO.Enums.AssignmentStatus.AssignedAndInProgress);
 
-        if (assignment!=null&& assignment.AssignmentStatus == DO.Enums.AssignmentStatus.AssignedAndInProgress)
+        if (assignment!=null)
         {
             var doCall = _dal.Call.Read(assignment.CallId);
 

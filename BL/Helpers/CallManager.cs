@@ -74,6 +74,10 @@ internal static class CallManager
 
             case DO.Enums.AssignmentStatus.EXPIRED:
                 return BO.Enums.CallStatus.Expired; // Call expired without being handled
+            case DO.Enums.AssignmentStatus.AssignedAndInProgress:
+                return BO.Enums.CallStatus.InProgress;
+            case DO.Enums.AssignmentStatus.NONE:
+                return BO.Enums.CallStatus.InProgress;
         }
 
         // Case 3: Call is in progress
@@ -130,8 +134,9 @@ internal static class CallManager
             DO.Enums.AssignmentStatus.TREATED => BO.Enums.CallStatus.Closed,
             DO.Enums.AssignmentStatus.SELF_CANCELLED => BO.Enums.CallStatus.Open,
             DO.Enums.AssignmentStatus.MANAGER_CANCELLED => BO.Enums.CallStatus.Open,
+            DO.Enums.AssignmentStatus.AssignedAndInProgress => BO.Enums.CallStatus.InProgress,
             DO.Enums.AssignmentStatus.EXPIRED => BO.Enums.CallStatus.Expired,
-            _ or null => BO.Enums.CallStatus.InProgress
+            _ or null => BO.Enums.CallStatus.Open
         };
     }
 

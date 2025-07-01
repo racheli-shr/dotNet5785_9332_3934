@@ -17,13 +17,13 @@ namespace Helpers
     {
         public static void SendEmail(string to, string subject, string body)
         {
-            var fromAddress = new MailAddress("your-system@email.com", "Call Management");
+            var fromAddress = new MailAddress(to, "Call Management");
             var toAddress = new MailAddress(to);
-            const string fromPassword = "yourPassword"; // מומלץ לשים בקובץ קונפיג
+            const string fromPassword = "1111"; // מומלץ לשים בקובץ קונפיג
 
             var smtp = new SmtpClient
             {
-                Host = "smtp.yourprovider.com",
+                Host = "smtp.gmail.com",
                 Port = 587,
                 EnableSsl = true,
                 Credentials = new NetworkCredential(fromAddress.Address, fromPassword)

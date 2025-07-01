@@ -117,7 +117,7 @@ public partial class CallListWindow : Window
             {
                 try
                 {
-                    if (s_bl.Call.closeLastAssignmentByCallId(call.CallId))
+                    if (s_bl.Call.closeLastAssignmentByCallId(call.CallId,DO.Enums.AssignmentStatus.MANAGER_CANCELLED))
                     {
                         MessageBox.Show("success");
                     }

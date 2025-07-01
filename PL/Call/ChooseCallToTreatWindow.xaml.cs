@@ -78,9 +78,22 @@ namespace PL.Call
 
         // Using a DependencyProperty as the backing store for SelectedCall.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty SelectedCallProperty =
-            DependencyProperty.Register("SelectedCall", typeof(BO.OpenCallInList), typeof(ChooseCallToTreatWindow), new PropertyMetadata(null));
+    DependencyProperty.Register(
+        "SelectedCall",
+        typeof(BO.OpenCallInList),
+        typeof(ChooseCallToTreatWindow),
+        new PropertyMetadata(null, OnSelectedCallChanged)
+    );
+        private static void OnSelectedCallChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var window = d as ChooseCallToTreatWindow;
+            var selectedCall = e.NewValue as BO.OpenCallInList;
 
-       
+            if (window != null && selectedCall != null)
+            {
+                window.Description = selectedCall.Description ?? "";
+            }
+        }
         public ChooseCallToTreatWindow(BO.Volunteer volunteer)
         {
             Volunteer = volunteer;

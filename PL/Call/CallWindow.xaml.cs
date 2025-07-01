@@ -22,15 +22,69 @@ namespace PL.Call
         static readonly BlApi.IBl s_bl = BlApi.Factory.Get();
         public BO.Call call { get; set; }
         public string ButtonText { get; set; }
+        public bool IsEditable { get; set; } = true;
+        public bool IsMaxTimeEditable { get; set; } = true;
+        public bool IsUpdatingEditable { get; set; } = false;
 
         public CallWindow(int id)
         {
-
-            ButtonText = id == 0 ? "Add" : "Update";
-
-            InitializeComponent();
-            CurrentCall = (id != 0) ? s_bl.Call.Read(id)! : new BO.Call() { Id = 0 };
             
+                ButtonText = id == 0 ? "Add" : "Update";
+                InitializeComponent();
+
+                if (id != 0)
+                {
+                    IsUpdatingEditable = true;
+                    CurrentCall = s_bl.Call.Read(id)!;
+
+                    var hasAssignments = s_bl.Call.isExistingAssignmentToCall(id);
+                    
+
+                    if (hasAssignments)
+                    {
+                        IsEditable = true;
+                        IsMaxTimeEditable = true;
+                    }
+                    else
+                    {
+                        switch (CurrentCall.Status)
+                        {
+                            case BO.Enums.CallStatus.Open:
+                            case BO.Enums.CallStatus.OpenAtRisk:
+                                IsEditable = false;
+                                IsMaxTimeEditable = false;
+                                break;
+
+                            case BO.Enums.CallStatus.InProgress:
+                            case BO.Enums.CallStatus.InProgressAtRisk:
+                                IsEditable = true;
+                                IsMaxTimeEditable = false;
+                                break;
+
+                            case BO.Enums.CallStatus.Closed:
+                            case BO.Enums.CallStatus.Expired:
+                                IsEditable = true;
+                                IsMaxTimeEditable = true;
+                                break;
+                        }
+                    }
+                }
+                else
+                {
+                    CurrentCall = new BO.Call() { Id = 0 };
+                    IsEditable = false;
+                    IsMaxTimeEditable = false;
+                }
+
+                DataContext = this; // חשוב כדי שכל התכונות יעבדו
+            
+
+
+            //ButtonText = id == 0 ? "Add" : "Update";
+
+            //InitializeComponent();
+            //CurrentCall = (id != 0) ? s_bl.Call.Read(id)! : new BO.Call() { Id = 0 };
+
         }
         public BO.Enums.CallType callType { get; set; } = BO.Enums.CallType.NONE;
 
