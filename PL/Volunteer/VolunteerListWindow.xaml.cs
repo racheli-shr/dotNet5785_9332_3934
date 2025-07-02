@@ -35,25 +35,32 @@ public partial class VolunteerListWindow : Window
     public static readonly DependencyProperty VolunteerListProperty = DependencyProperty.Register("VolunteerList", typeof(IEnumerable<BO.VolunteerInList>), typeof(VolunteerListWindow), new PropertyMetadata(null));
     public BO.Enums.VolunteerSortField Filter { get; set; } = BO.Enums.VolunteerSortField.NONE;
 
-   
+
+    // Updates the volunteer list based on the selected sorting filter.
 
     private void Sort_By(object sender, SelectionChangedEventArgs e)
     {
         VolunteerList = (Filter == BO.Enums.VolunteerSortField.NONE) ?s_bl?.Volunteer.GetVolunteersList(null,null)! : s_bl?.Volunteer.GetVolunteersList(null,Filter)!;
     }
+    // Queries and updates the volunteer list according to the current filter.
+
     private void queryVolunteerList()
     => VolunteerList = (Filter == BO.Enums.VolunteerSortField.NONE) ?
         s_bl?.Volunteer.GetVolunteersList(null,null)! : s_bl?.Volunteer.GetVolunteersList(null, Filter)!;
+    // Observer callback that refreshes the volunteer list when notified.
 
     private void volunteerListObserver()
         => queryVolunteerList();
- 
+
+    // Removes the volunteer list observer when the window is closed.
 
     private void VolunteerListWindow_Closed(object sender, EventArgs e)
     {
+
         s_bl.Volunteer.RemoveObserver(volunteerListObserver);
 
     }
+    // Adds the volunteer list observer when the window is loaded.
 
     private void VolunteerListWindow_Loaded(object sender, RoutedEventArgs e)
     {
@@ -62,14 +69,16 @@ public partial class VolunteerListWindow : Window
 
     }
 
- 
+
+    // Opens a new window to add a new volunteer.
 
     private void AddButton_Click(object sender, RoutedEventArgs e)
     {
         new VolunteerWindow(0, "VolunteerListWindow").ShowDialog();
     }
 
-   
+    // Opens the volunteer details window for the selected volunteer on double-click.
+
 
     private void lsvVolunteerList_MouseDoubleClick(object sender, MouseButtonEventArgs e)
     {
@@ -78,7 +87,8 @@ public partial class VolunteerListWindow : Window
     }
 
     private void DeleteVolunteer_Click(object sender, RoutedEventArgs e)
-    {
+    {    // Confirms and deletes the selected volunteer, with error handling.
+
         if (sender is Button btn && btn.Tag is BO.VolunteerInList volunteer)
         {
             var result = MessageBox.Show(

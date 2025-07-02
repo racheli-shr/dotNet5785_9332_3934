@@ -24,6 +24,8 @@ public partial class MainWindow : Window
     public BO.Volunteer volunteer;
     private VolunteerListWindow volunteerWindow;
     private CallListWindow callWindow;
+    // Initializes main window and sets role and volunteer references.
+
     public MainWindow(BO.Enums.Role r,BO.Volunteer vol)
     {
         InitializeComponent();
@@ -39,37 +41,51 @@ public partial class MainWindow : Window
     // Using a DependencyProperty as the backing store for CurrentTime.  This enables animation, styling, binding, etc...
     public static readonly DependencyProperty CurrentTimeProperty =
     DependencyProperty.Register("CurrentTime", typeof(DateTime), typeof(MainWindow), new PropertyMetadata(DateTime.MinValue));
+    // Advances system clock by one minute.
+
     private void BtnAddOneMinute_Click(object sender, RoutedEventArgs e)
     {
         s_bl.Admin.ForwardClock(BO.Enums.TimeUnit.MINUTE);
     }
+    // Advances system clock by one hour.
 
     private void BtnAddOneHour_Click(object sender, RoutedEventArgs e)
     {
         s_bl.Admin.ForwardClock(BO.Enums.TimeUnit.HOUR);
     }
+    // Advances system clock by one month.
+
     private void BtnAddOneMonth_Click(object sender, RoutedEventArgs e)
     {
         s_bl.Admin.ForwardClock(BO.Enums.TimeUnit.MONTH);
     }
+    // Advances system clock by one year.
+
     private void BtnAddOneYear_Click(object sender, RoutedEventArgs e)
     {
         s_bl.Admin.ForwardClock(BO.Enums.TimeUnit.YEAR);
     }
+    // Advances system clock by one day.
+
     private void BtnAddOneDay_Click(object sender, RoutedEventArgs e)
     {
         s_bl.Admin.ForwardClock(BO.Enums.TimeUnit.DAY);
     }
+    // Updates the risk range configuration in the system.
+
     private void BtnUpdateRiskRange_Click(object sender, RoutedEventArgs e)
     {
         
         s_bl.Admin.SetMaxRange(RiskRange);
     }
+    // Updates UI to reflect the current system clock time.
 
     private void ClockObserver()
     {
         Dispatcher.Invoke(() => CurrentTime = s_bl.Admin.GetClock());
     }
+    // Updates UI to reflect the current risk range configuration.
+
     private void ConfigObserver()
     {
         Dispatcher.Invoke(() => RiskRange = s_bl.Admin.GetMaxRange());
@@ -84,6 +100,8 @@ public partial class MainWindow : Window
     // Using a DependencyProperty as the backing store for RiskRange.  This enables animation, styling, binding, etc...
     public static readonly DependencyProperty RiskRangeProperty =
     DependencyProperty.Register("RiskRange", typeof(TimeSpan), typeof(MainWindow), new PropertyMetadata(TimeSpan.Zero));
+    // Initializes UI with current clock and config values, and registers observers.
+
     private void MainWindow_Loaded(object sender, RoutedEventArgs e)
     {
         
@@ -92,12 +110,15 @@ public partial class MainWindow : Window
         s_bl.Admin.AddConfigObserver(ConfigObserver);
         s_bl.Admin.AddClockObserver(ClockObserver);
     }
-   
+    // Unregisters observers when the window closes.
+
     private void MainWindow_Closed(object sender, EventArgs e)
     {
         s_bl.Admin.RemoveClockObserver(ClockObserver);
         s_bl.Admin.RemoveConfigObserver(ConfigObserver);
     }
+    // Opens the volunteer list window if not already open.
+
     private void HandleVolunteer_Click(object sender, RoutedEventArgs e)
     {
         if (volunteerWindow == null || !volunteerWindow.IsLoaded)
@@ -115,6 +136,7 @@ public partial class MainWindow : Window
 
 
 
+    // Opens the call list window if not already open.
 
     private void HandleCall_click(object sender, RoutedEventArgs e)
     {
@@ -132,8 +154,10 @@ public partial class MainWindow : Window
     }
     private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
     {
-        // כרגע היא ריקה - תוסיפי פה קוד אם צריך
+        
     }
+    // Resets the database after user confirmation, closing other windows and showing progress.
+
     private void BtnResetDB(object sender, RoutedEventArgs e)
     {
         MessageBoxResult result = MessageBox.Show(
@@ -177,6 +201,8 @@ public partial class MainWindow : Window
             Mouse.OverrideCursor = null;
         }
     }
+    // Initializes the database after user confirmation, closing other windows and showing progress.
+
     private void BtnInitializeDB(object sender, RoutedEventArgs e)
     {
         MessageBoxResult result = MessageBox.Show(

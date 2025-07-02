@@ -19,6 +19,8 @@ namespace PL
     /// <summary>
     /// Interaction logic for VolunteerMainWindow.xaml
     /// </summary>
+    ///  // Initialize window and set up volunteer's current call assignment status.
+    // Sets UI flags based on whether the volunteer has an existing assignment.
     public partial class VolunteerMainWindow : Window
     {
 
@@ -115,11 +117,13 @@ namespace PL
             Console.WriteLine(CurrentVolunteer);
             //LoadMap();
         }
+        // Opens a window to update the current volunteer's details.
 
         private void Update_btn(object sender, RoutedEventArgs e)
         {
             new VolunteerWindow(CurrentVolunteer.Id, "VolunteerMainWindow").Show();
         }
+        // Opens the call history window for the current volunteer.
 
         private void GoToCallHistoryPage_Btn(object sender, RoutedEventArgs e)
         {
@@ -128,14 +132,16 @@ namespace PL
         }
 
 
-
+        // Opens a window allowing the volunteer to choose a call to treat.
+        // Registers a callback for when that window closes.
         private void chooseCall_Click(object sender, RoutedEventArgs e)
         {
             var chooseCallWindow = new ChooseCallToTreatWindow(CurrentVolunteer);
             chooseCallWindow.Closed += ChooseCallWindow_Closed;
             chooseCallWindow.Show();
         }
-
+        // Refreshes the current assignment status when the call selection window closes.
+        // Updates UI flags accordingly.
         private void ChooseCallWindow_Closed(object sender, EventArgs e)
         {
             var call = s_bl.Volunteer.checkIfExistingAssignment(CurrentVolunteer);
@@ -151,6 +157,8 @@ namespace PL
                 IsChooseCallAble = false;
             }
         }
+        // Completes the current call assignment and updates UI state.
+        // Handles any exceptions by showing an error message.
         private void EndTreatment_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -167,7 +175,8 @@ namespace PL
                 MessageBox.Show("שגיאה בסיום הטיפול: " + ex.Message);
             }
         }
-
+        // Cancels the current call assignment and updates UI state.
+        // Handles any exceptions by showing an error message.
         private void CancelTreatment_Click(object sender, RoutedEventArgs e)
         {
             try

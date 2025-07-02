@@ -94,22 +94,28 @@ namespace PL.Call
                 window.Description = selectedCall.Description ?? "";
             }
         }
+        // Constructor: initializes the window and loads open calls for the volunteer
+
         public ChooseCallToTreatWindow(BO.Volunteer volunteer)
         {
             Volunteer = volunteer;
             OpenCalls = s_bl.Call.GetOpenCallsForVolunteer(Volunteer.Id).ToList();
             InitializeComponent();
         }
+        // Adds observer to the open calls list when window is loaded
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         => s_bl.Call.AddObserver(CallsListObserver);
 
+        // Removes observer when window is closed
 
         private void Window_Closed(object sender, EventArgs e)
             => s_bl.Call.RemoveObserver(CallsListObserver);
 
+        // Observer callback that triggers call list update
 
         public void CallsListObserver() => QueryOpenCall();
+        // Filters the open calls based on the selected search criteria
 
         public void QueryOpenCall()
         {
@@ -127,12 +133,15 @@ namespace PL.Call
                 MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
+        // Updates the open calls list when the filter option changes
+
         private void FilterOpenCalls(object sender, SelectionChangedEventArgs e)
         {
             OpenCalls = (FilterField == BO.Enums.OpenCallInListFields.None) ?
                 s_bl.Call.GetOpenCallsForVolunteer(Volunteer.Id).ToList() :
                 s_bl.Call.GetOpenCallsForVolunteer(Volunteer.Id).ToList();
         }
+        // Assigns the selected call to the volunteer and closes the window
 
         private void AssignCall_Click(object sender, RoutedEventArgs e)
         {
@@ -146,6 +155,7 @@ namespace PL.Call
                 MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
+        // Updates the description when a new call is selected
 
         private void OpenCallsDataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -156,11 +166,14 @@ namespace PL.Call
                 //InitializeAsync();
             }
         }
+        // Clears the filters and reloads the open calls list
 
         private void ClearButton_Click(object sender, RoutedEventArgs e)
 => OpenCalls = s_bl?.Call.GetOpenCallsForVolunteer(Volunteer.Id).ToList()!;
+        // Performs a search based on the selected criteria
 
         private void SearchButton_Click(object sender, RoutedEventArgs e) => QueryOpenCall();
+        // Sorts the open calls based on the selected sort option
 
         private void SortButton_Click(object sender, RoutedEventArgs e)
         => OpenCalls = s_bl.Call.SortOpenCalls(Volunteer.Id, SelectedSortOption).ToList();
