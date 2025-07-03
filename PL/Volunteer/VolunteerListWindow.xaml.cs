@@ -73,6 +73,8 @@ public partial class VolunteerListWindow : Window
 
         }
     }
+    // Queries and updates the volunteer list according to the current filter.
+
     private void queryVolunteerList()
     => VolunteerList = (Filter == BO.Enums.VolunteerSortField.NONE) ?
         s_bl?.Volunteer.GetVolunteersList(null,null)! : s_bl?.Volunteer.GetVolunteersList(null, Filter)!;

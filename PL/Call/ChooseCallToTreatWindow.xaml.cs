@@ -133,6 +133,7 @@ namespace PL.Call
             => s_bl.Call.RemoveObserver(CallsListObserver);
 
         private volatile DispatcherOperation? _observerOperation = null; //stage 7
+        // Observer callback that triggers call list update
 
         public void CallsListObserver()
         {
