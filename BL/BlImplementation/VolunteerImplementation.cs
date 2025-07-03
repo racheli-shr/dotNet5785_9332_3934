@@ -1,11 +1,12 @@
 ﻿using BL.Helpers;
 using BLApi;
 using BO;
+using DalApi;
 using DO;
 using Helpers;
 using static DO.Exceptions;
 namespace BLImplementation;
-internal class VolunteerImplementation : IVolunteer
+internal class VolunteerImplementation : BLApi.IVolunteer
 {
     private readonly DalApi.IDal _dal = DalApi.Factory.Get;
 
@@ -37,7 +38,7 @@ internal class VolunteerImplementation : IVolunteer
         // חישוב קואורדינטות מחוץ ל-lock
 
         bool didCreate = false;
-
+        var (latitude, longitude) = Tools.GetCoordinates(newVolunteer.FullAddress!);
         // נעילה רק על הפניות ל-DAL
         lock (AdminManager.BlMutex)
         {
@@ -56,8 +57,8 @@ internal class VolunteerImplementation : IVolunteer
                 DistanceType: (DO.Enums.DistanceType)newVolunteer.DistanceType,
                 Password: encryptedPassword,
                 FullAdress: newVolunteer.FullAddress,
-                Latitude: null,
-                longtitude: null,
+                Latitude: latitude,
+                longtitude: longitude,
                 MaxDistance: newVolunteer.MaxDistance
             );
 
@@ -78,7 +79,6 @@ internal class VolunteerImplementation : IVolunteer
             VolunteerManager.Observers.NotifyListUpdated();
         }
 
-        _ = VolunteerManager.updateCoordinatesForVolunteerAddressAsync(newVolunteer.Id, newVolunteer.FullAddress!);
 
 
         Console.WriteLine($"Generated password for {newVolunteer.FullName}: {generatedPassword}");
@@ -358,7 +358,7 @@ internal class VolunteerImplementation : IVolunteer
             throw new BO.Exceptions.BLInvalidDataException("מספר טלפון לא תקין.");
 
         bool notifyItem = false, notifyList = false, notifyCallList = false;
-
+        var (latitude, longitude) = Tools.GetCoordinates(dovolunteer.FullAdress!);
         lock (AdminManager.BlMutex)
         {
             try
@@ -387,8 +387,8 @@ internal class VolunteerImplementation : IVolunteer
                     IsActive: updatedVolunteer.IsActive,
                     Password: _dal.Volunteer.EncryptPassword(updatedVolunteer.Password),
                     FullAdress: updatedVolunteer.FullAddress,
-                    Latitude: null,         // לא מחשב כאן – מחשב אח"כ
-                    longtitude: null,
+                    Latitude: latitude,         // לא מחשב כאן – מחשב אח"כ
+                    longtitude: longitude,
                     MaxDistance: updatedVolunteer.MaxDistance,
                     DistanceType: (DO.Enums.DistanceType)updatedVolunteer.DistanceType
                 );
@@ -405,9 +405,7 @@ internal class VolunteerImplementation : IVolunteer
             }
         }
 
-        // מזמן את המשימה ברקע מבלי להמתין לה:
-        _ = VolunteerManager.updateCoordinatesForVolunteerAddressAsync(updatedVolunteer.Id, updatedVolunteer.FullAddress!);
-
+        
         if (notifyItem)
             VolunteerManager.Observers.NotifyItemUpdated(dovolunteer.Id);
         if (notifyList)

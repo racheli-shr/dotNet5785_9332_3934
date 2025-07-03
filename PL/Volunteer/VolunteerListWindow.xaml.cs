@@ -27,9 +27,15 @@ public partial class VolunteerListWindow : Window
     public VolunteerListWindow(BO.Volunteer vol)
     {
         InitializeComponent();
+        try { 
         Manager = vol;
         VolunteerList = (Filter == BO.Enums.VolunteerSortField.NONE) ?
         s_bl?.Volunteer.GetVolunteersList(null, null)! : s_bl?.Volunteer.GetVolunteersList(null, Filter)!;
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(ex.Message);
+        }
     }
     public IEnumerable<BO.VolunteerInList> VolunteerList
     {
@@ -60,17 +66,32 @@ public partial class VolunteerListWindow : Window
 
     private void Sort_By(object sender, SelectionChangedEventArgs e)
     {
-        VolunteerList = (Filter == BO.Enums.VolunteerSortField.NONE) ?s_bl?.Volunteer.GetVolunteersList(null,null)! : s_bl?.Volunteer.GetVolunteersList(null,Filter)!;
+        try
+        {
+            VolunteerList = (Filter == BO.Enums.VolunteerSortField.NONE) ?s_bl?.Volunteer.GetVolunteersList(null,null)! : s_bl?.Volunteer.GetVolunteersList(null,Filter)!;
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(ex.Message);
+        }
     }
     // Queries and updates the volunteer list according to the current filter.
 
-        
-    
+
+
     // Queries and updates the volunteer list according to the current filter.
 
     private void queryVolunteerList()
-          =>VolunteerList = (Filter == BO.Enums.VolunteerSortField.NONE) ?s_bl?.Volunteer.GetVolunteersList(null, null)! : s_bl?.Volunteer.GetVolunteersList(null, Filter)!;
-
+    {
+        try
+        {
+            VolunteerList = (Filter == BO.Enums.VolunteerSortField.NONE) ? s_bl?.Volunteer.GetVolunteersList(null, null)! : s_bl?.Volunteer.GetVolunteersList(null, Filter)!;
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(ex.Message);
+        }
+    }
    
     
     private volatile DispatcherOperation? _observerOperation = null; //stage 7
@@ -78,27 +99,44 @@ public partial class VolunteerListWindow : Window
 
     private void volunteerListObserver()
     {
-        if (_observerOperation is null || _observerOperation.Status == DispatcherOperationStatus.Completed)
+        try
+        {
+            if (_observerOperation is null || _observerOperation.Status == DispatcherOperationStatus.Completed)
             _observerOperation = Dispatcher.BeginInvoke(() =>
             {
                 queryVolunteerList();
             });
-
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(ex.Message);
+        }
     }
 
 
     private void VolunteerListWindow_Closed(object sender, EventArgs e)
     {
-
-        s_bl.Volunteer.RemoveObserver(volunteerListObserver);
-
+        try
+        {
+            s_bl.Volunteer.RemoveObserver(volunteerListObserver);
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(ex.Message);
+        }
     }
     // Adds the volunteer list observer when the window is loaded.
 
     private void VolunteerListWindow_Loaded(object sender, RoutedEventArgs e)
     {
-        s_bl.Volunteer.AddObserver(volunteerListObserver);
-
+        try
+        {
+            s_bl.Volunteer.AddObserver(volunteerListObserver);
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(ex.Message);
+        }
 
     }
 

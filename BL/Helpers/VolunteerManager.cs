@@ -86,28 +86,7 @@ internal static class VolunteerManager
 
         return Regex.IsMatch(name, pattern);
     }
-    public static async Task updateCoordinatesForVolunteerAddressAsync(int volunteerId, string address)
-    {
-        if (!string.IsNullOrWhiteSpace(address))
-        {
-            var (latitude, longitude) = await Tools.GetCoordinatesFromAddressAsync(address);
-            if (latitude != null && longitude != null)
-            {
-                DO.Call existingCall;
-                lock (AdminManager.BlMutex)
-                    existingCall = v_dal.Call.Read(volunteerId);
-
-                existingCall = existingCall with { Latitude = latitude, longtitude = longitude };
-
-                lock (AdminManager.BlMutex)
-                    v_dal.Call.Update(existingCall);
-
-                CallManager.Observers.NotifyListUpdated();
-                CallManager.Observers.NotifyItemUpdated(volunteerId);
-            }
-        }
-    }
-
+    
     public static DO.Volunteer ConvertBOToDO(BO.Volunteer input) =>
         new DO.Volunteer
         {

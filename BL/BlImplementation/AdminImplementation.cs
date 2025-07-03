@@ -115,6 +115,17 @@ internal class AdminImplementation : IAdmin
         AdminManager.ThrowOnSimulatorIsRunning();  //stage 7
         AdminManager.ConfigUpdatedObservers -= configObserver;
     }
+
+    public void AddRiskObserver(Action configObserver)
+    {
+        AdminManager.ThrowOnSimulatorIsRunning();  //stage 7
+        AdminManager.ConfigUpdatedObservers += configObserver;
+    }
+    public void RemoveRiskObserver(Action configObserver)
+    {
+        AdminManager.ThrowOnSimulatorIsRunning();  //stage 7
+        AdminManager.ConfigUpdatedObservers -= configObserver;
+    }
     #endregion Stage 5
 
 }

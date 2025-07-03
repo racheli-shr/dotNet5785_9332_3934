@@ -27,11 +27,10 @@ namespace PL.Volunteer
         public string password { get; set; } = "";
         public bool IsTextBoxEnabled { set; get; }
         public bool IsActiveEnabled { set; get; }
-        
+
         public int sender_Id = 0;
-        //public string CameFromWindow;
         public bool isAbleToChange = false;
-        
+
         public BO.Enums.Role Role { get; set; } = BO.Enums.Role.NONE;
         public BO.Enums.DistanceType distanceType { get; set; } = BO.Enums.DistanceType.airDistance;
 
@@ -63,25 +62,32 @@ namespace PL.Volunteer
         {
 
             InitializeComponent();
-            if (CameFromWindow == "VolunteerListWindow")
+            try
             {
-                isAbleToChange = true;
+                if (CameFromWindow == "VolunteerListWindow")
+                {
+                    isAbleToChange = true;
+                }
+                //CameFromWindow = window;
+                IsTextBoxEnabled = id != 0 ? true : false;
+                sender_Id = id;
+                ButtonText = id == 0 ? "Add" : "Update";
+                CurrentVolunteer = (id != 0) ? s_bl.Volunteer.Read(id)! : new BO.Volunteer() { Id = 0 };
+                var call = s_bl.Volunteer.checkIfExistingAssignment(CurrentVolunteer);
+                IsActiveEnabled = call != null ? true : false;
+                VolunteerId = id == 0 ? 0 : id;
             }
-            //CameFromWindow = window;
-            IsTextBoxEnabled = id != 0 ? true : false;
-            sender_Id = id;
-            ButtonText = id == 0 ? "Add" : "Update";
-            CurrentVolunteer = (id != 0) ? s_bl.Volunteer.Read(id)! : new BO.Volunteer() { Id = 0 };
-            var call = s_bl.Volunteer.checkIfExistingAssignment(CurrentVolunteer);
-            IsActiveEnabled = call != null ? true : false;
-            VolunteerId = id == 0 ? 0 : id;
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
 
         private void AddUpdate_btn(object sender, RoutedEventArgs e)
         {
             try
             {
-                Console.WriteLine(  CurrentVolunteer.Password);
+                Console.WriteLine(CurrentVolunteer.Password);
                 if (ButtonText == "Add")
                 {
                     //status_message = "Adding...";
@@ -132,29 +138,59 @@ namespace PL.Volunteer
 
         private void queryVolunteerWindow()
         {
-            CurrentVolunteer = s_bl.Volunteer.Read(VolunteerId)!;
+            try
+            {
+                CurrentVolunteer = s_bl.Volunteer.Read(VolunteerId)!;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
 
         private volatile DispatcherOperation? _observerOperation = null; //stage 7
 
         private void VolunteerWindowObserver()
         {
-            if (_observerOperation is null || _observerOperation.Status == DispatcherOperationStatus.Completed)
-                _observerOperation = Dispatcher.BeginInvoke(() =>
-                {
-                    queryVolunteerWindow();
-                });
-
+            try
+            {
+                if (_observerOperation is null || _observerOperation.Status == DispatcherOperationStatus.Completed)
+                    _observerOperation = Dispatcher.BeginInvoke(() =>
+                    {
+                        queryVolunteerWindow();
+                    });
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
+
+
         {
-            s_bl.Call.AddObserver(VolunteerWindowObserver);
+            try
+            {
+                s_bl.Call.AddObserver(VolunteerWindowObserver);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
 
         private void Window_Closed(object sender, EventArgs e)
         {
-            s_bl.Call.RemoveObserver(VolunteerWindowObserver);
+            try
+            {
+                s_bl.Call.RemoveObserver(VolunteerWindowObserver);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+
         }
 
 

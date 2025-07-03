@@ -61,7 +61,8 @@ public class Enums
         InProgressAtRisk,   // Call in progress and approaching risk
         Expired,            // Call expired and was canceled
         Closed,             // Call has been successfully closed
-        Open                
+        Open     ,
+        
     }
 
     public enum FinishType

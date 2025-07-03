@@ -26,7 +26,8 @@ namespace PL.Call
         public int CallId { get; set; } = 0;
         public CallWindow(int id)
         {
-            
+            try
+            {
                 ButtonText = id == 0 ? "Add" : "Update";
 
                 if (id != 0)
@@ -78,8 +79,12 @@ namespace PL.Call
 
             InitializeComponent();
 
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
 
-            
         }
         public BO.Enums.CallType callType { get; set; } = BO.Enums.CallType.NONE;
 
@@ -184,28 +189,57 @@ namespace PL.Call
 
         private void queryCallWindow()
         {
-            CurrentCall = s_bl.Call.Read(CallId)!;
+            try
+            {
+                CurrentCall = s_bl.Call.Read(CallId)!;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
         private volatile DispatcherOperation? _observerOperation = null; //stage 7
 
         private void CallWindowObserver()
         {
-            if (_observerOperation is null || _observerOperation.Status == DispatcherOperationStatus.Completed)
+            try
+            {
+                if (_observerOperation is null || _observerOperation.Status == DispatcherOperationStatus.Completed)
                 _observerOperation = Dispatcher.BeginInvoke(() =>
                 {
                     queryCallWindow();
                 });
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
 
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            s_bl.Call.AddObserver(CallWindowObserver);
+
+            try
+            {
+                s_bl.Call.AddObserver(CallWindowObserver);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
 
         private void Window_Closed(object sender, EventArgs e)
         {
-            s_bl.Call.RemoveObserver(CallWindowObserver);
+                try
+                {
+                    s_bl.Call.RemoveObserver(CallWindowObserver);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
     }
 }

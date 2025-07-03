@@ -21,10 +21,10 @@ namespace PL;
 public partial class MainWindow : Window
 {
     static readonly BlApi.IBl s_bl = BlApi.Factory.Get();
-    public BO.Enums.Role Role { get;  set; }
+    public BO.Enums.Role Role { get; set; }
     private VolunteerListWindow volunteerWindow;
     private CallListWindow callWindow;
-   
+
     public DateTime CurrentTime
     {
         get { return (DateTime)GetValue(CurrentTimeProperty); }
@@ -98,71 +98,164 @@ public partial class MainWindow : Window
     public MainWindow(BO.Enums.Role r, BO.Volunteer vol)
     {
         InitializeComponent();
+        try
+        {
+            CallStatusSummaries = s_bl.Call.GetCallStatusSummaries();
+
+        }
+        catch (Exception ex) { MessageBox.Show(ex.Message); }
+
         Role = r;
         volunteer = vol;
     }
 
     private void BtnAddOneMinute_Click(object sender, RoutedEventArgs e)
     {
-        s_bl.Admin.ForwardClock(BO.Enums.TimeUnit.MINUTE);
+        try
+        {
+            s_bl.Admin.ForwardClock(BO.Enums.TimeUnit.MINUTE);
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(ex.Message);
+        }
     }
     // Advances system clock by one hour.
 
     private void BtnAddOneHour_Click(object sender, RoutedEventArgs e)
     {
-        s_bl.Admin.ForwardClock(BO.Enums.TimeUnit.HOUR);
+        try
+        {
+            s_bl.Admin.ForwardClock(BO.Enums.TimeUnit.HOUR);
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(ex.Message);
+        }
     }
     // Advances system clock by one month.
 
     private void BtnAddOneMonth_Click(object sender, RoutedEventArgs e)
     {
-        s_bl.Admin.ForwardClock(BO.Enums.TimeUnit.MONTH);
+        try
+        {
+            s_bl.Admin.ForwardClock(BO.Enums.TimeUnit.MONTH);
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(ex.Message);
+        }
     }
     // Advances system clock by one year.
 
     private void BtnAddOneYear_Click(object sender, RoutedEventArgs e)
     {
-        s_bl.Admin.ForwardClock(BO.Enums.TimeUnit.YEAR);
+        try
+        {
+            s_bl.Admin.ForwardClock(BO.Enums.TimeUnit.YEAR);
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(ex.Message);
+        }
     }
     // Advances system clock by one day.
 
     private void BtnAddOneDay_Click(object sender, RoutedEventArgs e)
     {
-        s_bl.Admin.ForwardClock(BO.Enums.TimeUnit.DAY);
+        try
+        {
+            s_bl.Admin.ForwardClock(BO.Enums.TimeUnit.DAY);
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(ex.Message);
+        }
     }
     // Updates the risk range configuration in the system.
 
     private void BtnUpdateRiskRange_Click(object sender, RoutedEventArgs e)
     {
-        
-        s_bl.Admin.SetMaxRange(RiskRange);
+
+        try
+        {
+            s_bl.Admin.SetMaxRange(RiskRange);
+
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(ex.Message);
+        }
     }
     // Updates UI to reflect the current system clock time.
 
     private volatile DispatcherOperation? _observerOperation = null; //stage 7
+    private void updateSummaryCallsObserver()
+    {
+        try
+        {
+            if (_observerOperation is null || _observerOperation.Status == DispatcherOperationStatus.Completed)
+                _observerOperation = Dispatcher.BeginInvoke(() =>
+                {
+                    CallStatusSummaries = s_bl.Call.GetCallStatusSummaries();
+                });
+        }
+        catch (Exception ex) { MessageBox.Show(ex.Message); }
+    }
+
+    private void updateRiskRangeObserver()
+    {
+        try
+        {
+            if (_observerOperation is null || _observerOperation.Status == DispatcherOperationStatus.Completed)
+                _observerOperation = Dispatcher.BeginInvoke(() =>
+                {
+                    s_bl.Admin.SetMaxRange(RiskRange);
+                });
+        }
+        catch (Exception ex) { MessageBox.Show(ex.Message); }
+    }
 
     private void ClockObserver()
     {
-        
+        try
+        {
 
-        if (_observerOperation is null || _observerOperation.Status == DispatcherOperationStatus.Completed)
-            _observerOperation = Dispatcher.BeginInvoke(() =>
-            {
-                CurrentTime = s_bl.Admin.GetClock();
-            });
-
+            if (_observerOperation is null || _observerOperation.Status == DispatcherOperationStatus.Completed)
+                _observerOperation = Dispatcher.BeginInvoke(() =>
+                {
+                    CurrentTime = s_bl.Admin.GetClock();
+                });
+        }
+        catch (Exception ex) { MessageBox.Show(ex.Message); }
     }
     // Updates UI to reflect the current risk range configuration.
 
     private void ConfigObserver()
     {
-        if (_observerOperation is null || _observerOperation.Status == DispatcherOperationStatus.Completed)
-            _observerOperation = Dispatcher.BeginInvoke(() =>
-            {
-                CurrentTime = s_bl.Admin.GetClock();
-            });
+        try
+        {
+
+            if (_observerOperation is null || _observerOperation.Status == DispatcherOperationStatus.Completed)
+                _observerOperation = Dispatcher.BeginInvoke(() =>
+                {
+                    CurrentTime = s_bl.Admin.GetClock();
+                });
+        }
+        catch (Exception ex) { MessageBox.Show(ex.Message); }
 
     }
+    public object CallStatusSummaries
+    {
+        get { return (object)GetValue(CallStatusSummariesProperty); }
+        set { SetValue(CallStatusSummariesProperty, value); }
+    }
+
+    // Using a DependencyProperty as the backing store for CallStatusSummaries.  This enables animation, styling, binding, etc...
+    public static readonly DependencyProperty CallStatusSummariesProperty =
+        DependencyProperty.Register("CallStatusSummaries", typeof(object), typeof(MainWindow), new PropertyMetadata(null));
+
+
 
     public TimeSpan RiskRange
     {
@@ -177,18 +270,40 @@ public partial class MainWindow : Window
 
     private void MainWindow_Loaded(object sender, RoutedEventArgs e)
     {
-        
-        CurrentTime = s_bl.Admin.GetClock();
-        RiskRange = s_bl.Admin.GetMaxRange();
-        s_bl.Admin.AddConfigObserver(ConfigObserver);
-        s_bl.Admin.AddClockObserver(ClockObserver);
+        try
+        {
+            CurrentTime = s_bl.Admin.GetClock();
+            RiskRange = s_bl.Admin.GetMaxRange();
+
+            s_bl.Admin.AddConfigObserver(ConfigObserver);
+            s_bl.Admin.AddClockObserver(ClockObserver);
+            s_bl.Call.AddObserver(updateSummaryCallsObserver);
+            s_bl.Admin.AddRiskObserver(updateRiskRangeObserver);
+            s_bl.Admin.AddRiskObserver(updateSummaryCallsObserver);
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(ex.Message);
+        }
+
     }
     // Unregisters observers when the window closes.
 
     private void MainWindow_Closed(object sender, EventArgs e)
     {
-        s_bl.Admin.RemoveClockObserver(ClockObserver);
-        s_bl.Admin.RemoveConfigObserver(ConfigObserver);
+        try
+        {
+            s_bl.Admin.RemoveClockObserver(ClockObserver);
+            s_bl.Admin.RemoveConfigObserver(ConfigObserver);
+            s_bl.Call.RemoveObserver(updateSummaryCallsObserver);
+            s_bl.Admin.RemoveRiskObserver(updateRiskRangeObserver);
+            s_bl.Admin.RemoveRiskObserver(updateSummaryCallsObserver);
+
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(ex.Message);
+        }
     }
     // Opens the volunteer list window if not already open.
 
@@ -197,7 +312,7 @@ public partial class MainWindow : Window
         if (volunteerWindow == null || !volunteerWindow.IsLoaded)
         {
             volunteerWindow = new VolunteerListWindow(volunteer);
-            volunteerWindow.Owner = this; 
+            volunteerWindow.Owner = this;
             volunteerWindow.Closed += (s, args) => volunteerWindow = null;
             volunteerWindow.Show();
         }
@@ -215,10 +330,14 @@ public partial class MainWindow : Window
     {
         if (callWindow == null || !callWindow.IsLoaded)
         {
-            callWindow = new CallListWindow();
-            callWindow.Owner = this;
-            callWindow.Closed += (s, args) => callWindow = null;
-            callWindow.Show();
+            try
+            {
+                callWindow = new CallListWindow();
+                callWindow.Owner = this;
+                callWindow.Closed += (s, args) => callWindow = null;
+                callWindow.Show();
+            }
+            catch (Exception ex) { MessageBox.Show(ex.ToString()); }
         }
         else
         {
@@ -227,7 +346,7 @@ public partial class MainWindow : Window
     }
     private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
     {
-        
+
     }
     // Resets the database after user confirmation, closing other windows and showing progress.
 
@@ -324,22 +443,35 @@ public partial class MainWindow : Window
     private void startOrStopSimulator(object sender, RoutedEventArgs e)
     {
         //אם הוא היה מכובה
-        if(SimulatorFlag==false)
+        if (SimulatorFlag == false)
         {
-            //הופך לדלוק
-            SimulatorFlag = true;
-            s_bl.Admin.StartSimulator(Interval); //stage 7
-            SimulatorButtonText = "Stop Simulator";
-            EnableToChange = false;
+            try
+            {
+                //הופך לדלוק
+                SimulatorFlag = true;
+                s_bl.Admin.StartSimulator(Interval); //stage 7
+                SimulatorButtonText = "Stop Simulator";
+                EnableToChange = false;
+            }
+            catch (Exception ex) { MessageBox.Show(ex.Message); }
+
         }
         else
         {
-            //הופך למכובה
-            SimulatorFlag = false;
-            s_bl.Admin.StopSimulator(); //stage 7
-            SimulatorButtonText = "Start Simulator";
-            EnableToChange = true;
+
+            try
+            {
+                //הופך למכובה
+                SimulatorFlag = false;
+                s_bl.Admin.StopSimulator(); //stage 7
+                SimulatorButtonText = "Start Simulator";
+                EnableToChange = true;
+            }
+            catch (Exception ex) { MessageBox.Show(ex.Message); }
         }
     }
+
+
+
 }
 

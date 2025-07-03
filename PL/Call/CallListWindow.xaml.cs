@@ -28,6 +28,7 @@ public partial class CallListWindow : Window
     public CallListWindow()
     {
         InitializeComponent();
+
     }
     public IEnumerable<BO.CallInList> CallList
     {
@@ -41,42 +42,75 @@ public partial class CallListWindow : Window
     private void CallType_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         Console.WriteLine(FilterByCallType);
-        CallList = (FilterByCallType == BO.Enums.CallType.NONE) ? s_bl?.Call.GetFilteredAndCallList(null, null)! : s_bl?.Call.GetFilteredAndCallList(Enums.CallInListFields.CallType, FilterByCallType)!;
-
+        try
+        {
+            CallList = (FilterByCallType == BO.Enums.CallType.NONE) ? s_bl?.Call.GetFilteredAndCallList(null, null)! : s_bl?.Call.GetFilteredAndCallList(Enums.CallInListFields.CallType, FilterByCallType)!;
+        }catch(Exception ex) { MessageBox.Show(ex.Message); }
     }
     private void queryCallList()
-    => CallList = (FilterByCallType == BO.Enums.CallType.NONE) ?
-        s_bl?.Call.GetFilteredAndCallList(null, null)! : s_bl?.Call.GetFilteredAndCallList(null, FilterByCallType)!;
-
+    {
+        try
+        {
+            CallList = (FilterByCallType == BO.Enums.CallType.NONE) ?
+            s_bl?.Call.GetFilteredAndCallList(null, null)! : s_bl?.Call.GetFilteredAndCallList(null, FilterByCallType)!;
+        }
+        catch(Exception ex) { MessageBox.Show(ex.Message); }
+    }
     private volatile DispatcherOperation? _observerOperation = null; //stage 7
 
     private void callListObserver()
     {
-        if (_observerOperation is null || _observerOperation.Status == DispatcherOperationStatus.Completed)
+        try
+        {
+            if (_observerOperation is null || _observerOperation.Status == DispatcherOperationStatus.Completed)
             _observerOperation = Dispatcher.BeginInvoke(() =>
             {
                 queryCallList();
             });
 
-
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(ex.Message);
+        }
     }
 
 
     private void CallListWindow_Closed(object sender, EventArgs e)
     {
-        s_bl.Call.RemoveObserver(callListObserver);
-
+        try
+        {
+            s_bl.Call.RemoveObserver(callListObserver);
+            s_bl.Admin.AddRiskObserver(callListObserver);
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(ex.Message);
+        }
     }
 
     private void CallListWindow_Loaded(object sender, RoutedEventArgs e)
     {
-        s_bl.Call.AddObserver(callListObserver);
+            try
+            {
+                s_bl.Call.AddObserver(callListObserver);
+                s_bl.Admin.AddRiskObserver(callListObserver);
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(ex.Message);
+        }
     }
 
 
     private void AddButton_Click(object sender, RoutedEventArgs e)
     {
+        try
+        {
         new CallWindow(0).Show();
+
+        }
+        catch(Exception ex) { MessageBox.Show(ex.Message); }
     }
 
 

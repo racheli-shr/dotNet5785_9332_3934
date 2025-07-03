@@ -52,14 +52,23 @@ namespace PL.Call
 
         public CallsHistoryWindow(BO.Volunteer v)
         {
-            InitializeComponent();
+            try
+            {
+                InitializeComponent();
             volunteer = v;
             ClosedCallInList = s_bl.Call.GetClosedCallsByVolunteer(v.Id, null).ToList();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
 
         private void FilterClosedCalls(object sender, SelectionChangedEventArgs e)
         {
-            if (volunteer != null)
+            try
+            {
+                if (volunteer != null)
             {
                 var allClosedCalls = s_bl.Call.GetClosedCallsByVolunteer(volunteer.Id, null);
 
@@ -67,35 +76,69 @@ namespace PL.Call
                     allClosedCalls.ToList() :
                     allClosedCalls.Where(c => c.FinishType == EndTreatmentType).ToList();
             }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
 
 
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            s_bl.Call.AddObserver(CallsHistoryWindowObserver);
+
+            try
+            {
+                s_bl.Call.AddObserver(CallsHistoryWindowObserver);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
 
         private void Window_Closed(object sender, EventArgs e)
         {
-            s_bl.Call.RemoveObserver(CallsHistoryWindowObserver);
+            try
+            {
+                s_bl.Call.RemoveObserver(CallsHistoryWindowObserver);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
 
         private void queryCallsHistoryWindow()
         {
-            ClosedCallInList = (EndTreatmentType == BO.Enums.TypeOfTreatmentTerm.NONE) ?
+            try
+            {
+                ClosedCallInList = (EndTreatmentType == BO.Enums.TypeOfTreatmentTerm.NONE) ?
                 s_bl.Call.GetClosedCallsByVolunteer(volunteer.Id, null).ToList() : s_bl.Call.GetClosedCallsByVolunteer(volunteer.Id, (closedCall) => closedCall.FinishType == EndTreatmentType).ToList()!;
+
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
         private volatile DispatcherOperation? _observerOperation = null; //stage 7
 
         private void CallsHistoryWindowObserver()
         {
-            if (_observerOperation is null || _observerOperation.Status == DispatcherOperationStatus.Completed)
+            try
+            {
+                if (_observerOperation is null || _observerOperation.Status == DispatcherOperationStatus.Completed)
                 _observerOperation = Dispatcher.BeginInvoke(() =>
                 {
                     queryCallsHistoryWindow();
                 });
-
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
 
 

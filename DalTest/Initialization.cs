@@ -2,7 +2,9 @@
 using DalApi;
 using DO;
 using System.Data;
+using System.Numerics;
 using System.Security.Principal;
+using static DO.Enums;
 using static DO.Exceptions;
 
 public static class Initialization
@@ -10,10 +12,10 @@ public static class Initialization
     //initialization of data
     private static IDal? s_dal;
     private static readonly Random s_rand = new();
-
-    
     private static void createVolunteer()
     {
+        s_dal.Volunteer!.Create(new(328183934, "Yael Bloch", "0534183542", "yaelbloch2023@gmail.com", s_dal!.Volunteer.EncryptPassword("Yael@2023") , "moshe zilberg 32", 31.762107245509604, 35.1859516513024, DO.Enums.Role.manager, true, 100, DO.Enums.DistanceType.driveDistance));
+        s_dal.Volunteer!.Create(new(321226227, "Lea Bloch", "0548440911", "lea@smileart.co.il", s_dal!.Volunteer.EncryptPassword("Yael@2023") , "moshe zilberg 30", 31.76146873975337, 35.18567807502385, DO.Enums.Role.volunteer, true, 100, DO.Enums.DistanceType.airDistance));
         int MIN_ID = 20000000;
         int MAX_ID = 40000000;
         int MIN_PHONE = 500000000;
@@ -34,8 +36,8 @@ public static class Initialization
             string fullAdress = $"{address[i].StringAddress}";
             double longtitude = address[i].Longitude;
             double latitude = address[i].Latitude;
-            DO.Enums.Role role = (i == 0 ? DO.Enums.Role.manager : DO.Enums.Role.volunteer);
-            bool isIative = (i % 2 == 0) ? false : true;
+            DO.Enums.Role role =  DO.Enums.Role.volunteer;
+            bool isIative =(i % 2 == 0) ? false : true;
             double maxDistance = i * i + 50;
             DO.Enums.DistanceType distanceType = (i % 2 == 0 ? DO.Enums.DistanceType.walkDistance : i % 3 == 0 ? DO.Enums.DistanceType.airDistance : DO.Enums.DistanceType.driveDistance);
             int Id;
@@ -75,23 +77,46 @@ public static class Initialization
             s_dal!.Call.Create(new(0, CallType, Description, FullAdress, Latitude, longtitude, OpeningCallTime, MaxTimeToEnd));
         }
     }
-    
+
     private static void createAssignment()
     {
-        List<Volunteer> VolList = s_dal.Volunteer.ReadAll().ToList();
-        int length = VolList.Count();
-        List<Call> CallList = s_dal.Call.ReadAll().ToList();
-        for (int i = 0; i < 10; i++)
-        {
+        // סינון רק מתנדבים פעילים
+        List<Volunteer> VolList = s_dal.Volunteer.ReadAll()
+            .Where(v => v.IsActive)
+            .ToList();
 
+        if (VolList.Count == 0)
+            throw new InvalidOperationException("No active volunteers available.");
+
+        List<Call> CallList = s_dal.Call.ReadAll().ToList();
+
+        for (int i = 0; i < 10 && i < CallList.Count; i++)
+        {
             int CallId = CallList[i].Id;
-            int VolunteerId = VolList[i%length].Id;
+
+            // הגרלת מתנדב פעיל
+            int VolunteerId = VolList[s_rand.Next(VolList.Count)].Id;
+
             DateTime EntryTimeForTreatment = s_dal!.Config.Clock;
-            DateTime? ActualTreatmentEndTime = s_dal!.Config.Clock.AddYears(1);
-            DO.Enums.AssignmentStatus assignmentStatus = CallId%4==0? DO.Enums.AssignmentStatus.TREATED:CallId%3==0? DO.Enums.AssignmentStatus.MANAGER_CANCELLED:CallId%2==0? DO.Enums.AssignmentStatus.SELF_CANCELLED:CallId%1==0?DO.Enums.AssignmentStatus.AssignedAndInProgress: DO.Enums.AssignmentStatus.EXPIRED;
-            s_dal!.Assignment.Create(new(0, CallId, VolunteerId, EntryTimeForTreatment, ActualTreatmentEndTime,assignmentStatus));
+            DateTime? ActualTreatmentEndTime = EntryTimeForTreatment.AddYears(1);
+
+            // קביעה דינמית של סטטוס
+            DO.Enums.AssignmentStatus assignmentStatus =
+                CallId % 4 == 0 ? DO.Enums.AssignmentStatus.TREATED :
+                CallId % 3 == 0 ? DO.Enums.AssignmentStatus.MANAGER_CANCELLED :
+                CallId % 2 == 0 ? DO.Enums.AssignmentStatus.SELF_CANCELLED :
+                DO.Enums.AssignmentStatus.AssignedAndInProgress;
+
+            s_dal!.Assignment.Create(new(
+                0,
+                CallId,
+                VolunteerId,
+                EntryTimeForTreatment,
+                ActualTreatmentEndTime,
+                assignmentStatus));
         }
     }
+
 
     public static int GetValidIsraeliID(int id)
     {

@@ -7,8 +7,8 @@
     <FullAdress>שדרות רוטשילד 16, תל אביב</FullAdress>
     <Latitude>32.062819</Latitude>
     <longtitude>34.774061</longtitude>
-    <OpeningCallTime>2025-07-03T12:12:46</OpeningCallTime>
-    <MaxTimeToEnd>2025-07-17T12:12:46</MaxTimeToEnd>
+    <OpeningCallTime>2025-07-03T16:47:19</OpeningCallTime>
+    <MaxTimeToEnd>2025-07-17T16:47:19</MaxTimeToEnd>
   </Call>
   <Call>
     <Id>1001</Id>
@@ -17,8 +17,8 @@
     <FullAdress>בן גוריון 22, רמת גן</FullAdress>
     <Latitude>32.084027</Latitude>
     <longtitude>34.812335</longtitude>
-    <OpeningCallTime>2025-07-04T13:12:46</OpeningCallTime>
-    <MaxTimeToEnd>2025-07-18T12:12:46</MaxTimeToEnd>
+    <OpeningCallTime>2025-07-04T17:47:19</OpeningCallTime>
+    <MaxTimeToEnd>2025-07-18T16:47:19</MaxTimeToEnd>
   </Call>
   <Call>
     <Id>1002</Id>
@@ -27,8 +27,8 @@
     <FullAdress>דרך חיפה 101, חיפה</FullAdress>
     <Latitude>32.811834</Latitude>
     <longtitude>34.983419</longtitude>
-    <OpeningCallTime>2025-07-05T14:12:46</OpeningCallTime>
-    <MaxTimeToEnd>2025-07-19T12:12:46</MaxTimeToEnd>
+    <OpeningCallTime>2025-07-05T18:47:19</OpeningCallTime>
+    <MaxTimeToEnd>2025-07-19T16:47:19</MaxTimeToEnd>
   </Call>
   <Call>
     <Id>1003</Id>
@@ -37,8 +37,8 @@
     <FullAdress>ויצמן 19, כפר סבא</FullAdress>
     <Latitude>32.174547</Latitude>
     <longtitude>34.905562</longtitude>
-    <OpeningCallTime>2025-07-06T12:12:46</OpeningCallTime>
-    <MaxTimeToEnd>2025-07-20T12:12:46</MaxTimeToEnd>
+    <OpeningCallTime>2025-07-06T16:47:19</OpeningCallTime>
+    <MaxTimeToEnd>2025-07-20T16:47:19</MaxTimeToEnd>
   </Call>
   <Call>
     <Id>1004</Id>
@@ -47,8 +47,8 @@
     <FullAdress>שדרות הנשיא 15, חיפה</FullAdress>
     <Latitude>32.80246</Latitude>
     <longtitude>34.985614</longtitude>
-    <OpeningCallTime>2025-07-07T13:12:46</OpeningCallTime>
-    <MaxTimeToEnd>2025-07-21T12:12:46</MaxTimeToEnd>
+    <OpeningCallTime>2025-07-07T17:47:19</OpeningCallTime>
+    <MaxTimeToEnd>2025-07-21T16:47:19</MaxTimeToEnd>
   </Call>
   <Call>
     <Id>1005</Id>
@@ -57,8 +57,8 @@
     <FullAdress>הרצל 77, ראשון לציון</FullAdress>
     <Latitude>31.965539</Latitude>
     <longtitude>34.803267</longtitude>
-    <OpeningCallTime>2025-07-08T14:12:46</OpeningCallTime>
-    <MaxTimeToEnd>2025-07-22T12:12:46</MaxTimeToEnd>
+    <OpeningCallTime>2025-07-08T18:47:19</OpeningCallTime>
+    <MaxTimeToEnd>2025-07-22T16:47:19</MaxTimeToEnd>
   </Call>
   <Call>
     <Id>1006</Id>
@@ -67,8 +67,8 @@
     <FullAdress>דרך בגין 48, תל אביב</FullAdress>
     <Latitude>32.069509</Latitude>
     <longtitude>34.78337</longtitude>
-    <OpeningCallTime>2025-07-09T12:12:46</OpeningCallTime>
-    <MaxTimeToEnd>2025-07-23T12:12:46</MaxTimeToEnd>
+    <OpeningCallTime>2025-07-09T16:47:19</OpeningCallTime>
+    <MaxTimeToEnd>2025-07-23T16:47:19</MaxTimeToEnd>
   </Call>
   <Call>
     <Id>1007</Id>
@@ -77,8 +77,8 @@
     <FullAdress>שדרות ירושלים 45, יפו</FullAdress>
     <Latitude>32.051958</Latitude>
     <longtitude>34.758285</longtitude>
-    <OpeningCallTime>2025-07-10T13:12:46</OpeningCallTime>
-    <MaxTimeToEnd>2025-07-24T12:12:46</MaxTimeToEnd>
+    <OpeningCallTime>2025-07-10T17:47:19</OpeningCallTime>
+    <MaxTimeToEnd>2025-07-24T16:47:19</MaxTimeToEnd>
   </Call>
   <Call>
     <Id>1008</Id>
@@ -87,8 +87,8 @@
     <FullAdress>הרצל 60, חדרה</FullAdress>
     <Latitude>32.434046</Latitude>
     <longtitude>34.918386</longtitude>
-    <OpeningCallTime>2025-07-11T14:12:46</OpeningCallTime>
-    <MaxTimeToEnd>2025-07-25T12:12:46</MaxTimeToEnd>
+    <OpeningCallTime>2025-07-11T18:47:19</OpeningCallTime>
+    <MaxTimeToEnd>2025-07-25T16:47:19</MaxTimeToEnd>
   </Call>
   <Call>
     <Id>1009</Id>
@@ -97,8 +97,8 @@
     <FullAdress>אלנבי 99, תל אביב</FullAdress>
     <Latitude>34.769863</Latitude>
     <longtitude>32.068588</longtitude>
-    <OpeningCallTime>2025-07-12T12:12:46</OpeningCallTime>
-    <MaxTimeToEnd>2025-07-26T12:12:46</MaxTimeToEnd>
+    <OpeningCallTime>2025-07-12T16:47:19</OpeningCallTime>
+    <MaxTimeToEnd>2025-07-26T16:47:19</MaxTimeToEnd>
   </Call>
   <Call>
     <Id>1010</Id>
@@ -107,8 +107,8 @@
     <FullAdress>בלפור 14, בת ים</FullAdress>
     <Latitude>32.019664</Latitude>
     <longtitude>34.745525</longtitude>
-    <OpeningCallTime>2025-07-13T13:12:46</OpeningCallTime>
-    <MaxTimeToEnd>2025-07-27T12:12:46</MaxTimeToEnd>
+    <OpeningCallTime>2025-07-13T17:47:19</OpeningCallTime>
+    <MaxTimeToEnd>2025-07-27T16:47:19</MaxTimeToEnd>
   </Call>
   <Call>
     <Id>1011</Id>
@@ -117,8 +117,8 @@
     <FullAdress>ז'בוטינסקי 33, פתח תקווה</FullAdress>
     <Latitude>32.090468</Latitude>
     <longtitude>34.878975</longtitude>
-    <OpeningCallTime>2025-07-14T14:12:46</OpeningCallTime>
-    <MaxTimeToEnd>2025-07-28T12:12:46</MaxTimeToEnd>
+    <OpeningCallTime>2025-07-14T18:47:19</OpeningCallTime>
+    <MaxTimeToEnd>2025-07-28T16:47:19</MaxTimeToEnd>
   </Call>
   <Call>
     <Id>1012</Id>
@@ -127,8 +127,8 @@
     <FullAdress>הגליל 12, צפת</FullAdress>
     <Latitude>32.965678</Latitude>
     <longtitude>35.494012</longtitude>
-    <OpeningCallTime>2025-07-15T12:12:46</OpeningCallTime>
-    <MaxTimeToEnd>2025-07-29T12:12:46</MaxTimeToEnd>
+    <OpeningCallTime>2025-07-15T16:47:19</OpeningCallTime>
+    <MaxTimeToEnd>2025-07-29T16:47:19</MaxTimeToEnd>
   </Call>
   <Call>
     <Id>1013</Id>
@@ -137,8 +137,8 @@
     <FullAdress>השומר 10, תל אביב</FullAdress>
     <Latitude>32.068281</Latitude>
     <longtitude>34.770236</longtitude>
-    <OpeningCallTime>2025-07-16T13:12:46</OpeningCallTime>
-    <MaxTimeToEnd>2025-07-30T12:12:46</MaxTimeToEnd>
+    <OpeningCallTime>2025-07-16T17:47:19</OpeningCallTime>
+    <MaxTimeToEnd>2025-07-30T16:47:19</MaxTimeToEnd>
   </Call>
   <Call>
     <Id>1014</Id>
@@ -147,7 +147,17 @@
     <FullAdress>יגאל אלון 98, תל אביב</FullAdress>
     <Latitude>32.06981</Latitude>
     <longtitude>34.794895</longtitude>
-    <OpeningCallTime>2025-07-17T14:12:46</OpeningCallTime>
-    <MaxTimeToEnd>2025-07-31T12:12:46</MaxTimeToEnd>
+    <OpeningCallTime>2025-07-17T18:47:19</OpeningCallTime>
+    <MaxTimeToEnd>2025-07-31T16:47:19</MaxTimeToEnd>
+  </Call>
+  <Call>
+    <Id>1015</Id>
+    <CallType>salad</CallType>
+    <Description>jhvgjvg hdh dwhg hwe</Description>
+    <FullAdress>moshe zilberg 32</FullAdress>
+    <Latitude>31.7610773</Latitude>
+    <longtitude>35.1854477</longtitude>
+    <OpeningCallTime>0001-02-01T00:00:00</OpeningCallTime>
+    <MaxTimeToEnd>2025-07-31T16:47:19</MaxTimeToEnd>
   </Call>
 </ArrayOfCall>

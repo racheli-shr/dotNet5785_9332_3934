@@ -118,32 +118,63 @@ namespace PL.Call
 
         public ChooseCallToTreatWindow(BO.Volunteer volunteer)
         {
-            Volunteer = volunteer;
+            try
+            {
+                Volunteer = volunteer;
             OpenCalls = s_bl.Call.GetOpenCallsForVolunteer(Volunteer.Id).ToList();
             InitializeComponent();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
         // Adds observer to the open calls list when window is loaded
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
-        => s_bl.Call.AddObserver(CallsListObserver);
+        {
+            try
+            {
+                s_bl.Call.AddObserver(CallsListObserver);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
 
         // Removes observer when window is closed
 
         private void Window_Closed(object sender, EventArgs e)
-            => s_bl.Call.RemoveObserver(CallsListObserver);
+        {
+            try
+            {
+                s_bl.Call.RemoveObserver(CallsListObserver);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
 
         private volatile DispatcherOperation? _observerOperation = null; //stage 7
         // Observer callback that triggers call list update
 
         public void CallsListObserver()
         {
-            if (_observerOperation is null || _observerOperation.Status == DispatcherOperationStatus.Completed)
+            try
+            {
+                if (_observerOperation is null || _observerOperation.Status == DispatcherOperationStatus.Completed)
                 _observerOperation = Dispatcher.BeginInvoke(() =>
                 {
                     QueryOpenCall();
                 });
-        // Observer callback that triggers call list update
-
+                // Observer callback that triggers call list update
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
         
 
@@ -167,9 +198,16 @@ namespace PL.Call
 
         private void FilterOpenCalls(object sender, SelectionChangedEventArgs e)
         {
-            OpenCalls = (FilterField == BO.Enums.OpenCallInListFields.None) ?
+            try
+            {
+                OpenCalls = (FilterField == BO.Enums.OpenCallInListFields.None) ?
                 s_bl.Call.GetOpenCallsForVolunteer(Volunteer.Id).ToList() :
                 s_bl.Call.GetOpenCallsForVolunteer(Volunteer.Id).ToList();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
         // Assigns the selected call to the volunteer and closes the window
 
@@ -199,7 +237,16 @@ namespace PL.Call
         // Clears the filters and reloads the open calls list
 
         private void ClearButton_Click(object sender, RoutedEventArgs e)
-=> OpenCalls = s_bl?.Call.GetOpenCallsForVolunteer(Volunteer.Id).ToList()!;
+        {
+            try
+            {
+                OpenCalls = s_bl?.Call.GetOpenCallsForVolunteer(Volunteer.Id).ToList()!;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
         // Performs a search based on the selected criteria
         // Updates the open calls list when the filter option changes
 
@@ -207,7 +254,15 @@ namespace PL.Call
         // Sorts the open calls based on the selected sort option
 
         private void SortButton_Click(object sender, RoutedEventArgs e)
-        => OpenCalls = s_bl.Call.SortOpenCalls(Volunteer.Id, SelectedSortOption).ToList();
-
+        {
+            try
+            {
+                OpenCalls = s_bl.Call.SortOpenCalls(Volunteer.Id, SelectedSortOption).ToList();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
     }
 }

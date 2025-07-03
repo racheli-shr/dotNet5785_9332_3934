@@ -68,8 +68,6 @@ namespace PL
 
 
 
-
-
         public BO.Volunteer CurrentVolunteer
         {
             get { return (BO.Volunteer)GetValue(CurrentVolunteerProperty); }
@@ -86,21 +84,10 @@ namespace PL
         {
 
             InitializeComponent();
+            try
+            {
 
-            //MapBrowser.LoadCompleted += (s, e) =>
-            //{
-            //    dynamic activeX = MapBrowser.GetType().InvokeMember("ActiveXInstance",
-            //        System.Reflection.BindingFlags.GetProperty | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic,
-            //        null, MapBrowser, new object[] { });
-
-            //    if (activeX != null)
-            //    {
-            //        activeX.Silent = true; // מבטל הודעות שגיאה
-            //    }
-            //};
-
-
-            VolunteerCall = s_bl.Volunteer.checkIfExistingAssignment(v);
+                VolunteerCall = s_bl.Volunteer.checkIfExistingAssignment(v);
             if (VolunteerCall != null)
             {
                 IsAssignedCallAble = true;
@@ -115,7 +102,11 @@ namespace PL
             CurrentVolunteer = v;
             role = r;
             Console.WriteLine(CurrentVolunteer);
-            //LoadMap();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
         // Opens a window to update the current volunteer's details.
 
@@ -136,15 +127,29 @@ namespace PL
         // Registers a callback for when that window closes.
         private void chooseCall_Click(object sender, RoutedEventArgs e)
         {
-            var chooseCallWindow = new ChooseCallToTreatWindow(CurrentVolunteer);
-            chooseCallWindow.Closed += ChooseCallWindow_Closed;
-            chooseCallWindow.Show();
+            try
+            {
+                if (!CurrentVolunteer.IsActive)
+                {
+                    MessageBox.Show("can't assign volunteer to a not active volunteer");
+                    return;
+                }
+                var chooseCallWindow = new ChooseCallToTreatWindow(CurrentVolunteer);
+                chooseCallWindow.Closed += ChooseCallWindow_Closed;
+                chooseCallWindow.Show();
+            }
+            catch(Exception ex)
+            {
+                   MessageBox.Show("error choosing call"+ex.Message);
+            }
         }
         // Refreshes the current assignment status when the call selection window closes.
         // Updates UI flags accordingly.
         private void ChooseCallWindow_Closed(object sender, EventArgs e)
         {
-            var call = s_bl.Volunteer.checkIfExistingAssignment(CurrentVolunteer);
+            try
+            {
+                var call = s_bl.Volunteer.checkIfExistingAssignment(CurrentVolunteer);
             if (call != null)
             {
                 VolunteerCall = call;
@@ -155,6 +160,11 @@ namespace PL
             {
                 IsAssignedCallAble = false;
                 IsChooseCallAble = true;
+            }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
             }
         }
         // Completes the current call assignment and updates UI state.
@@ -197,30 +207,57 @@ namespace PL
 
         private void queryVolunteerMainWindow()
         {
-            CurrentVolunteer = s_bl.Volunteer.Read(VolunteerId)!;
+            try
+            {
+                CurrentVolunteer = s_bl.Volunteer.Read(VolunteerId)!;
             VolunteerCall= s_bl.Volunteer.checkIfExistingAssignment(CurrentVolunteer);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
 
         private volatile DispatcherOperation? _observerOperation = null; //stage 7
 
         private void VolunteerMainWindowObserver()
         {
-            if (_observerOperation is null || _observerOperation.Status == DispatcherOperationStatus.Completed)
+            try
+            {
+                if (_observerOperation is null || _observerOperation.Status == DispatcherOperationStatus.Completed)
                 _observerOperation = Dispatcher.BeginInvoke(() =>
                 {
                     queryVolunteerMainWindow();
                 });
-
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            s_bl.Call.AddObserver(VolunteerMainWindowObserver);
+            try
+            {
+                s_bl.Call.AddObserver(VolunteerMainWindowObserver);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
 
         private void Window_Closed(object sender, EventArgs e)
         {
-            s_bl.Call.RemoveObserver(VolunteerMainWindowObserver);
+                try
+                {
+                    s_bl.Call.RemoveObserver(VolunteerMainWindowObserver);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
 
     }

@@ -111,27 +111,13 @@ namespace BL.Helpers
 
         private const string BaseUrl = "https://maps.googleapis.com/maps/api/geocode/json";
         #region check address
-     
-        private class LocationIqResponse
-        {
-            [JsonPropertyName("lat")]
-            public string Latitude { get; set; }
-
-            [JsonPropertyName("lon")]
-            public string Longitude { get; set; }
-        }
-        // מפתח API עבור שליפת קואורדינטות
-        private static readonly HttpClient HttpClient = new HttpClient();
-
-
-        #region check address
         /// <summary>
         /// Retrieves the geographical coordinates (latitude and longitude) for a given address.
         /// </summary>
         /// <param name="address">The address to get the coordinates for.</param>
         /// <returns>A tuple containing the latitude and longitude of the address.</returns>
         /// <exception cref="BO.BlValidationException">Thrown when the address is invalid.</exception>
-        public static async Task<(double Latitude, double Longitude)> GetCoordinatesFromAddressAsync(string address)
+        public static (double Latitude, double Longitude) GetCoordinates(string address)
         {
             if (string.IsNullOrWhiteSpace(address))
             {
@@ -146,7 +132,7 @@ namespace BL.Helpers
                 {
                     string response = client.DownloadString(url);
 
-                    var result = JsonSerializer.Deserialize<LocationIqResponse[]>(response);
+                    var result = JsonSerializer.Deserialize<GeocodeResponse[]>(response);
 
                     if (result == null || result.Length == 0)
                     {
@@ -165,53 +151,20 @@ namespace BL.Helpers
             }
         }
 
-        //public static async Task<(double Latitude, double Longitude)> GetCoordinatesFromAddressAsync(string address)
-        //{
-        //    if (string.IsNullOrWhiteSpace(address))
-        //        throw new BO.Exceptions.BLInvalidDataException("הכתובת אינה תקינה.");
+        /// <summary>
+        /// Represents the structure of a geocoding response.
+        /// </summary>
+        private class GeocodeResponse
+        {
+            [JsonPropertyName("lat")]
+            public string Latitude { get; set; } // Latitude as string
 
-        //    string url = $"https://geocode.maps.co/search?q={Uri.EscapeDataString(address)}&api_key=...";
+            [JsonPropertyName("lon")]
+            public string Longitude { get; set; } // Longitude as string
 
-        //    try
-        //    {
-        //        HttpResponseMessage response = await HttpClient.GetAsync(url);
-        //        response.EnsureSuccessStatusCode();
-
-        //        string jsonResponse = await response.Content.ReadAsStringAsync();
-
-        //        var results = JsonSerializer.Deserialize<LocationIqResponse[]>(jsonResponse, new JsonSerializerOptions
-        //        {
-        //            PropertyNameCaseInsensitive = true
-        //        });
-
-        //        if (results == null || results.Length == 0)
-        //            throw new BO.Exceptions.BlDoesNotExistException("לא נמצאו קואורדינטות לכתובת זו.");
-
-        //        if (!double.TryParse(results[0].Latitude, out double latitude) ||
-        //            !double.TryParse(results[0].Longitude, out double longitude))
-        //            throw new BO.Exceptions.BLGeneralException("שגיאה בהמרת קואורדינטות.");
-
-        //        Console.WriteLine($"Latitude: {latitude}, Longitude: {longitude}");
-        //        return (latitude, longitude);
-        //    }
-        //    catch (HttpRequestException httpEx)
-        //    {
-        //        throw new BO.Exceptions.BLGeneralException("שגיאה בבקשת הרשת: " + httpEx.Message);
-        //    }
-        //    catch (JsonException jsonEx)
-        //    {
-        //        throw new BO.Exceptions.BLGeneralException("שגיאה בפענוח JSON: " + jsonEx.Message);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        throw new BO.Exceptions.BLGeneralException("שגיאה בעת שליפת קואורדינטות: " + ex.Message);
-        //    }
-        //}
-
-
-        #endregion
-
-
+            [JsonPropertyName("display_name")]
+            public string DisplayName { get; set; } // Full address representation
+        }
 
     }
 

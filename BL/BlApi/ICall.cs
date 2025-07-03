@@ -58,6 +58,8 @@ public interface ICall:BlApi.IObservable
     /// </summary>
     void CompleteCallTreatment(int volunteerId, int assignmentId);
     public void CompleteAssignmentToCall(int volunteerId, int callId);
+    public IEnumerable<object> GetCallStatusSummaries();
+
     public bool isExistingAssignmentToCall(int callId);
     /// <summary>
     /// Cancels the treatment of a call.

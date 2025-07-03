@@ -7,7 +7,10 @@ using Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 //namespace BL.Helpers
@@ -18,28 +21,65 @@ internal static class CallManager
     internal static ObserverManager Observers = new(); //stage 5 
     private static readonly IDal c_dal = Factory.Get; //stage 4
 
-    public static async Task UpdateCoordinatesForCallAddressAsync(int callId, string address)
+
+
+    #region check address
+    /// <summary>
+    /// Retrieves the geographical coordinates (latitude and longitude) for a given address.
+    /// </summary>
+    /// <param name="address">The address to get the coordinates for.</param>
+    /// <returns>A tuple containing the latitude and longitude of the address.</returns>
+    /// <exception cref="BO.BlValidationException">Thrown when the address is invalid.</exception>
+    public static (double Latitude, double Longitude) GetCoordinates(string address)
     {
         if (string.IsNullOrWhiteSpace(address))
-            throw new Exception("Address must not be null or empty.");
+        {
+            throw new BO.Exceptions.BLInvalidDataException("The address is invalid.");
+        }
 
-        var (latitude, longitude) = await Tools.GetCoordinatesFromAddressAsync(address);
+        string url = $"https://geocode.maps.co/search?q={Uri.EscapeDataString(address)}&api_key=679a8da6c01a6853187846vomb04142";
 
-        if (latitude < -90 || latitude > 90 || longitude < -180 || longitude > 180)
-            throw new Exception($"Invalid coordinates for address: {address}. Latitude: {latitude}, Longitude: {longitude}");
+        try
+        {
+            using (WebClient client = new WebClient())
+            {
+                string response = client.DownloadString(url);
 
-        DO.Call existingCall;
-        lock (AdminManager.BlMutex)
-            existingCall = c_dal.Call.Read(callId);
+                var result = JsonSerializer.Deserialize<GeocodeResponse[]>(response);
 
-        existingCall = existingCall with { Latitude = latitude, longtitude = longitude };
+                if (result == null || result.Length == 0)
+                {
+                    throw new BO.Exceptions.BLInvalidDataException("The address is invalid.");
+                }
 
-        lock (AdminManager.BlMutex)
-            c_dal.Call.Update(existingCall);
+                double latitude = double.Parse(result[0].Latitude);
+                double longitude = double.Parse(result[0].Longitude);
 
-        CallManager.Observers.NotifyListUpdated();
-        CallManager.Observers.NotifyItemUpdated(callId);
+                return (latitude, longitude);
+            }
+        }
+        catch (Exception ex)
+        {
+            throw new BO.Exceptions.BLInvalidDataException("Error retrieving coordinates" + ex.Message);
+        }
     }
+
+
+    /// <summary>
+    /// Represents the structure of a geocoding response.
+    /// </summary>
+    private class GeocodeResponse
+    {
+        [JsonPropertyName("lat")]
+        public string Latitude { get; set; } // Latitude as string
+
+        [JsonPropertyName("lon")]
+        public string Longitude { get; set; } // Longitude as string
+
+        [JsonPropertyName("display_name")]
+        public string DisplayName { get; set; } // Full address representation
+    }
+    #endregion
 
     internal static DO.Call ConvertBOToDO(BO.Call call) =>
     new DO.Call
@@ -62,6 +102,8 @@ internal static class CallManager
     /// <returns>A BO.CallInList object representing the student call.</returns>
     internal static BO.Enums.CallStatus GetCallStatus(DateTime? MaxTimeToEnd,int callId)
     {
+        if (MaxTimeToEnd == null)
+            return  BO.Enums.CallStatus.Open;
         var lastAssignment = c_dal.Assignment.ReadAll(a => a.CallId == callId)
                                          .OrderBy(a => a.EntryTimeForTreatment)
                                          .LastOrDefault();

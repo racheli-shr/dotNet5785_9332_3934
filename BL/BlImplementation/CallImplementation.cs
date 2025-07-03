@@ -6,6 +6,7 @@ using DO;
 using Helpers;
 using System;
 using System.Net;
+using static BO.Enums;
 using static DO.Exceptions;
 namespace BLImplementation;
 
@@ -26,8 +27,7 @@ internal class CallImplementation : BLApi.ICall
         bool didCreate = false;
 
 
-        var coordinates = Tools.GetCoordinatesFromAddressAsync(boCall.FullAddress!);
-
+        var (latitude, longitude) = Tools.GetCoordinates(boCall.FullAddress!);
         lock (AdminManager.BlMutex)
         {
             try
@@ -36,8 +36,8 @@ internal class CallImplementation : BLApi.ICall
                     Id: boCall.Id,
                     CallType: (DO.Enums.CallType)boCall.CallType,
                     FullAdress: boCall.FullAddress,
-                    Latitude: null,
-                    longtitude: null,
+                    Latitude: latitude,
+                    longtitude: longitude,
                     OpeningCallTime: boCall.OpeningTime,
                     MaxTimeToEnd: boCall.MaxFinishTime,
                     Description: boCall.Description
@@ -57,8 +57,7 @@ internal class CallImplementation : BLApi.ICall
             CallManager.Observers.NotifyListUpdated();
         }
 
-        // אחרי ההוספה הראשונית: מתחילים לחשב קואורדינטות אסינכרונית
-        _ = CallManager.UpdateCoordinatesForCallAddressAsync(boCall.Id, boCall.FullAddress!);
+        
     }
 
 
@@ -340,15 +339,16 @@ internal class CallImplementation : BLApi.ICall
             lock (AdminManager.BlMutex) //stage 7
                 DOAssignment = _dal.Assignment.ReadAll(c => c.CallId == callId);
             callStatus = CallManager.GetCallStatus(DOCall.MaxTimeToEnd,DOCall.Id);
+            
             List<BO.CallAssignInList>? Assignments = null;
             if (DOAssignment != null)
             {
                 Assignments = DOAssignment.Select(assignment =>
                 {
-                    var volunteerId = assignment.VolunteerId;
+                    var volunteerId =  assignment.VolunteerId;
                     lock (AdminManager.BlMutex) //stage 7
-                        volunteer = _dal.Volunteer.Read(v => v.Id == volunteerId);
-                    var volunteerName = volunteer.FullName;
+                        volunteer =  volunteerId!=0? _dal.Volunteer.Read(v => v.Id == volunteerId):null;
+                    var volunteerName = volunteer==null?"any volunteer":volunteer.FullName;
                     return new BO.CallAssignInList()
                     {
                         VolunteerId = volunteerId,
@@ -380,6 +380,30 @@ internal class CallImplementation : BLApi.ICall
             throw new BO.Exceptions.BlDoesNotExistException($"Error fetching Call or Assignments: {ex.Message}");
         }
     }
+
+
+
+    public IEnumerable<object> GetCallStatusSummaries()
+    {
+        IEnumerable<DO.Call> calls;
+        lock (AdminManager.BlMutex) //stage 7
+            calls = _dal.Call.ReadAll();
+
+        var grouped = calls
+            .GroupBy(c => CallManager.CalculateCallStatus(c))
+            .ToDictionary(g => g.Key, g => g.Count());
+
+        return Enum.GetValues(typeof(CallStatus))
+            .Cast<CallStatus>()
+            .Select(status => new
+            {
+                Status = status,
+                Amount = grouped.ContainsKey(status) ? grouped[status] : 0
+            })
+            .ToList();
+    }
+
+
     public IEnumerable<BO.ClosedCallInList> GetClosedCallsByVolunteer(int volunteerId, Func<BO.ClosedCallInList, bool>? predicate = null)
     {
         IEnumerable<DO.Call> calls;
@@ -480,7 +504,7 @@ internal class CallImplementation : BLApi.ICall
                 CallType = (BO.Enums.CallType)call.CallType,
                 OpeningTime = call.OpeningTime,
                 RemainingTime = call.MaxFinishTime - currentTime,
-                LastVolunteerName = lastVolunteer?.FullName,
+                LastVolunteerName = lastVolunteer!=null?lastVolunteer.FullName:"Any Assignment",
                 HandlingDuration= totalCompletionTime,
                 Status = CallManager.GetCallStatus(call.MaxFinishTime,call.Id),
                 AssignmentCount = assignments.Count()
@@ -601,15 +625,15 @@ internal class CallImplementation : BLApi.ICall
 
         CallManager.ValidateCall(boCall);
         CallManager.ValidateLogicalCall(boCall);
-
+        var (latitude, longitude) = Tools.GetCoordinates(boCall.FullAddress!);
         // עדכון הקריאה מיידי בדאטהבייס ללא קואורדינטות מעודכנות (ישארו null זמנית)
         var updatedCall = new DO.Call(
             boCall.Id,
             (DO.Enums.CallType)boCall.CallType,
             boCall.Description,
             boCall.FullAddress,
-            null, // Latitude יעודכן אח"כ
-            null, // Longitude יעודכן אח"כ
+            latitude, 
+            longitude,
             boCall.OpeningTime,
             boCall.MaxFinishTime
             
@@ -631,9 +655,7 @@ internal class CallImplementation : BLApi.ICall
             throw new BO.Exceptions.BlDoesNotExistException($"Error updating call details for call ID {boCall.Id}: {ex.Message}", ex);
         }
 
-        // שליחת המשימה ברקע: מחשבת קואורדינטות ועדכון נוסף לדאטהבייס כשהתוצאה תגיע
-        _ = CallManager.UpdateCoordinatesForCallAddressAsync(boCall.Id, boCall.FullAddress!);
-    }
+        }
 
 
     public void AddObserver(Action listObserver)

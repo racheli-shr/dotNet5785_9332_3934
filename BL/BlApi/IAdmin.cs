@@ -8,6 +8,8 @@ public interface IAdmin
     // Method to request the current system clock
     public DateTime GetClock();
 
+    public void AddRiskObserver(Action configObserver);
+    public void RemoveRiskObserver(Action configObserver);
 
     // Method to advance the system clock by a specified time unit
     public void ForwardClock(TimeUnit unit);
