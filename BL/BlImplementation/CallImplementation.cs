@@ -4,6 +4,9 @@ using BO;
 using DalApi;
 using DO;
 using Helpers;
+using System;
+using System.Net;
+using static DO.Exceptions;
 namespace BLImplementation;
 
 
@@ -11,47 +14,71 @@ internal class CallImplementation : BLApi.ICall
 {
     private readonly DalApi.IDal _dal = DalApi.Factory.Get;
 
-    public void AddCall(BO.Call call)
+    public void AddCall(BO.Call boCall)
     {
-        try
+        AdminManager.ThrowOnSimulatorIsRunning();
+
+        // בדיקות תקינות
+
+        CallManager.ValidateCall(boCall);         // בדיקת פורמט
+        CallManager.ValidateLogicalCall(boCall);  // בדיקה לוגית
+
+        bool didCreate = false;
+
+
+        var coordinates = Tools.GetCoordinatesFromAddressAsync(boCall.FullAddress!);
+
+        lock (AdminManager.BlMutex)
         {
-            if (call == null)
-                throw new BO.Exceptions.BLInvalidDataException($"cannot update call with null object");
+            try
+            {
+                _dal.Call.Create(new DO.Call(
+                    Id: boCall.Id,
+                    CallType: (DO.Enums.CallType)boCall.CallType,
+                    FullAdress: boCall.FullAddress,
+                    Latitude: null,
+                    longtitude: null,
+                    OpeningCallTime: boCall.OpeningTime,
+                    MaxTimeToEnd: boCall.MaxFinishTime,
+                    Description: boCall.Description
+                ));
 
-
-            // Validate and retrieve coordinates
-            var (latitude, longtitude) = Tools.GetCoordinates(call.FullAddress);
-            call.Latitude = latitude;
-            call.longtitude = longtitude;
-            CallManager.Validation(call);
-
-            // Update originalVolunteer with allowed changes
-            DO.Call updatedCall = CallManager.ConvertBOToDO(call);
-
-            // Save updated volunteer to DAL
-            _dal.Call.Create(updatedCall);
-            CallManager.Observers.NotifyListUpdated(); //stage 5  
+                didCreate = true;
+            }
+            catch (DalAlreadyExistsException ex)
+            {
+                throw new BO.Exceptions.BlAlreadyExistsException($"Error creating the call with ID {boCall.Id}: {ex.Message}");
+            }
         }
 
-        catch (BO.Exceptions.BLInvalidDataException ex)
+        // התראה מחוץ ל-lock
+        if (didCreate)
         {
-            throw new BO.Exceptions.BLInvalidDataException($"An error occurred while adding Volunteer : {ex.Message}", ex);
+            CallManager.Observers.NotifyListUpdated();
         }
-        catch (Exception ex)
-        {
-            throw new BO.Exceptions.BLGeneralException($"An error occurred while adding Volunteer : {ex.Message}", ex);
-        }
+
+        // אחרי ההוספה הראשונית: מתחילים לחשב קואורדינטות אסינכרונית
+        _ = CallManager.UpdateCoordinatesForCallAddressAsync(boCall.Id, boCall.FullAddress!);
     }
 
+
+    
     public void AssignCallToVolunteer(int volunteerId, int callId)
     {
+        IEnumerable< DO.Assignment> assignments;
+        DO.Volunteer volunteer;
+        DO.Call call;
+
+        AdminManager.ThrowOnSimulatorIsRunning();  //stage 7
         try
         {
             // Fetch the necessary data from the data layer
-            var call = _dal.Call.Read(callId);
-            var volunteer = _dal.Volunteer.Read(volunteerId);
-            var assignments = _dal.Assignment.ReadAll(a => a.CallId == callId);
-
+            lock (AdminManager.BlMutex) //stage 7
+            {
+                call = _dal.Call.Read(callId);
+                volunteer = _dal.Volunteer.Read(volunteerId);
+                assignments = _dal.Assignment.ReadAll(a => a.CallId == callId);
+            }
             // Using 'let' to create a variable for filtering the assignments
             var openAssignments = from assignment in assignments
                                   let isAssigned = assignment.AssignmentStatus == DO.Enums.AssignmentStatus.TREATED || assignment.AssignmentStatus == DO.Enums.AssignmentStatus.EXPIRED
@@ -66,8 +93,8 @@ internal class CallImplementation : BLApi.ICall
             if (call.MaxTimeToEnd < AdminManager.Now)
                 throw new BO.Exceptions.BLGeneralException("The call has expired.");
 
-            double Latitude = volunteer.Latitude ?? 0;
-            double longtitude = volunteer.longtitude ?? 0;
+            double? Latitude = volunteer.Latitude ?? 0;
+            double? longtitude = volunteer.longtitude ?? 0;
             var distanceBetweenVolToCall = VolunteerManager.GetDistance(Latitude, longtitude, call.Latitude, call.longtitude, volunteer.DistanceType);
             if (volunteer.MaxDistance < distanceBetweenVolToCall)
                 throw new BO.Exceptions.BLInvalidDataException("The call is further from volunteer max distance .");
@@ -84,7 +111,8 @@ internal class CallImplementation : BLApi.ICall
             };
 
             // Add the new assignment to the data layer
-            _dal.Assignment.Create(newAssignment);
+            lock (AdminManager.BlMutex) //stage 7
+                _dal.Assignment.Create(newAssignment);
             CallManager.Observers.NotifyListUpdated();  //stage 5  
         }
         catch (Exception ex)
@@ -96,11 +124,17 @@ internal class CallImplementation : BLApi.ICall
 
     public void CancelCallTreatment(int volunteerId, int assignmentId)
     {
+        DO.Assignment assignment;
+        DO.Volunteer volunteer;
+        AdminManager.ThrowOnSimulatorIsRunning();  //stage 7
         try
         {
             // Retrieve the assignment and volunteer details from the database
-            var assignment = _dal.Assignment.Read(assignmentId);
-            var volunteer = _dal.Volunteer.Read(volunteerId);
+            lock (AdminManager.BlMutex) //stage 7
+            {
+                assignment = _dal.Assignment.Read(assignmentId);
+                volunteer = _dal.Volunteer.Read(volunteerId);
+            }
             // Check if the volunteer is allowed to cancel the assignment
             // The volunteer can only cancel their own assignment, or if they are a director
             if (assignment.VolunteerId != volunteerId && volunteer.Role != DO.Enums.Role.manager)
@@ -124,7 +158,8 @@ internal class CallImplementation : BLApi.ICall
                 AssignmentStatus = AssignmentStatus
             };
             // Create the updated assignment object with the new status and end time
-            _dal.Assignment.Update(updatedAssignment);
+            lock (AdminManager.BlMutex) //stage 7
+                _dal.Assignment.Update(updatedAssignment);
             CallManager.Observers.NotifyItemUpdated(updatedAssignment.Id);  //stage 5
 
             CallManager.Observers.NotifyListUpdated();  //stage 5  
@@ -138,10 +173,14 @@ internal class CallImplementation : BLApi.ICall
 
     public void CompleteCallTreatment(int volunteerId, int assignmentId)
     {
+        DO.Assignment assignment;
+
+        AdminManager.ThrowOnSimulatorIsRunning();  //stage 7
         try
         {
             // Retrieve the assignment from the database
-            var assignment = _dal.Assignment.Read(assignmentId);
+            lock (AdminManager.BlMutex) //stage 7
+                assignment = _dal.Assignment.Read(assignmentId);
             // Check if the assignment belongs to the volunteer, if not throw an error
             if (assignment.VolunteerId != volunteerId)
                 throw new BO.Exceptions.BLGeneralException($"invalid action,cannot complete assignment that is not yours ");
@@ -164,7 +203,8 @@ internal class CallImplementation : BLApi.ICall
                 AssignmentStatus = DO.Enums.AssignmentStatus.TREATED
             };
             // Update the assignment in the database
-            _dal.Assignment.Update(updatedAssignment);
+            lock (AdminManager.BlMutex) //stage 7
+                _dal.Assignment.Update(updatedAssignment);
             CallManager.Observers.NotifyItemUpdated(updatedAssignment.Id);  //stage 5
             CallManager.Observers.NotifyListUpdated();  //stage 5  
         }
@@ -176,11 +216,19 @@ internal class CallImplementation : BLApi.ICall
 
     public void DeleteCall(int callId)
     {
+        DO.Call DOcall = null;
+        DO.Assignment HisAssignment = null;
+        IEnumerable<DO.Assignment> assignments = null;
+        BO.Call BOcall = null;
+        AdminManager.ThrowOnSimulatorIsRunning();  //stage 7
         try
         {
-            var DOcall = _dal.Call.Read(c => c.Id == callId);
-            var BOcall = Read(DOcall.Id);
-            var HisAssignment = _dal.Assignment.Read(c => c.CallId == callId);
+            lock (AdminManager.BlMutex) //stage 7
+                DOcall = _dal.Call.Read(c => c.Id == callId);
+            lock (AdminManager.BlMutex) //stage 7
+                BOcall = Read(DOcall.Id);
+            lock (AdminManager.BlMutex) //stage 7
+                HisAssignment = _dal.Assignment.Read(c => c.CallId == callId);
             if (BOcall == null)
             {
                 throw new BO.Exceptions.BlDoesNotExistException($"Call with ID {callId} does not exist.");
@@ -193,14 +241,16 @@ internal class CallImplementation : BLApi.ICall
             }
 
             // Check if the call has assignments
-            var assignments = _dal.Assignment.ReadAll(assignment => assignment.CallId == callId);
+            lock (AdminManager.BlMutex) //stage 7
+                assignments = _dal.Assignment.ReadAll(assignment => assignment.CallId == callId);
             if (assignments.Any())
             {
                 throw new BO.Exceptions.BLInvalidDataException("Cannot delete the call because it has been assigned to volunteers.");
             }
 
             // Delete the call from the data layer
-            _dal.Call.Delete(callId);
+            lock (AdminManager.BlMutex) //stage 7
+                _dal.Call.Delete(callId);
             CallManager.Observers.NotifyListUpdated();  //stage 5    
         }
         catch (BO.Exceptions.BlDoesNotExistException ex)
@@ -225,8 +275,14 @@ internal class CallImplementation : BLApi.ICall
 
     public IEnumerable<BO.StatusCounter> GetCallCountsByStatus()//TODO: find return value type
     {
-        IEnumerable<DO.Call> dalCalls = _dal.Call.ReadAll();
-        IEnumerable<BO.Call> blCalls = dalCalls.Select(call => Read(call.Id));
+        IEnumerable<DO.Call> dalCalls;
+        IEnumerable<BO.Call> blCalls;
+        lock (AdminManager.BlMutex) //stage 7
+             dalCalls = _dal.Call.ReadAll();
+        blCalls = dalCalls.Select(call => {
+            lock (AdminManager.BlMutex) //stage 7
+                return Read(call.Id);
+            });
         int maxStatusIndex = Enum.GetValues(typeof(BO.Enums.CallStatus)).Cast<int>().Max();
 
         // Use LINQ to group calls by status and construct the array directly.
@@ -240,16 +296,21 @@ internal class CallImplementation : BLApi.ICall
     }
     //if an opened assignment was found he will cancel it and sending an email- תוספת
     public bool closeLastAssignmentByCallId(int callId, DO.Enums.AssignmentStatus canceledBy)
-    {
-        var DOAssignment = _dal.Assignment.ReadAll(c => c.CallId == callId);
+    { IEnumerable<DO.Assignment> DOAssignment = null;
+        DO.Call call;
+        AdminManager.ThrowOnSimulatorIsRunning();  //stage 7
+        lock (AdminManager.BlMutex) //stage 7
+            DOAssignment = _dal.Assignment.ReadAll(c => c.CallId == callId);
         foreach (var assignment in DOAssignment)
         {
             if (assignment.AssignmentStatus == DO.Enums.AssignmentStatus.AssignedAndInProgress)
             {
                 //update the manager cancelation of assignments
-                _dal.Assignment.Update(assignment with { AssignmentStatus = canceledBy});
+                lock (AdminManager.BlMutex) //stage 7
+                    _dal.Assignment.Update(assignment with { AssignmentStatus = canceledBy});
                 //searching the call
-                var call = _dal.Call.Read(c => c.Id == callId);
+                lock (AdminManager.BlMutex) //stage 7
+                    call = _dal.Call.Read(c => c.Id == callId);
                 ////sending an email to the concerned volunteer
                 //var volunteer = _dal.Volunteer.Read(v => v.Id == assignment.VolunteerId);
                 //var subject = $"Assignment Cancelled for Call #{callId}";
@@ -260,24 +321,34 @@ internal class CallImplementation : BLApi.ICall
                 return true;
             }
         }
+        CallManager.Observers.NotifyItemUpdated(callId);
+        CallManager.Observers.NotifyListUpdated();
         return false;
     }
     public BO.Call Read(int callId)
     {
+        DO.Volunteer volunteer = null;
+        IEnumerable<DO.Assignment> DOAssignment;
+        DO.Call DOCall;
+        BO.Enums.CallStatus callStatus;
         try
         {
+            lock (AdminManager.BlMutex) //stage 7
+                DOCall = _dal.Call.Read(c => c.Id == callId);
+            
 
-            var DOCall = _dal.Call.Read(c => c.Id == callId);
-            var DOAssignment = _dal.Assignment.ReadAll(c => c.CallId == callId);
-            var callStatus = CallManager.GetCallStatus(callId);
+            lock (AdminManager.BlMutex) //stage 7
+                DOAssignment = _dal.Assignment.ReadAll(c => c.CallId == callId);
+            callStatus = CallManager.GetCallStatus(DOCall.MaxTimeToEnd,DOCall.Id);
             List<BO.CallAssignInList>? Assignments = null;
             if (DOAssignment != null)
             {
                 Assignments = DOAssignment.Select(assignment =>
                 {
                     var volunteerId = assignment.VolunteerId;
-                    var DOVolunteers = _dal.Volunteer.Read(v => v.Id == volunteerId);
-                    var volunteerName = DOVolunteers.FullName;
+                    lock (AdminManager.BlMutex) //stage 7
+                        volunteer = _dal.Volunteer.Read(v => v.Id == volunteerId);
+                    var volunteerName = volunteer.FullName;
                     return new BO.CallAssignInList()
                     {
                         VolunteerId = volunteerId,
@@ -289,7 +360,7 @@ internal class CallImplementation : BLApi.ICall
 
                 }).ToList();
             }
-            return new BO.Call
+             return new BO.Call
             {
                 Id = callId,
                 CallType = (BO.Enums.CallType)DOCall.CallType,
@@ -311,9 +382,14 @@ internal class CallImplementation : BLApi.ICall
     }
     public IEnumerable<BO.ClosedCallInList> GetClosedCallsByVolunteer(int volunteerId, Func<BO.ClosedCallInList, bool>? predicate = null)
     {
-        // Retrieve all closed calls for the volunteer from the assignments table.  
-        var closedCalls = _dal.Assignment.ReadAll(a => a.VolunteerId == volunteerId && a.AssignmentStatus != null&&(a.AssignmentStatus!=DO.Enums.AssignmentStatus.AssignedAndInProgress))
-            .Join(_dal.Call.ReadAll(),
+        IEnumerable<DO.Call> calls;
+        lock (AdminManager.BlMutex) //stage 7
+            calls= _dal.Call.ReadAll();
+        IEnumerable<BO.ClosedCallInList> closedCalls;
+        // Retrieve all closed calls for the volunteer from the assignments table.
+        lock (AdminManager.BlMutex) //stage 7
+             closedCalls = _dal.Assignment.ReadAll(a => a.VolunteerId == volunteerId && a.AssignmentStatus != null&&(a.AssignmentStatus!=DO.Enums.AssignmentStatus.AssignedAndInProgress))
+            .Join(calls,
             a => a.CallId, c => c.Id,
             (a, c) => new BO.ClosedCallInList
             {
@@ -337,10 +413,15 @@ internal class CallImplementation : BLApi.ICall
 
     public IEnumerable<BO.OpenCallInList> GetOpenCallsForVolunteer(int volunteerId, Func<BO.OpenCallInList, bool> predicate = null /*BO.Enums.OpenCallInListFields? filterByField = null, object? filterValue = null, BO.Enums.OpenCallInListFields? sortByField = null*/)
     {
-        var volunteer = _dal.Volunteer.Read(volunteerId) ?? throw new BO.Exceptions.BlDoesNotExistException($"volunteer with ID={volunteerId} does not exist");
+        IEnumerable<BO.OpenCallInList> openCalls;
 
-        // Retrieve all open or open-in-risk calls for the volunteer.  
-        var openCalls = _dal.Call.ReadAll(c => CallManager.CalculateCallStatus(c) == BO.Enums.CallStatus.Open ||
+        DO.Volunteer volunteer = null;
+        lock (AdminManager.BlMutex) //stage 7
+            volunteer = _dal.Volunteer.Read(volunteerId) ?? throw new BO.Exceptions.BlDoesNotExistException($"volunteer with ID={volunteerId} does not exist");
+
+        // Retrieve all open or open-in-risk calls for the volunteer.
+        lock (AdminManager.BlMutex) //stage 7
+            openCalls = _dal.Call.ReadAll(c => CallManager.CalculateCallStatus(c) == BO.Enums.CallStatus.Open ||
             CallManager.CalculateCallStatus(c) == BO.Enums.CallStatus.OpenAtRisk)
             .Select(c => new BO.OpenCallInList
             {
@@ -358,21 +439,7 @@ internal class CallImplementation : BLApi.ICall
                 openCalls = openCalls.Where(predicate);
 
         openCalls = openCalls.Where(c => c.DistanceFromVolunteer <= volunteer.MaxDistance); // Filter out calls that are too far away.  
-        //openCalls = sortByField switch
-        //{
-        //    BO.Enums.OpenCallInListFields.Id => openCalls.OrderBy(call => call.Id),
-        //    BO.Enums.OpenCallInListFields.CallType => openCalls.OrderBy(call => call.CallType),
-            
-        //    BO.Enums.OpenCallInListFields.OpenTime => openCalls.OrderBy(call => call.OpeningTime),
-        //    BO.Enums.OpenCallInListFields.MaxEndTime => openCalls.OrderBy(call => call.MaxFinishTime),
-        //    BO.Enums.OpenCallInListFields.DistanceFromVolunteer => openCalls.OrderBy(call => call.DistanceFromVolunteer),
-        //    //BO.Enums.OpenCallInListFields.TotalHandlingTime => openCalls.OrderBy(call => call.HandlingDuration),
-        //    //BO.Enums.OpenCallInListFields.CallStatus => openCalls.OrderBy(call => call.Status),
-        //    //BO.Enums.OpenCallInListFields.TotalAssignments => openCalls.OrderBy(call => call.AssignmentCount
-        //    ),
-        //    _ => openCalls.OrderBy(call => call.Id)
-        //};
-
+       
         return openCalls;
     }
 
@@ -380,16 +447,25 @@ internal class CallImplementation : BLApi.ICall
     public IEnumerable<BO.CallInList> GetFilteredAndCallList(BO.Enums.CallInListFields? filterByField = null, object? filterValue = null, BO.Enums.CallInListFields? sortByField = null)
 
     {
-        IEnumerable<DO.Call> DOCalls = _dal.Call.ReadAll();
-        var BOCall = DOCalls.Select(call => Read(call.Id)).ToList();
+        IEnumerable<DO.Call> DOCalls;
+        lock (AdminManager.BlMutex) //stage 7
+            DOCalls = _dal.Call.ReadAll();
+        IEnumerable<BO.Call> BOCall;
+        lock (AdminManager.BlMutex) //stage 7
+            BOCall = DOCalls.Select(call => {
+                lock (AdminManager.BlMutex) //stage 7
+                    return Read(call.Id);
+                }).ToList();
 
         IEnumerable<BO.CallInList> callInLists = BOCall.Select(call =>
         {
-            var assignments = _dal.Assignment.ReadAll(a => a.CallId == call.Id);
-            var lastAssignment = assignments.OrderByDescending(a => a.EntryTimeForTreatment).FirstOrDefault();
-            var lastVolunteer = lastAssignment != null
-                ? _dal.Volunteer.ReadAll().FirstOrDefault(v => v.Id == lastAssignment.VolunteerId)
-                : null;
+            IEnumerable<DO.Assignment> assignments;
+            lock (AdminManager.BlMutex) //stage 7
+                assignments = _dal.Assignment.ReadAll(a => a.CallId == call.Id);
+            DO.Assignment lastAssignment= assignments.OrderByDescending(a => a.EntryTimeForTreatment).FirstOrDefault();
+            DO.Volunteer lastVolunteer;
+            lock (AdminManager.BlMutex) //stage 7
+                lastVolunteer = lastAssignment != null? _dal.Volunteer.ReadAll().FirstOrDefault(v => v.Id == lastAssignment.VolunteerId) : null;
 
             TimeSpan? totalCompletionTime = (call.MaxFinishTime != null && call.OpeningTime != null)
                 ? call.MaxFinishTime - call.OpeningTime
@@ -406,7 +482,7 @@ internal class CallImplementation : BLApi.ICall
                 RemainingTime = call.MaxFinishTime - currentTime,
                 LastVolunteerName = lastVolunteer?.FullName,
                 HandlingDuration= totalCompletionTime,
-                Status = CallManager.GetCallStatus(call.Id),
+                Status = CallManager.GetCallStatus(call.MaxFinishTime,call.Id),
                 AssignmentCount = assignments.Count()
             };
         });
@@ -450,10 +526,14 @@ internal class CallImplementation : BLApi.ICall
     }
     public IEnumerable<BO.OpenCallInList> SortOpenCalls(int volunteerId, BO.Enums.OpenCallInListFields? sortField = BO.Enums.OpenCallInListFields.Id)
     {
-        var volunteer = _dal.Volunteer.Read(volunteerId) ?? throw new BO.Exceptions.BlDoesNotExistException($"volunteer with ID={volunteerId} does not exist");
+        DO.Volunteer volunteer;
+        lock (AdminManager.BlMutex) //stage 7
+            volunteer = _dal.Volunteer.Read(volunteerId) ?? throw new BO.Exceptions.BlDoesNotExistException($"volunteer with ID={volunteerId} does not exist");
 
         // Retrieve all open or open-in-risk calls for the volunteer.  
-        var openCalls = _dal.Call.ReadAll(c => CallManager.CalculateCallStatus(c) == BO.Enums.CallStatus.Open ||
+        IEnumerable<BO.OpenCallInList> openCalls;
+        lock (AdminManager.BlMutex) //stage 7
+            openCalls = _dal.Call.ReadAll(c => CallManager.CalculateCallStatus(c) == BO.Enums.CallStatus.Open ||
             CallManager.CalculateCallStatus(c) == BO.Enums.CallStatus.OpenAtRisk)
             .Select(c => new BO.OpenCallInList
             {
@@ -473,10 +553,14 @@ internal class CallImplementation : BLApi.ICall
     }
     public IEnumerable<BO.OpenCallInList> FilterOpenCalls(int volunteerId, BO.Enums.OpenCallInListFields? filterField = null, object? filterValue = null)
     {
-        var volunteer = _dal.Volunteer.Read(volunteerId) ?? throw new BO.Exceptions.BlDoesNotExistException($"volunteer with ID={volunteerId} does not exist");
+        DO.Volunteer volunteer; 
+        lock (AdminManager.BlMutex) //stage 7
+            volunteer = _dal.Volunteer.Read(volunteerId) ?? throw new BO.Exceptions.BlDoesNotExistException($"volunteer with ID={volunteerId} does not exist");
 
         // Retrieve all open or open-in-risk calls for the volunteer.  
-        var openCalls = _dal.Call.ReadAll(c => CallManager.CalculateCallStatus(c) == BO.Enums.CallStatus.Open ||
+        IEnumerable<BO.OpenCallInList> openCalls;
+        lock (AdminManager.BlMutex) //stage 7
+            openCalls = _dal.Call.ReadAll(c => CallManager.CalculateCallStatus(c) == BO.Enums.CallStatus.Open ||
             CallManager.CalculateCallStatus(c) == BO.Enums.CallStatus.OpenAtRisk)
             .Select(c => new BO.OpenCallInList
             {
@@ -501,131 +585,77 @@ internal class CallImplementation : BLApi.ICall
             }).ToList();
         return openCalls;
     }
-    //אני רוצה פונקציה שתבדוק האם לקריאה מסויימת יש הקצאות
-
-
-    //public IEnumerable<BO.OpenCallInList> GetFilteredAndOpenCalls(int volunteerId, BO.Enums.CallType? callType, BO.Enums.OpenCallInListFields? sortByField)
-    //    {
-    //        var volunteer = _dal.Volunteer.Read(volunteerId);
-
-    //        // Step 1: Retrieve all assignments for the given volunteer
-    //        var volunteerAssignments = _dal.Assignment.ReadAll(a => a.VolunteerId == volunteerId);
-
-    //        // Step 2: Create a dictionary to map assignments by CallId for quick access
-    //        var assignmentDictionary = volunteerAssignments.ToDictionary(a => a.CallId);
-
-    //        // Step 3: Filter only open or at-risk calls
-    //        var openCalls = volunteerAssignments
-    //            .Select(a => Read(a.CallId)) // Convert CallId to actual Call object
-    //            .Where(c => c.Status == BO.Enums.CallStatus.Open || c.Status == BO.Enums.CallStatus.OpenAtRisk) // Filter by status
-    //            .ToList(); // Store as a list to optimize further operations
-
-    //        double Latitude = volunteer.Latitude ?? 0;
-    //        double longtitude = volunteer.longtitude ?? 0;
-
-    //        // Step 4: Map open calls to OpenCallInList DTO
-    //        var openCallInList = openCalls.Select(c => new BO.OpenCallInList
-    //        {
-    //            Id = c.Id,
-    //            CallType = c.CallType,
-    //            Description = c.Description,
-    //            Address = c.FullAddress,
-    //            OpeningTime = c.OpeningTime,
-    //            MaxFinishTime = c.MaxFinishTime,
-    //            DistanceFromVolunteer = VolunteerManager.GetDistance(Latitude, longtitude, c.Latitude, c.longtitude, volunteer.DistanceType)
-    //        }).ToList(); // Store in a list to avoid multiple IEnumerable evaluations
-
-    //        // Step 5: Filter by call type if a specific type is provided
-    //        if (callType.HasValue)
-    //        {
-    //            openCallInList = openCallInList.Where(c => c.CallType == callType.Value).ToList();
-    //        }
-
-    //        // Step 6: Sort the list if a sorting field is provided
-    //        if (sortByField.HasValue)
-    //        {
-    //            switch (sortByField.Value)
-    //            {
-    //                case BO.Enums.OpenCallInListFields.Id:
-    //                    openCallInList = openCallInList.OrderBy(c => c.Id).ToList();
-    //                    break;
-    //                case BO.Enums.OpenCallInListFields.CallType:
-    //                    openCallInList = openCallInList.OrderBy(c => c.CallType).ToList();
-    //                    break;
-    //                case BO.Enums.OpenCallInListFields.Description:
-    //                    openCallInList = openCallInList.OrderBy(c => c.Description).ToList();
-    //                    break;
-    //                case BO.Enums.OpenCallInListFields.FullAddress:
-    //                    openCallInList = openCallInList.OrderBy(c => c.Address).ToList();
-    //                    break;
-    //                case BO.Enums.OpenCallInListFields.OpenTime:
-    //                    openCallInList = openCallInList.OrderBy(c => c.OpeningTime).ToList();
-    //                    break;
-    //                case BO.Enums.OpenCallInListFields.MaxEndTime:
-    //                    openCallInList = openCallInList.OrderBy(c => c.MaxFinishTime).ToList();
-    //                    break;
-    //                case BO.Enums.OpenCallInListFields.DistanceFromVolunteer:
-    //                    openCallInList = openCallInList.OrderBy(c => c.DistanceFromVolunteer).ToList();
-    //                    break;
-    //                default:
-    //                    openCallInList = openCallInList.OrderBy(c => c.Id).ToList();
-    //                    break;
-    //            }
-    //        }
-
-    //        return openCallInList;
-    //    }
 
     public bool isExistingAssignmentToCall(int callId)
     {
-        var assignment = _dal.Assignment.Read(a => a.CallId == callId && a.AssignmentStatus==DO.Enums.AssignmentStatus.AssignedAndInProgress);
+        DO.Assignment assignment;
+        lock (AdminManager.BlMutex) //stage 7
+            assignment = _dal.Assignment.Read(a => a.CallId == callId && a.AssignmentStatus==DO.Enums.AssignmentStatus.AssignedAndInProgress);
         return (assignment == null);
 
     }
 
-
-    public void UpdateCall(BO.Call call)
+    public void UpdateCall(BO.Call boCall)
     {
+        AdminManager.ThrowOnSimulatorIsRunning();
+
+        CallManager.ValidateCall(boCall);
+        CallManager.ValidateLogicalCall(boCall);
+
+        // עדכון הקריאה מיידי בדאטהבייס ללא קואורדינטות מעודכנות (ישארו null זמנית)
+        var updatedCall = new DO.Call(
+            boCall.Id,
+            (DO.Enums.CallType)boCall.CallType,
+            boCall.Description,
+            boCall.FullAddress,
+            null, // Latitude יעודכן אח"כ
+            null, // Longitude יעודכן אח"כ
+            boCall.OpeningTime,
+            boCall.MaxFinishTime
+            
+        );
+
         try
         {
-            if (call == null)
-                throw new BO.Exceptions.BLInvalidDataException($"cannot update call with null object");
-            // Check authorization
+            lock (AdminManager.BlMutex)
+            {
+                _dal.Call.Update(updatedCall);
+            }
 
-
-            // Validate and retrieve coordinates
-            var (latitude, longtitude) = Tools.GetCoordinates(call.FullAddress);
-            call.Latitude = latitude;
-            call.longtitude = longtitude;
-            CallManager.Validation(call);
-
-            // Update originalVolunteer with allowed changes
-            DO.Call updatedCall = CallManager.ConvertBOToDO(call);
-
-            // Save updated volunteer to DAL
-            _dal.Call.Update(updatedCall);
-            CallManager.Observers.NotifyItemUpdated(updatedCall.Id);  //stage 5
-            CallManager.Observers.NotifyListUpdated();  //stage 5
-
+            // Notifications מחוץ ל-lock
+            CallManager.Observers.NotifyItemUpdated(updatedCall.Id);
+            CallManager.Observers.NotifyListUpdated();
         }
-
-        catch (BO.Exceptions.BLInvalidDataException ex)
+        catch (DalDoesNotExistException ex)
         {
-            throw new BO.Exceptions.BLInvalidDataException($"An error occurred while updating Volunteer : {ex.Message}");
+            throw new BO.Exceptions.BlDoesNotExistException($"Error updating call details for call ID {boCall.Id}: {ex.Message}", ex);
         }
-        catch (Exception ex)
-        {
-            throw new BO.Exceptions.BLGeneralException($"An error occurred while updating Volunteer : {ex.Message}");
-        }
+
+        // שליחת המשימה ברקע: מחשבת קואורדינטות ועדכון נוסף לדאטהבייס כשהתוצאה תגיע
+        _ = CallManager.UpdateCoordinatesForCallAddressAsync(boCall.Id, boCall.FullAddress!);
     }
-    public void AddObserver(Action listObserver) =>
+
+
+    public void AddObserver(Action listObserver)
+    {
+        AdminManager.ThrowOnSimulatorIsRunning();  //stage 7
         CallManager.Observers.AddListObserver(listObserver); //stage 5
-    public void AddObserver(int id, Action observer) =>
+    }
+    public void AddObserver(int id, Action observer)
+    {
+        AdminManager.ThrowOnSimulatorIsRunning();  //stage 7
         CallManager.Observers.AddObserver(id, observer); //stage 5
-    public void RemoveObserver(Action listObserver) =>
+    }
+    public void RemoveObserver(Action listObserver)
+    {
+        AdminManager.ThrowOnSimulatorIsRunning();  //stage 7
         CallManager.Observers.RemoveListObserver(listObserver); //stage 5
-    public void RemoveObserver(int id, Action observer) =>
+    }
+    public void RemoveObserver(int id, Action observer)
+    {
+        AdminManager.ThrowOnSimulatorIsRunning();  //stage 7
         CallManager.Observers.RemoveObserver(id, observer); //stage 5
+    }
 
     #region Stage 5
 
@@ -634,21 +664,40 @@ internal class CallImplementation : BLApi.ICall
         throw new NotImplementedException();
     }
     #endregion Stage 5
+
     public void DeleteAssignmentToCall(int callId)
     {
-        var call = _dal.Call.Read(callId);
+        AdminManager.ThrowOnSimulatorIsRunning();  //stage 7
+        DO.Call call;
+        lock (AdminManager.BlMutex) //stage 7
+            call = _dal.Call.Read(callId);
         var status = CallManager.CalculateCallStatus(call);
         if (status != BO.Enums.CallStatus.InProgress && status != BO.Enums.CallStatus.InProgressAtRisk) throw new BO.Exceptions.BLUnauthorizedException($"Cant delete a non opened call status");
-        var AssignmentToDelete = _dal.Assignment.ReadAll(a => a.CallId == call.Id && (BO.Enums.AssignmentStatus)a.AssignmentStatus == BO.Enums.AssignmentStatus.AssignedAndInProgress).FirstOrDefault();
+
+        DO.Assignment AssignmentToDelete;
+        lock (AdminManager.BlMutex) //stage 7
+            AssignmentToDelete = _dal.Assignment.ReadAll(a => a.CallId == call.Id && (BO.Enums.AssignmentStatus)a.AssignmentStatus == BO.Enums.AssignmentStatus.AssignedAndInProgress).FirstOrDefault();
         closeLastAssignmentByCallId(callId, DO.Enums.AssignmentStatus.SELF_CANCELLED);
+
+        CallManager.Observers.NotifyListUpdated();
+        CallManager.Observers.NotifyItemUpdated(callId);
     }
     public void CompleteAssignmentToCall(int volunteerId, int callId)
     {
-        var call = _dal.Call.Read(callId);
+        
+        AdminManager.ThrowOnSimulatorIsRunning();  //stage 7
+        DO.Call call;
+        lock (AdminManager.BlMutex) //stage 7
+            call = _dal.Call.Read(callId);
         var status = CallManager.CalculateCallStatus(call);
         if (status != BO.Enums.CallStatus.InProgress && status != BO.Enums.CallStatus.InProgressAtRisk) throw new BO.Exceptions.BLUnauthorizedException($"Cant delete a non opened call status");
-        var AssignmentToComplete = _dal.Assignment.ReadAll(a => a.CallId == call.Id && (BO.Enums.AssignmentStatus)a.AssignmentStatus == BO.Enums.AssignmentStatus.AssignedAndInProgress).FirstOrDefault();
+        DO.Assignment AssignmentToComplete;
+        lock (AdminManager.BlMutex) //stage 7
+            AssignmentToComplete = _dal.Assignment.ReadAll(a => a.CallId == call.Id && (BO.Enums.AssignmentStatus)a.AssignmentStatus == BO.Enums.AssignmentStatus.AssignedAndInProgress).FirstOrDefault();
         CompleteCallTreatment(volunteerId, AssignmentToComplete.Id);
-
+        VolunteerManager.Observers.NotifyListUpdated();
+        VolunteerManager.Observers.NotifyItemUpdated(volunteerId);
     }
+
+    
 }

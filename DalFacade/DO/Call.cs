@@ -22,8 +22,8 @@ public record Call
     DO.Enums.CallType CallType,  // הגדרת enum עם סוג "CallType"
     string? Description,
     string FullAdress,
-    double Latitude,
-    double longtitude,
+    double? Latitude,
+    double? longtitude,
     DateTime OpeningCallTime,
     DateTime? MaxTimeToEnd  // כאן הערך יכול להיות null
 )

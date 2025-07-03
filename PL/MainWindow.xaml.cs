@@ -11,6 +11,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 
 namespace PL;
 
@@ -21,15 +22,9 @@ public partial class MainWindow : Window
 {
     static readonly BlApi.IBl s_bl = BlApi.Factory.Get();
     public BO.Enums.Role Role { get;  set; }
-    public BO.Volunteer volunteer;
     private VolunteerListWindow volunteerWindow;
     private CallListWindow callWindow;
-    public MainWindow(BO.Enums.Role r,BO.Volunteer vol)
-    {
-        InitializeComponent();
-        Role = r;
-        volunteer = vol;
-    }
+   
     public DateTime CurrentTime
     {
         get { return (DateTime)GetValue(CurrentTimeProperty); }
@@ -39,40 +34,134 @@ public partial class MainWindow : Window
     // Using a DependencyProperty as the backing store for CurrentTime.  This enables animation, styling, binding, etc...
     public static readonly DependencyProperty CurrentTimeProperty =
     DependencyProperty.Register("CurrentTime", typeof(DateTime), typeof(MainWindow), new PropertyMetadata(DateTime.MinValue));
+
+
+
+    public int Interval
+    {
+        get { return (int)GetValue(IntervalProperty); }
+        set { SetValue(IntervalProperty, value); }
+    }
+
+    // Using a DependencyProperty as the backing store for Interval.  This enables animation, styling, binding, etc...
+    public static readonly DependencyProperty IntervalProperty =
+        DependencyProperty.Register("Interval", typeof(int), typeof(MainWindow), new PropertyMetadata(2000));
+
+
+
+    public BO.Volunteer volunteer
+    {
+        get { return (BO.Volunteer)GetValue(volunteerProperty); }
+        set { SetValue(volunteerProperty, value); }
+    }
+
+    // Using a DependencyProperty as the backing store for volunteer.  This enables animation, styling, binding, etc...
+    public static readonly DependencyProperty volunteerProperty =
+        DependencyProperty.Register("volunteer", typeof(BO.Volunteer), typeof(MainWindow), new PropertyMetadata(null));
+
+
+
+    public bool EnableToChange
+    {
+        get { return (bool)GetValue(EnableToChangeProperty); }
+        set { SetValue(EnableToChangeProperty, value); }
+    }
+
+    // Using a DependencyProperty as the backing store for EnableToChange.  This enables animation, styling, binding, etc...
+    public static readonly DependencyProperty EnableToChangeProperty =
+        DependencyProperty.Register("EnableToChange", typeof(bool), typeof(MainWindow), new PropertyMetadata(true));
+
+
+
+    public bool SimulatorFlag
+    {
+        get { return (bool)GetValue(SimulatorFlagProperty); }
+        set { SetValue(SimulatorFlagProperty, value); }
+    }
+
+    // Using a DependencyProperty as the backing store for SimulatorFlag.  This enables animation, styling, binding, etc...
+    public static readonly DependencyProperty SimulatorFlagProperty =
+        DependencyProperty.Register("SimulatorFlag", typeof(bool), typeof(MainWindow), new PropertyMetadata(false));
+
+
+
+    public string SimulatorButtonText
+    {
+        get { return (string)GetValue(SimulatorButtonTextProperty); }
+        set { SetValue(SimulatorButtonTextProperty, value); }
+    }
+
+    // Using a DependencyProperty as the backing store for SimulatorButtonText.  This enables animation, styling, binding, etc...
+    public static readonly DependencyProperty SimulatorButtonTextProperty =
+        DependencyProperty.Register("SimulatorButtonText", typeof(string), typeof(MainWindow), new PropertyMetadata("Start simulator"));
+
+    public MainWindow(BO.Enums.Role r, BO.Volunteer vol)
+    {
+        InitializeComponent();
+        Role = r;
+        volunteer = vol;
+    }
+
     private void BtnAddOneMinute_Click(object sender, RoutedEventArgs e)
     {
         s_bl.Admin.ForwardClock(BO.Enums.TimeUnit.MINUTE);
     }
+    // Advances system clock by one hour.
 
     private void BtnAddOneHour_Click(object sender, RoutedEventArgs e)
     {
         s_bl.Admin.ForwardClock(BO.Enums.TimeUnit.HOUR);
     }
+    // Advances system clock by one month.
+
     private void BtnAddOneMonth_Click(object sender, RoutedEventArgs e)
     {
         s_bl.Admin.ForwardClock(BO.Enums.TimeUnit.MONTH);
     }
+    // Advances system clock by one year.
+
     private void BtnAddOneYear_Click(object sender, RoutedEventArgs e)
     {
         s_bl.Admin.ForwardClock(BO.Enums.TimeUnit.YEAR);
     }
+    // Advances system clock by one day.
+
     private void BtnAddOneDay_Click(object sender, RoutedEventArgs e)
     {
         s_bl.Admin.ForwardClock(BO.Enums.TimeUnit.DAY);
     }
+    // Updates the risk range configuration in the system.
+
     private void BtnUpdateRiskRange_Click(object sender, RoutedEventArgs e)
     {
         
         s_bl.Admin.SetMaxRange(RiskRange);
     }
+    // Updates UI to reflect the current system clock time.
+
+    private volatile DispatcherOperation? _observerOperation = null; //stage 7
 
     private void ClockObserver()
     {
-        Dispatcher.Invoke(() => CurrentTime = s_bl.Admin.GetClock());
+        
+
+        if (_observerOperation is null || _observerOperation.Status == DispatcherOperationStatus.Completed)
+            _observerOperation = Dispatcher.BeginInvoke(() =>
+            {
+                CurrentTime = s_bl.Admin.GetClock();
+            });
+
     }
+    // Updates UI to reflect the current risk range configuration.
+
     private void ConfigObserver()
     {
-        Dispatcher.Invoke(() => RiskRange = s_bl.Admin.GetMaxRange());
+        if (_observerOperation is null || _observerOperation.Status == DispatcherOperationStatus.Completed)
+            _observerOperation = Dispatcher.BeginInvoke(() =>
+            {
+                CurrentTime = s_bl.Admin.GetClock();
+            });
+
     }
 
     public TimeSpan RiskRange
@@ -84,6 +173,8 @@ public partial class MainWindow : Window
     // Using a DependencyProperty as the backing store for RiskRange.  This enables animation, styling, binding, etc...
     public static readonly DependencyProperty RiskRangeProperty =
     DependencyProperty.Register("RiskRange", typeof(TimeSpan), typeof(MainWindow), new PropertyMetadata(TimeSpan.Zero));
+    // Initializes UI with current clock and config values, and registers observers.
+
     private void MainWindow_Loaded(object sender, RoutedEventArgs e)
     {
         
@@ -92,17 +183,20 @@ public partial class MainWindow : Window
         s_bl.Admin.AddConfigObserver(ConfigObserver);
         s_bl.Admin.AddClockObserver(ClockObserver);
     }
-   
+    // Unregisters observers when the window closes.
+
     private void MainWindow_Closed(object sender, EventArgs e)
     {
         s_bl.Admin.RemoveClockObserver(ClockObserver);
         s_bl.Admin.RemoveConfigObserver(ConfigObserver);
     }
+    // Opens the volunteer list window if not already open.
+
     private void HandleVolunteer_Click(object sender, RoutedEventArgs e)
     {
         if (volunteerWindow == null || !volunteerWindow.IsLoaded)
         {
-            volunteerWindow = new VolunteerListWindow();
+            volunteerWindow = new VolunteerListWindow(volunteer);
             volunteerWindow.Owner = this; 
             volunteerWindow.Closed += (s, args) => volunteerWindow = null;
             volunteerWindow.Show();
@@ -115,6 +209,7 @@ public partial class MainWindow : Window
 
 
 
+    // Opens the call list window if not already open.
 
     private void HandleCall_click(object sender, RoutedEventArgs e)
     {
@@ -132,8 +227,10 @@ public partial class MainWindow : Window
     }
     private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
     {
-        // כרגע היא ריקה - תוסיפי פה קוד אם צריך
+        
     }
+    // Resets the database after user confirmation, closing other windows and showing progress.
+
     private void BtnResetDB(object sender, RoutedEventArgs e)
     {
         MessageBoxResult result = MessageBox.Show(
@@ -177,6 +274,8 @@ public partial class MainWindow : Window
             Mouse.OverrideCursor = null;
         }
     }
+    // Initializes the database after user confirmation, closing other windows and showing progress.
+
     private void BtnInitializeDB(object sender, RoutedEventArgs e)
     {
         MessageBoxResult result = MessageBox.Show(
@@ -219,6 +318,27 @@ public partial class MainWindow : Window
         {
             // החזר את סמן העכבר לקדמותו
             Mouse.OverrideCursor = null;
+        }
+    }
+
+    private void startOrStopSimulator(object sender, RoutedEventArgs e)
+    {
+        //אם הוא היה מכובה
+        if(SimulatorFlag==false)
+        {
+            //הופך לדלוק
+            SimulatorFlag = true;
+            s_bl.Admin.StartSimulator(Interval); //stage 7
+            SimulatorButtonText = "Stop Simulator";
+            EnableToChange = false;
+        }
+        else
+        {
+            //הופך למכובה
+            SimulatorFlag = false;
+            s_bl.Admin.StopSimulator(); //stage 7
+            SimulatorButtonText = "Start Simulator";
+            EnableToChange = true;
         }
     }
 }

@@ -11,20 +11,20 @@
         Closed="VolunteerListWindow_Closed">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="109*"/>
-            <RowDefinition Height="490*"/>
-            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="54*"/>
+            <RowDefinition Height="217*"/>
+            <RowDefinition Height="Auto" MinHeight="74.06"/>
         </Grid.RowDefinitions>
         <!--Internal, Upper Grid-->
-        <Grid Height="auto" Grid.Row="0" Width="auto" RenderTransformOrigin="0.609,0.453" Margin="0,0,0,490" Grid.RowSpan="2">
+        <Grid Height="auto" Grid.Row="0" Width="auto" RenderTransformOrigin="0.609,0.453" Margin="0,0,0,26">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
-            <Label Content="Hello manager" Margin="0,0,294,71"></Label>
-            <Label Content="Please enter a limited&#xD;&#xA;number of call" Margin="241,38,16,23" Grid.Column="1"></Label>
-            <TextBox Text="" Margin="342,61,21,27" Grid.Column="1"/>
-            <ComboBox ItemsSource="{Binding Source={StaticResource VolunteerSortFieldCollectionKey}}" SelectedValue="{Binding Path=Filter, Mode=TwoWay}" SelectionChanged="Sort_By" Grid.Column="1" HorizontalAlignment="Left" Width="152" Margin="242,6,0,71"/>
+            <Label Content="Hello" Margin="135,27,135,23"></Label>
+            <TextBlock Text="{Binding Manager}" Margin="60,41,103,10"></TextBlock>
+
+            <ComboBox ItemsSource="{Binding Source={StaticResource VolunteerSortFieldCollectionKey}}" SelectedValue="{Binding Path=Filter, Mode=TwoWay}" SelectionChanged="Sort_By" Grid.Column="1" HorizontalAlignment="Left" Width="152" Margin="212,18,0,19"/>
         </Grid>
         <ListView Margin="5,5,5,5" Grid.Row="1" ItemsSource="{Binding Path=VolunteerList}" 
   SelectedItem="{Binding SelectedVolunteer}" MouseDoubleClick="lsvVolunteerList_MouseDoubleClick">
@@ -110,7 +110,7 @@
                 </GridView>
             </ListView.View>
         </ListView>
-        <Button Content="Add" Click="AddButton_Click" Grid.Row="2" HorizontalAlignment="Center" Width="100" Margin="0,4,0,-4"/>
+        <Button Content="Add" Click="AddButton_Click" Grid.Row="2" HorizontalAlignment="Center" Width="100" Margin="0,10,0,14"/>
 
     </Grid>
 </Window>

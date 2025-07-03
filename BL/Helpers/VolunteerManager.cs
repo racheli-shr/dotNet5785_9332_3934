@@ -1,5 +1,6 @@
 ﻿
 using BL.Helpers;
+using BLImplementation;
 using DalApi;
 using System.ComponentModel;
 using System.Text.RegularExpressions;
@@ -11,7 +12,102 @@ internal static class VolunteerManager
 {
     private static IDal v_dal = Factory.Get; //stage 4
     internal static ObserverManager Observers = new(); //stage 5
-    // Define the delegate for converting BO.Volunteer to DO.Volunteer
+                                                       // Define the delegate for converting BO.Volunteer to DO.Volunteer
+
+
+    private static readonly Random s_rand = new();
+    private static int s_simulatorCounter = 0;
+
+
+    internal static void TutorSimulator()
+    {
+        BLApi.IVolunteer volunteerImplementation= new VolunteerImplementation();
+        BLApi.ICall callImplementation = new CallImplementation();
+        
+        Random rnd = new Random();
+        int toCancel = rnd.Next(1, 6);
+        int toAssign = rnd.Next(1, 6);
+        var activeDOTutors = v_dal.Volunteer.ReadAll(tutor => tutor.IsActive);
+        IEnumerable<BO.Volunteer> activeTutors = activeDOTutors.Select(t => volunteerImplementation.Read(t.Id));
+        foreach (var tutor in activeTutors)
+        {
+            BO.CallInProgress currentCallInProgress = tutor.CurrentCallInProgress;
+            if (currentCallInProgress == null)
+            {
+                toAssign = rnd.Next(1, 11);
+                if (toAssign == 1)
+                {
+                    var mostCommonSubject = callImplementation.GetClosedCallsByVolunteer(tutor.Id)
+                     .GroupBy(c => c.CallType)
+                     .OrderByDescending(g => g.Count())
+                     .Select(g => (BO.Enums.CallType?)g.Key)
+                     .FirstOrDefault();
+
+                    IEnumerable<BO.OpenCallInList> openCalls;
+                    if (mostCommonSubject != null)
+                        openCalls = callImplementation.FilterOpenCalls(tutor.Id, BO.Enums.OpenCallInListFields.CallType, mostCommonSubject);
+                    else
+                        openCalls = callImplementation.FilterOpenCalls(tutor.Id);
+
+                    openCalls.OrderBy(c => c.DistanceFromVolunteer);
+                    if (openCalls.Any())
+                        callImplementation.AssignCallToVolunteer(tutor.Id, openCalls.FirstOrDefault().Id);
+
+                }
+            }
+            else
+            {
+                DateTime entryTime = currentCallInProgress.EntryTimeToHandle;
+                int addTime = 7 + (int)Math.Floor((double)currentCallInProgress.DistanceFromVolunteer) / 2;
+                if (entryTime.AddDays(addTime) <= AdminManager.Now)
+                {
+                    callImplementation.CompleteCallTreatment(tutor.Id, currentCallInProgress.Id);
+                }
+                else
+                {
+                    toCancel = rnd.Next(1, 11);
+                    if (toCancel == 1)
+                        callImplementation.DeleteAssignmentToCall(currentCallInProgress.Id);
+                }
+
+
+            }
+
+        }
+    }
+    internal static bool IsValidName(string name)
+    {
+        // בדיקה שהאורך בין 2 ל-50 תווים
+        if (string.IsNullOrWhiteSpace(name) || name.Length < 2 || name.Length > 50)
+            return false;
+
+        // ביטוי רגולרי: שם יכול להכיל רק אותיות (עברית/אנגלית) ורווחים, אך לא להתחיל או להסתיים ברווח
+        string pattern = @"^[A-Za-zא-ת]+(?: [A-Za-zא-ת]+)*$";
+
+        return Regex.IsMatch(name, pattern);
+    }
+    public static async Task updateCoordinatesForVolunteerAddressAsync(int volunteerId, string address)
+    {
+        if (!string.IsNullOrWhiteSpace(address))
+        {
+            var (latitude, longitude) = await Tools.GetCoordinatesFromAddressAsync(address);
+            if (latitude != null && longitude != null)
+            {
+                DO.Call existingCall;
+                lock (AdminManager.BlMutex)
+                    existingCall = v_dal.Call.Read(volunteerId);
+
+                existingCall = existingCall with { Latitude = latitude, longtitude = longitude };
+
+                lock (AdminManager.BlMutex)
+                    v_dal.Call.Update(existingCall);
+
+                CallManager.Observers.NotifyListUpdated();
+                CallManager.Observers.NotifyItemUpdated(volunteerId);
+            }
+        }
+    }
+
     public static DO.Volunteer ConvertBOToDO(BO.Volunteer input) =>
         new DO.Volunteer
         {
@@ -48,7 +144,7 @@ internal static class VolunteerManager
         return checksum == (id[8] - '0');
     }
 
-    internal static double GetDistance(double volLatitude, double vollongtitude, double callLatitude, double calllongtitude, DO.Enums.DistanceType? typeDistance)
+    internal static double? GetDistance(double? volLatitude, double? vollongtitude, double? callLatitude, double? calllongtitude, DO.Enums.DistanceType? typeDistance)
     {
 
         switch (typeDistance)
@@ -69,15 +165,15 @@ internal static class VolunteerManager
     }
 
     // חישוב מרחק אווירי נוסחת Haversine
-    private static double CalculateHaversineDistance(double lat1, double lon1, double lat2, double lon2)
+    private static double? CalculateHaversineDistance(double? lat1, double? lon1, double? lat2, double? lon2)
     {
         const double R = 6371; // רדיוס כדור הארץ בק"מ
-        double dLat = DegreesToRadians(lat2 - lat1);
-        double dLon = DegreesToRadians(lon2 - lon1);
+        double? dLat = DegreesToRadians(lat2 - lat1);
+        double? dLon = DegreesToRadians(lon2 - lon1);
 
-        double a = Math.Sin(dLat / 2) * Math.Sin(dLat / 2) +
-                   Math.Cos(DegreesToRadians(lat1)) * Math.Cos(DegreesToRadians(lat2)) *
-                   Math.Sin(dLon / 2) * Math.Sin(dLon / 2);
+        double a = Math.Sin((double)dLat / 2) * Math.Sin((double)dLat / 2) +
+                   Math.Cos((double)DegreesToRadians(lat1)) * Math.Cos((double)DegreesToRadians(lat2)) *
+                   Math.Sin((double)dLon / 2) * Math.Sin((double)dLon / 2);
 
         double c = 2 * Math.Atan2(Math.Sqrt(a), Math.Sqrt(1 - a));
 
@@ -85,22 +181,23 @@ internal static class VolunteerManager
     }
 
     // המרחק להליכה (סימולציה בסיסית)
-    private static double SimulatedWalkingDistance(double lat1, double lon1, double lat2, double lon2)
+    private static double? SimulatedWalkingDistance(double? lat1, double? lon1, double? lat2, double? lon2)
     {
-        double aerialDistance = CalculateHaversineDistance(lat1, lon1, lat2, lon2);
+        double? aerialDistance = CalculateHaversineDistance(lat1, lon1, lat2, lon2);
         return aerialDistance * 1.3; // מקדם לקיצור או הארכת הדרך הרגלית
     }
 
     // המרחק לנסיעה (סימולציה בסיסית)
-    private static double SimulatedDrivingDistance(double lat1, double lon1, double lat2, double lon2)
+    private static double? SimulatedDrivingDistance(double? lat1, double? lon1, double? lat2, double? lon2)
     {
-        double aerialDistance = CalculateHaversineDistance(lat1, lon1, lat2, lon2);
+        double? aerialDistance = CalculateHaversineDistance(lat1, lon1, lat2, lon2);
         return aerialDistance * 1.5; // מקדם להתחשבות בכבישים ומסלולים
     }
 
-    private static double DegreesToRadians(double degrees)
+    private static double? DegreesToRadians(double? degrees)
     {
-        return degrees * (Math.PI / 180);
+        
+        return degrees!=null?degrees * (Math.PI / 180):null;
     }
 
     internal static bool IsValidEmail(string? email)
@@ -159,17 +256,10 @@ internal static class VolunteerManager
             throw new BO.Exceptions.BLInvalidDataException("One or more numeric fields in the volunteer object contain invalid data.");
         }
     }
-//    internal static void PeriodicVolunteersUpdates(DateTime oldClock, DateTime newClock) //stage 4
-//    {
-//        var list = v_dal.Volunteer.ReadAll().ToList();
-//        foreach (var doVolunteer in list)
-//        {
-//            //if student study for more than MaxRange years
-//            //then student should be automatically updated to 'not active'
-//            if (AdminManager.Now.Year - doVolunteer.registrationDate?.Year >= AdminManager.MaxRange)
-//            {
-//                v_dal.Volunteer.Update(doVolunteer with { IsActive = false });
-//            }
-//        }
-//    }
+ 
+    private static int s_periodicCounter = 0;
+
+    
+
 }
+

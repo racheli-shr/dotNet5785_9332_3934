@@ -4,6 +4,7 @@ using DalApi;
 using DO;
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Xml.Linq;
 
 using static DO.Exceptions;
@@ -11,6 +12,8 @@ using static DO.Exceptions;
 internal class AssignmentImplementation : IAssignment
 {
     // convert from element to assignment object
+    [MethodImpl(MethodImplOptions.Synchronized)]
+
     public Assignment Read(int id)
     {
         XElement? assignmentElem = XMLTools.LoadListFromXMLElement(Config.s_assignment_xml)
@@ -24,6 +27,7 @@ internal class AssignmentImplementation : IAssignment
     }
 
 
+    [MethodImpl(MethodImplOptions.Synchronized)]
 
     static Assignment GetAssignment(XElement s)
     {
@@ -38,6 +42,8 @@ internal class AssignmentImplementation : IAssignment
             AssignmentStatus= s.ToEnumNullable<DO.Enums.AssignmentStatus>("AssignmentStatus") ?? DO.Enums.AssignmentStatus.NONE,
         };
     }
+    [MethodImpl(MethodImplOptions.Synchronized)]
+
     public void Create(Assignment item)
     {
         // bring the next id from the data config
@@ -57,6 +63,7 @@ internal class AssignmentImplementation : IAssignment
         // save at the XML file
         XMLTools.SaveListToXMLSerializer(assignments, Config.s_assignment_xml);
     }
+    [MethodImpl(MethodImplOptions.Synchronized)]
 
     public void Delete(int id)
     {
@@ -66,11 +73,13 @@ internal class AssignmentImplementation : IAssignment
         XMLTools.SaveListToXMLSerializer(Assignments, Config.s_assignment_xml);
 
     }
+    [MethodImpl(MethodImplOptions.Synchronized)]
 
     public void DeleteAll()
     {
         XMLTools.SaveListToXMLSerializer(new List<Assignment>(), Config.s_assignment_xml);
     }
+    [MethodImpl(MethodImplOptions.Synchronized)]
 
     public Assignment? Read(Func<Assignment, bool> filter)
     {
@@ -78,6 +87,7 @@ internal class AssignmentImplementation : IAssignment
         GetAssignment(s)).FirstOrDefault(filter);
         return assignments;
     }
+    [MethodImpl(MethodImplOptions.Synchronized)]
 
     public IEnumerable<Assignment> ReadAll(Func<Assignment, bool>? filter = null)
     {
@@ -85,6 +95,7 @@ internal class AssignmentImplementation : IAssignment
         return filter != null ? assignments.Where(filter) : assignments;
 
     }
+    [MethodImpl(MethodImplOptions.Synchronized)]
 
     public void Update(Assignment item)
     {

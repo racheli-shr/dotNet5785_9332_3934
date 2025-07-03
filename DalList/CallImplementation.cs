@@ -3,12 +3,15 @@ namespace Dal;
 using DalApi;
 using DO;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using static DO.Exceptions;
 
 internal class CallImplementation : ICall
 {
     // Retrieves a Call object by its unique ID.
     // Throws an exception if the call is not found.
+    [MethodImpl(MethodImplOptions.Synchronized)]
+
     public Call? Read(int id)
     {
         Call? c = DataSource.Calls.FirstOrDefault(x => x.Id == id); // Fetch call by ID
@@ -17,6 +20,7 @@ internal class CallImplementation : ICall
         else return c;
     }
     // Creates a new Call entry with a unique ID and adds it to the data source.
+    [MethodImpl(MethodImplOptions.Synchronized)]
 
     public void Create(Call item)
     {
@@ -27,6 +31,8 @@ internal class CallImplementation : ICall
     }
     // Deletes a Call entry by its ID.
     // Throws an exception if the call does not exist.
+    [MethodImpl(MethodImplOptions.Synchronized)]
+
     public void Delete(int id)
     {
         Call? c = Read(a => a.Id == id);
@@ -40,12 +46,14 @@ internal class CallImplementation : ICall
         }
     }
     // Deletes all Call entries from the data source.
+    [MethodImpl(MethodImplOptions.Synchronized)]
 
     public void DeleteAll()
     {
         DataSource.Calls.Clear();
     }
     // Retrieves a single Call entry that matches a given filter condition.
+    [MethodImpl(MethodImplOptions.Synchronized)]
 
     public Call? Read(Func<Call, bool> filter)
     {
@@ -53,6 +61,7 @@ internal class CallImplementation : ICall
         return DataSource.Calls.FirstOrDefault(filter);
     }
     // Retrieves all Call entries, optionally filtered by a given condition.
+    [MethodImpl(MethodImplOptions.Synchronized)]
 
     public IEnumerable<Call> ReadAll(Func<Call, bool>? filter = null)
     {
@@ -66,6 +75,8 @@ internal class CallImplementation : ICall
     // Updates an existing Call entry.
     // Replaces the old entry with the new one.
     // Throws an exception if the call does not exist.
+    [MethodImpl(MethodImplOptions.Synchronized)]
+
     public void Update(Call item)
     {
         Call? c = DataSource.Calls.Find(call => call.Id == item.Id);

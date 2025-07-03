@@ -15,8 +15,8 @@ public class Call
     public CallType CallType { get; set; } // Type of the call (ENUM, from Call.DO)
     public string? Description { get; set; } // Textual description of the call (nullable, from Call.DO)
     public string? FullAddress { get; set; } // Full address of the call; validated in the logic layer
-    public double Latitude { get; set; } // Latitude of the call's location; updated when address is set
-    public double longtitude { get; set; } // longtitude of the call's location; updated when address is set
+    public double? Latitude { get; set; } // Latitude of the call's location; updated when address is set
+    public double? longtitude { get; set; } // longtitude of the call's location; updated when address is set
     public DateTime OpeningTime { get; init; } // Time the call was opened; set by the data layer
     public DateTime? MaxFinishTime { get; set; } // Maximum time to finish the call; must be validated in logic layer
     public CallStatus Status { get; set; } // Status of the call; computed based on logic conditions

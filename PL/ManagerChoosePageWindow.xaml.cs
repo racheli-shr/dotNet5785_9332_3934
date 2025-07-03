@@ -20,19 +20,27 @@ namespace PL
     public partial class ManagerChoosePageWindow : Window
     {
         private MainWindow _mainWindow;
-         BO.Enums.Role Role { get; set; }
-         BO.Volunteer volunteer { get; set; }
+        // Stores the role of the user (e.g., Manager, Volunteer, etc.)
+
+        BO.Enums.Role Role { get; set; }
+        // Stores the current volunteer's information
+
+        BO.Volunteer volunteer { get; set; }
+        // Constructor receives role and volunteer, initializes the window
+
         public ManagerChoosePageWindow(BO.Enums.Role r, BO.Volunteer v)
         {
             InitializeComponent();
             Role = r;
             volunteer = v;
         }
+        // Opens the volunteer main window
 
         private void volunteerPageBtn_Click(object sender, RoutedEventArgs e)
         {
             new VolunteerMainWindow(Role, volunteer).Show();
         }
+        // Opens the manager main window
 
         private void managerPageBtn_Click(object sender, RoutedEventArgs e)
         {

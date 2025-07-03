@@ -11,21 +11,7 @@ public static class Initialization
     private static IDal? s_dal;
     private static readonly Random s_rand = new();
 
-    private static void createAssignment()
-    {
-        List<Volunteer> VolList = s_dal.Volunteer.ReadAll().ToList();
-        List<Call> CallList = s_dal.Call.ReadAll().ToList();
-        for (int i = 0; i < 10; i++)
-        {
-
-            int CallId = CallList[s_rand.Next(0, CallList.Count)].Id;
-            int VolunteerId = VolList[s_rand.Next(0, VolList.Count)].Id;
-            DateTime EntryTimeForTreatment = s_dal!.Config.Clock;
-            DateTime? ActualTreatmentEndTime = s_dal!.Config.Clock.AddDays(7);
-            DO.Enums.AssignmentStatus assignmentStatus = CallId%3==0? DO.Enums.AssignmentStatus.TREATED:CallId%2==0? DO.Enums.AssignmentStatus.MANAGER_CANCELLED:CallId%1==0? DO.Enums.AssignmentStatus.SELF_CANCELLED: DO.Enums.AssignmentStatus.EXPIRED;
-            s_dal!.Assignment.Create(new(0, CallId, VolunteerId, EntryTimeForTreatment, ActualTreatmentEndTime,assignmentStatus));
-        }
-    }
+    
     private static void createVolunteer()
     {
         int MIN_ID = 20000000;
@@ -34,8 +20,7 @@ public static class Initialization
         int MAX_PHONE = 599999999;
 
         string[] fullName = { "Yael Bar", "Racheli Tal ", "Hadas Shay", "Shira Or", "Daniel Zohar", "David Mor" };
-        string[] adress = { "mango 32", "orange 15", "ananas 66", "kiwi 46", "apple 21", "cherry 10" };
-
+        var address = DalTest.AddAddress.GetAddAddresses();
         int i = 0;
         foreach (string name in fullName)
         {
@@ -46,9 +31,9 @@ public static class Initialization
             string email = $"{name.Trim().Replace(" ", "")}@gmail.com";
             string password = s_dal!.Volunteer.GenerateStrongPassword();
             string encriptedPassword = s_dal!.Volunteer.EncryptPassword(password);
-            string fullAdress = $"{adress[i]}";
-            double longtitude = (s_rand.NextDouble() * 360) - 180;
-            double latitude = (s_rand.NextDouble() * 180) - 90;
+            string fullAdress = $"{address[i].StringAddress}";
+            double longtitude = address[i].Longitude;
+            double latitude = address[i].Latitude;
             DO.Enums.Role role = (i == 0 ? DO.Enums.Role.manager : DO.Enums.Role.volunteer);
             bool isIative = (i % 2 == 0) ? false : true;
             double maxDistance = i * i + 50;
@@ -76,20 +61,37 @@ public static class Initialization
     }
     private static void createCall()
     {
-        string[] adress = { "mango 66", "orange 56", "ananas 12", "kiwi 88", "apple 2", "cherry 3" };
+        var address = DalTest.AddAddress.GetAddAddresses();
         string[] sortOfFood = { "I want to prepare a lemomCake", "Hi mazal tov! i prepare a creamy champinion pasta", "harbe nahat! i bring a cheesy salad", "oh a new baby! i bring the family a chocolate pai" };
-        for (int i = 0; i < 4; i++)
+        for (int i = 0; i < 15; i++)
         {
             DO.Enums.CallType CallType = i % 2 == 0 ? i % 4 == 0 ? DO.Enums.CallType.desert : DO.Enums.CallType.mainMeal : i % 3 == 0 ? DO.Enums.CallType.salad : DO.Enums.CallType.pastry;
-            string? Description = sortOfFood[i];
-            string FullAdress = adress[i + 1];
-            double Latitude = (s_rand.NextDouble() * 180) - 90;
-            double longtitude = (s_rand.NextDouble() * 180) - 90;
+            string? Description = sortOfFood[i%4];
+            string FullAdress = address[i + 1].StringAddress;
+            double? Latitude = address[i+1].Latitude;
+            double? longtitude = address[i+1].Longitude;
             DateTime OpeningCallTime = s_dal!.Config.Clock.AddDays(i).AddHours(i % 3);
             DateTime? MaxTimeToEnd = s_dal!.Config.Clock.AddDays(i + 14);
             s_dal!.Call.Create(new(0, CallType, Description, FullAdress, Latitude, longtitude, OpeningCallTime, MaxTimeToEnd));
         }
     }
+    
+    private static void createAssignment()
+    {
+        List<Volunteer> VolList = s_dal.Volunteer.ReadAll().ToList();
+        List<Call> CallList = s_dal.Call.ReadAll().ToList();
+        for (int i = 0; i < 10; i++)
+        {
+
+            int CallId = CallList[i].Id;
+            int VolunteerId = VolList[s_rand.Next(0, VolList.Count)].Id;
+            DateTime EntryTimeForTreatment = s_dal!.Config.Clock;
+            DateTime? ActualTreatmentEndTime = s_dal!.Config.Clock.AddYears(1);
+            DO.Enums.AssignmentStatus assignmentStatus = CallId%4==0? DO.Enums.AssignmentStatus.TREATED:CallId%3==0? DO.Enums.AssignmentStatus.MANAGER_CANCELLED:CallId%2==0? DO.Enums.AssignmentStatus.SELF_CANCELLED:CallId%1==0?DO.Enums.AssignmentStatus.AssignedAndInProgress: DO.Enums.AssignmentStatus.EXPIRED;
+            s_dal!.Assignment.Create(new(0, CallId, VolunteerId, EntryTimeForTreatment, ActualTreatmentEndTime,assignmentStatus));
+        }
+    }
+
     public static int GetValidIsraeliID(int id)
     {
         if (id < 10000000 || id > 99999999)

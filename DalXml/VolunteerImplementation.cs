@@ -5,13 +5,16 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.Metrics;
 using System.Numerics;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Xml.Linq;
 using static DO.Exceptions;
 
 internal class VolunteerImplementation : IVolunteer
 {
-  //  convert from element to volunteer object
+    //  convert from element to volunteer object
+    [MethodImpl(MethodImplOptions.Synchronized)]
+
     static Volunteer GetVolunteer(XElement s)
     {
         return new DO.Volunteer()
@@ -33,6 +36,8 @@ internal class VolunteerImplementation : IVolunteer
 
 
     //verify if the password is legal and srtong
+    [MethodImpl(MethodImplOptions.Synchronized)]
+
     public bool checkPassword(string password)
     {
         if (string.IsNullOrEmpty(password) || password.Length != 8)
@@ -45,6 +50,7 @@ internal class VolunteerImplementation : IVolunteer
 
         return hasUpper && hasLower && hasDigit && hasSpecial;
     }
+    [MethodImpl(MethodImplOptions.Synchronized)]
 
     public void Create(Volunteer item)
     {
@@ -56,6 +62,8 @@ internal class VolunteerImplementation : IVolunteer
         XMLTools.SaveListToXMLSerializer(volunteers, Config.s_volunteer_xml);
         
     }
+    [MethodImpl(MethodImplOptions.Synchronized)]
+
     //Decrypt the Password
     public string DecryptPassword(string encryptedPassword)
     {
@@ -69,6 +77,7 @@ internal class VolunteerImplementation : IVolunteer
 
         return decryptedPassword.ToString();
     }
+    [MethodImpl(MethodImplOptions.Synchronized)]
 
     public void Delete(int id)
     {
@@ -78,12 +87,15 @@ internal class VolunteerImplementation : IVolunteer
         XMLTools.SaveListToXMLSerializer(Volunteers, Config.s_volunteer_xml);
 
     }
+    [MethodImpl(MethodImplOptions.Synchronized)]
 
     public void DeleteAll()
     {
         XMLTools.SaveListToXMLSerializer(new List<Volunteer>(), Config.s_volunteer_xml);
     }
     //Encrypt the Password
+    [MethodImpl(MethodImplOptions.Synchronized)]
+
     public string EncryptPassword(string password)
     {
         if (string.IsNullOrEmpty(password))
@@ -97,6 +109,8 @@ internal class VolunteerImplementation : IVolunteer
         return encryptedPassword.ToString();
     }
     //genarate first password for a new person
+    [MethodImpl(MethodImplOptions.Synchronized)]
+
     public string GenerateStrongPassword()
     {
         const string upperChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -118,6 +132,7 @@ internal class VolunteerImplementation : IVolunteer
         string password = upper.ToString() + lower + digit + special + randomChars;
         return new string(password.OrderBy(_ => random.Next()).ToArray());
     }
+    [MethodImpl(MethodImplOptions.Synchronized)]
 
     public Volunteer? Read(Func<Volunteer, bool> filter)
     {
@@ -134,6 +149,7 @@ internal class VolunteerImplementation : IVolunteer
         return volunteer;
 
     }
+    [MethodImpl(MethodImplOptions.Synchronized)]
 
     public Volunteer Read(int id)
     {
@@ -150,12 +166,14 @@ internal class VolunteerImplementation : IVolunteer
 
 
 
+    [MethodImpl(MethodImplOptions.Synchronized)]
 
-        public IEnumerable<Volunteer> ReadAll(Func<Volunteer, bool>? filter = null)
+    public IEnumerable<Volunteer> ReadAll(Func<Volunteer, bool>? filter = null)
     {
         var volunteers = XMLTools.LoadListFromXMLSerializer<Volunteer>(Config.s_volunteer_xml);
         return filter == null ? volunteers : volunteers.Where(filter);
     }
+    [MethodImpl(MethodImplOptions.Synchronized)]
 
     public void Update(Volunteer item)
     {
@@ -166,6 +184,8 @@ internal class VolunteerImplementation : IVolunteer
         XMLTools.SaveListToXMLSerializer(Volunteers, Config.s_volunteer_xml);
     }
     //change and update a new password
+    [MethodImpl(MethodImplOptions.Synchronized)]
+
     public void updatePassword(int id, string password)
     {
         var volunteers = XMLTools.LoadListFromXMLSerializer<Volunteer>(Config.s_volunteer_xml);

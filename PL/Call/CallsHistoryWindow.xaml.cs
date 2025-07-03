@@ -12,6 +12,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 
 namespace PL.Call
 {
@@ -85,8 +86,17 @@ namespace PL.Call
             ClosedCallInList = (EndTreatmentType == BO.Enums.TypeOfTreatmentTerm.NONE) ?
                 s_bl.Call.GetClosedCallsByVolunteer(volunteer.Id, null).ToList() : s_bl.Call.GetClosedCallsByVolunteer(volunteer.Id, (closedCall) => closedCall.FinishType == EndTreatmentType).ToList()!;
         }
+        private volatile DispatcherOperation? _observerOperation = null; //stage 7
+
         private void CallsHistoryWindowObserver()
-            => queryCallsHistoryWindow();
+        {
+            if (_observerOperation is null || _observerOperation.Status == DispatcherOperationStatus.Completed)
+                _observerOperation = Dispatcher.BeginInvoke(() =>
+                {
+                    queryCallsHistoryWindow();
+                });
+
+        }
 
 
 

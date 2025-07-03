@@ -1,6 +1,6 @@
 ﻿namespace BO;
 //
-internal class Exceptions
+public class Exceptions
 {
     [Serializable]
     public class BlDoesNotExistException : Exception
@@ -52,4 +52,10 @@ internal class Exceptions
         public BLUnauthorizedException(string? message) : base(message) { }
         public BLUnauthorizedException(string? message, Exception innerException) : base(message, innerException) { }
     }
+    public class BLTemporaryNotAvailableException : Exception
+    {
+        public BLTemporaryNotAvailableException(string? message) : base(message) { }
+        public BLTemporaryNotAvailableException(string? message, Exception innerException) : base(message, innerException) { }
+    }
+    
 }

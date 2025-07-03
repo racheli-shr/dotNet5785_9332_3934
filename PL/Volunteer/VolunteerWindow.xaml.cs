@@ -12,6 +12,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 
 namespace PL.Volunteer
 {
@@ -21,8 +22,8 @@ namespace PL.Volunteer
     public partial class VolunteerWindow : Window
     {
         static readonly BlApi.IBl s_bl = BlApi.Factory.Get();
-        public BO.Volunteer Volunteer { get; set; }
-        public string ButtonText { get; set; }
+        public int VolunteerId { get; set; }
+
         public string password { get; set; } = "";
         public bool IsTextBoxEnabled { set; get; }
         public bool IsActiveEnabled { set; get; }
@@ -30,35 +31,22 @@ namespace PL.Volunteer
         public int sender_Id = 0;
         //public string CameFromWindow;
         public bool isAbleToChange = false;
-        public VolunteerWindow(int id ,string CameFromWindow)
-        {
-            
-            InitializeComponent();
-            if (CameFromWindow == "VolunteerListWindow")
-            {
-                isAbleToChange = true;
-            }
-            //CameFromWindow = window;
-            IsTextBoxEnabled = id!=0 ? true : false;
-            sender_Id = id;
-            ButtonText = id == 0 ? "Add" : "Update";
-            CurrentVolunteer = (id != 0) ? s_bl.Volunteer.Read(id)! : new BO.Volunteer() { Id = 0 };
-            var call=s_bl.Volunteer.checkIfExistingAssignment(CurrentVolunteer);
-            IsActiveEnabled = call!=null?true:false;
-        }
+        
         public BO.Enums.Role Role { get; set; } = BO.Enums.Role.NONE;
         public BO.Enums.DistanceType distanceType { get; set; } = BO.Enums.DistanceType.airDistance;
 
 
-        public string status_message
+
+
+        public string ButtonText
         {
-            get { return (string)GetValue(status_messageProperty); }
-            set { SetValue(status_messageProperty, value); }
+            get { return (string)GetValue(ButtonTextProperty); }
+            set { SetValue(ButtonTextProperty, value); }
         }
 
-        // Using a DependencyProperty as the backing store for status_message.  This enables animation, styling, binding, etc...
-        public static readonly DependencyProperty status_messageProperty =
-            DependencyProperty.Register("status_message", typeof(string), typeof(VolunteerWindow), new PropertyMetadata(""));
+        // Using a DependencyProperty as the backing store for ButtonText.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty ButtonTextProperty =
+            DependencyProperty.Register("ButtonText", typeof(string), typeof(VolunteerWindow), new PropertyMetadata(""));
 
 
 
@@ -71,12 +59,29 @@ namespace PL.Volunteer
         public static readonly DependencyProperty CurrentVolunteerProperty =
             DependencyProperty.Register("CurrentVolunteer", typeof(BO.Volunteer), typeof(VolunteerWindow), new PropertyMetadata(null));
 
+        public VolunteerWindow(int id, string CameFromWindow)
+        {
+
+            InitializeComponent();
+            if (CameFromWindow == "VolunteerListWindow")
+            {
+                isAbleToChange = true;
+            }
+            //CameFromWindow = window;
+            IsTextBoxEnabled = id != 0 ? true : false;
+            sender_Id = id;
+            ButtonText = id == 0 ? "Add" : "Update";
+            CurrentVolunteer = (id != 0) ? s_bl.Volunteer.Read(id)! : new BO.Volunteer() { Id = 0 };
+            var call = s_bl.Volunteer.checkIfExistingAssignment(CurrentVolunteer);
+            IsActiveEnabled = call != null ? true : false;
+            VolunteerId = id == 0 ? 0 : id;
+        }
+
         private void AddUpdate_btn(object sender, RoutedEventArgs e)
         {
-            status_message = ButtonText == "Add" ? "Adding..." : "Updating";
             try
             {
-                
+                Console.WriteLine(  CurrentVolunteer.Password);
                 if (ButtonText == "Add")
                 {
                     //status_message = "Adding...";
@@ -118,12 +123,40 @@ namespace PL.Volunteer
 
         private void PasswordBox_PasswordChanged(object sender, RoutedEventArgs e)
         {
-            if (CurrentVolunteer != null && sender is PasswordBox passwordBox)
+            var passwordBox = sender as PasswordBox;
+            if (passwordBox != null && DataContext is VolunteerWindow viewModel)
             {
-                CurrentVolunteer.Password = passwordBox.Password;
+                viewModel.CurrentVolunteer.Password = passwordBox.Password;
             }
         }
 
-        
+        private void queryVolunteerWindow()
+        {
+            CurrentVolunteer = s_bl.Volunteer.Read(VolunteerId)!;
+        }
+
+        private volatile DispatcherOperation? _observerOperation = null; //stage 7
+
+        private void VolunteerWindowObserver()
+        {
+            if (_observerOperation is null || _observerOperation.Status == DispatcherOperationStatus.Completed)
+                _observerOperation = Dispatcher.BeginInvoke(() =>
+                {
+                    queryVolunteerWindow();
+                });
+
+        }
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            s_bl.Call.AddObserver(VolunteerWindowObserver);
+        }
+
+        private void Window_Closed(object sender, EventArgs e)
+        {
+            s_bl.Call.RemoveObserver(VolunteerWindowObserver);
+        }
+
+
     }
 }

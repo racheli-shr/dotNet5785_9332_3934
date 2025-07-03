@@ -12,6 +12,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 
 namespace PL.Call;
 
@@ -33,7 +34,7 @@ public partial class CallListWindow : Window
         get { return (IEnumerable<BO.CallInList>)GetValue(CallListProperty); }
         set { SetValue(CallListProperty, value); }
     }
-    
+
     public static readonly DependencyProperty CallListProperty =
         DependencyProperty.Register("CallList", typeof(IEnumerable<BO.CallInList>), typeof(CallListWindow), new PropertyMetadata(null));
 
@@ -47,8 +48,18 @@ public partial class CallListWindow : Window
     => CallList = (FilterByCallType == BO.Enums.CallType.NONE) ?
         s_bl?.Call.GetFilteredAndCallList(null, null)! : s_bl?.Call.GetFilteredAndCallList(null, FilterByCallType)!;
 
+    private volatile DispatcherOperation? _observerOperation = null; //stage 7
+
     private void callListObserver()
-        => queryCallList();
+    {
+        if (_observerOperation is null || _observerOperation.Status == DispatcherOperationStatus.Completed)
+            _observerOperation = Dispatcher.BeginInvoke(() =>
+            {
+                queryCallList();
+            });
+
+
+    }
 
 
     private void CallListWindow_Closed(object sender, EventArgs e)

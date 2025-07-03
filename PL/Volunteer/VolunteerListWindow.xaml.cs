@@ -11,6 +11,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 
 namespace PL.Volunteer;
 
@@ -22,9 +23,12 @@ public partial class VolunteerListWindow : Window
     static readonly BlApi.IBl s_bl = BlApi.Factory.Get();
     public BO.VolunteerInList? SelectedVolunteer { get; set; }
 
-    public VolunteerListWindow()
+    public VolunteerListWindow(BO.Volunteer vol)
     {
         InitializeComponent();
+        Manager = vol;
+        VolunteerList = (Filter == BO.Enums.VolunteerSortField.NONE) ?
+        s_bl?.Volunteer.GetVolunteersList(null, null)! : s_bl?.Volunteer.GetVolunteersList(null, Filter)!;
     }
     public IEnumerable<BO.VolunteerInList> VolunteerList
     {
@@ -33,52 +37,118 @@ public partial class VolunteerListWindow : Window
     }
 
     public static readonly DependencyProperty VolunteerListProperty = DependencyProperty.Register("VolunteerList", typeof(IEnumerable<BO.VolunteerInList>), typeof(VolunteerListWindow), new PropertyMetadata(null));
+
+
     public BO.Enums.VolunteerSortField Filter { get; set; } = BO.Enums.VolunteerSortField.NONE;
 
-   
+
+    // Updates the volunteer list based on the selected sorting filter.
+
+
+    public BO.Volunteer Manager
+    {
+        get { return (BO.Volunteer)GetValue(ManagerProperty); }
+        set { SetValue(ManagerProperty, value); }
+    }
+
+    // Using a DependencyProperty as the backing store for Manager.  This enables animation, styling, binding, etc...
+    public static readonly DependencyProperty ManagerProperty =
+        DependencyProperty.Register("Manager", typeof(BO.Volunteer), typeof(VolunteerListWindow), new PropertyMetadata(null));
+
+
 
     private void Sort_By(object sender, SelectionChangedEventArgs e)
     {
         VolunteerList = (Filter == BO.Enums.VolunteerSortField.NONE) ?s_bl?.Volunteer.GetVolunteersList(null,null)! : s_bl?.Volunteer.GetVolunteersList(null,Filter)!;
     }
+    // Queries and updates the volunteer list according to the current filter.
+
+        try
+        {
+            VolunteerList = (Filter == BO.Enums.VolunteerSortField.NONE) ? s_bl?.Volunteer.GetVolunteersList(null, null)! : s_bl?.Volunteer.GetVolunteersList(null, Filter)!;
+        }
+        catch(Exception ex) 
+        {
+            MessageBox.Show("error opening add/update window" + ex.Message);
+
+        }
+    }
     private void queryVolunteerList()
     => VolunteerList = (Filter == BO.Enums.VolunteerSortField.NONE) ?
         s_bl?.Volunteer.GetVolunteersList(null,null)! : s_bl?.Volunteer.GetVolunteersList(null, Filter)!;
+    // Observer callback that refreshes the volunteer list when notified.
+        s_bl?.Volunteer.GetVolunteersList(null, null)! : s_bl?.Volunteer.GetVolunteersList(null, Filter)!;
+
+    private volatile DispatcherOperation? _observerOperation = null; //stage 7
 
     private void volunteerListObserver()
-        => queryVolunteerList();
- 
+    {
+        if (_observerOperation is null || _observerOperation.Status == DispatcherOperationStatus.Completed)
+            _observerOperation = Dispatcher.BeginInvoke(() =>
+            {
+                queryVolunteerList();
+            });
+
+    }
+
 
     private void VolunteerListWindow_Closed(object sender, EventArgs e)
     {
+
         s_bl.Volunteer.RemoveObserver(volunteerListObserver);
 
     }
+    // Adds the volunteer list observer when the window is loaded.
 
     private void VolunteerListWindow_Loaded(object sender, RoutedEventArgs e)
     {
         s_bl.Volunteer.AddObserver(volunteerListObserver);
-        
+
 
     }
 
- 
+
+    // Opens a new window to add a new volunteer.
+
 
     private void AddButton_Click(object sender, RoutedEventArgs e)
+
     {
-        new VolunteerWindow(0, "VolunteerListWindow").ShowDialog();
+        try
+        {
+            new VolunteerWindow(0, "VolunteerListWindow").ShowDialog();
+
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show("error opening add/update window" + ex.Message);
+
+        }
     }
 
-   
+    // Opens the volunteer details window for the selected volunteer on double-click.
+
+
 
     private void lsvVolunteerList_MouseDoubleClick(object sender, MouseButtonEventArgs e)
     {
-        if (SelectedVolunteer != null)
-            new VolunteerWindow(SelectedVolunteer.Id, "VolunteerListWindow").ShowDialog();
+
+
+        try
+        {
+            if (SelectedVolunteer != null)
+                new VolunteerWindow(SelectedVolunteer.Id, "VolunteerListWindow").ShowDialog();
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show("error opening add/update window" + ex.Message);
+
+        }
     }
 
     private void DeleteVolunteer_Click(object sender, RoutedEventArgs e)
-    {
+    {    // Confirms and deletes the selected volunteer, with error handling.
+
         if (sender is Button btn && btn.Tag is BO.VolunteerInList volunteer)
         {
             var result = MessageBox.Show(

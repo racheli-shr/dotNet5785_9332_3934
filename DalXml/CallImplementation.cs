@@ -4,11 +4,14 @@ using DalApi;
 using DO;
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Xml.Linq;
 using static DO.Exceptions;
 
 internal class CallImplementation : ICall
 {
+    [MethodImpl(MethodImplOptions.Synchronized)]
+
     public Call Read(int id)
     {
         // Load the list of calls from XML
@@ -27,8 +30,11 @@ internal class CallImplementation : ICall
     }
 
     // convert from element to call object
+    [MethodImpl(MethodImplOptions.Synchronized)]
+
     static Call GetCall(XElement s)
     {
+
         return new DO.Call()
         {
             Id = s.ToIntNullable("Id") ?? throw new FormatException("can't convert id"),
@@ -42,6 +48,7 @@ internal class CallImplementation : ICall
         };
     }
 
+    [MethodImpl(MethodImplOptions.Synchronized)]
 
     public void Create(Call item)
     {
@@ -63,6 +70,7 @@ internal class CallImplementation : ICall
         // save at the XML file
         XMLTools.SaveListToXMLSerializer(calls, Config.s_call_xml);
     }
+    [MethodImpl(MethodImplOptions.Synchronized)]
 
     public void Delete(int id)
     {
@@ -72,17 +80,20 @@ internal class CallImplementation : ICall
         XMLTools.SaveListToXMLSerializer(Calls, Config.s_call_xml);
 
     }
+    [MethodImpl(MethodImplOptions.Synchronized)]
 
     public void DeleteAll()
     {
         XMLTools.SaveListToXMLSerializer(new List<Call>(), Config.s_call_xml);
     }
+    [MethodImpl(MethodImplOptions.Synchronized)]
 
     public Call? Read(Func<Call, bool> filter)
     {
         return XMLTools.LoadListFromXMLElement(Config.s_call_xml).Elements().Select(s =>
         GetCall(s)).FirstOrDefault(filter);
     }
+    [MethodImpl(MethodImplOptions.Synchronized)]
 
     public IEnumerable<Call> ReadAll(Func<Call, bool>? filter = null)
     {
@@ -90,6 +101,7 @@ internal class CallImplementation : ICall
         return filter != null ? calls.Where(filter) : calls;
 
     }
+    [MethodImpl(MethodImplOptions.Synchronized)]
 
     public void Update(Call item)
     {

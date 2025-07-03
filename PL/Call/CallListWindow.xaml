@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PL.Call"
         mc:Ignorable="d"
-        Title="CallListWindow" Height="450" Width="800"
+        Title="CallListWindow" Height="450" Width="900"
         DataContext="{Binding RelativeSource={RelativeSource Mode=Self}}" 
         Loaded="CallListWindow_Loaded"
         Closed="CallListWindow_Closed">
@@ -29,7 +29,7 @@
             <ListView.View>
                 <GridView>
                     <!-- Delete -->
-                    <GridViewColumn Width="40">
+                    <GridViewColumn Width="50">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
                                 <Button Click="DeleteCall_Click" Tag="{Binding}" Background="Transparent" BorderThickness="0" Padding="2" ToolTip="Delete call">
@@ -39,7 +39,7 @@
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
                     <!--Assignments deletion-->
-                    <GridViewColumn Width="40">
+                    <GridViewColumn Width="50">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
                                 <Button Click="DeleteAssignmentsCall_Click" Tag="{Binding}" Background="Transparent" BorderThickness="0" Padding="2" ToolTip="Delete Assignment call">
@@ -49,7 +49,7 @@
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
                     <!-- Call ID -->
-                    <GridViewColumn Header="Call ID" Width="80">
+                    <GridViewColumn Header="Call ID" Width="60">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding CallId}"/>
@@ -58,7 +58,7 @@
                     </GridViewColumn>
 
                     <!-- Call Type (enum) -->
-                    <GridViewColumn Header="Call Type" Width="100">
+                    <GridViewColumn Header="Call Type" Width="80">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding CallType}"/>
@@ -87,7 +87,7 @@
                     </GridViewColumn>
 
                     <!-- Last Volunteer Name -->
-                    <GridViewColumn Header="Last Volunteer" Width="150">
+                    <GridViewColumn Header="Last Volunteer" Width="100">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding LastVolunteerName}" 
@@ -106,7 +106,7 @@
                     </GridViewColumn>
 
                     <!-- Status (enum) -->
-                    <GridViewColumn Header="Status" Width="100">
+                    <GridViewColumn Header="Status" Width="90">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding Status}" FontWeight="Bold"/>
@@ -115,7 +115,7 @@
                     </GridViewColumn>
 
                     <!-- Assignment Count -->
-                    <GridViewColumn Header="Assignments" Width="90">
+                    <GridViewColumn Header="Assignments" Width="95">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding AssignmentCount}" />

@@ -6,6 +6,7 @@ namespace Dal
     using DO;
     using System.Collections.Generic;
     using System.ComponentModel;
+    using System.Runtime.CompilerServices;
     using System.Text;
     using System.Xml.Linq;
     using static DO.Exceptions;
@@ -13,6 +14,7 @@ namespace Dal
     internal class VolunteerImplementation : IVolunteer
     {
         // Read: Retrieves a volunteer by ID or throws an exception if not found.
+        [MethodImpl(MethodImplOptions.Synchronized)]
 
         public Volunteer? Read(int id)
         {
@@ -22,6 +24,7 @@ namespace Dal
             else return v;
         }
         // checkPassword: Validates that a password is exactly 8 characters and contains uppercase, lowercase, digit, and special character.
+        [MethodImpl(MethodImplOptions.Synchronized)]
 
         public bool checkPassword(string password)//checking password strongth
         {
@@ -34,6 +37,7 @@ namespace Dal
             return hasUpper && hasLower && hasDigit && hasSpecial;
         }
         // Create: Adds a new volunteer if the ID doesn't already exist; otherwise, throws an exception.
+        [MethodImpl(MethodImplOptions.Synchronized)]
 
         public void Create(Volunteer item)//create
         {
@@ -44,6 +48,7 @@ namespace Dal
             DataSource.Volunteers.Add(item);
         }
         // Delete: Removes a volunteer by ID or throws an exception if not found.
+        [MethodImpl(MethodImplOptions.Synchronized)]
 
         public void Delete(int id)//delete
         {
@@ -58,6 +63,8 @@ namespace Dal
             }
         }
         //check if the volunteer dont have call openeed the is treat them.
+        [MethodImpl(MethodImplOptions.Synchronized)]
+
         public bool IsNotTreatedCalls(int id)
         {
             Predicate<Assignment> containOpenedAssignments = a=> { return a.VolunteerId == id && a.AssignmentStatus == Enums.AssignmentStatus.AssignedAndInProgress && a.AssignmentStatus == Enums.AssignmentStatus.TREATED; };
@@ -70,12 +77,14 @@ namespace Dal
 
         }
         // DeleteAll: Removes all volunteers from the data source.
+        [MethodImpl(MethodImplOptions.Synchronized)]
 
         public void DeleteAll()//delete All volunteers
         {
             DataSource.Volunteers.Clear();
         }
         // Read (with filter): Retrieves a volunteer matching the filter, decrypts their password before returning.
+        [MethodImpl(MethodImplOptions.Synchronized)]
 
         public Volunteer? Read(Func<Volunteer, bool> filter)
         
@@ -92,6 +101,7 @@ namespace Dal
             return v; // מחזיר את האובייקט (או null אם לא נמצא)
         }
         // ReadAll: Retrieves all volunteers or those matching an optional filter.
+        [MethodImpl(MethodImplOptions.Synchronized)]
 
         public IEnumerable<Volunteer> ReadAll(Func<Volunteer, bool>? filter = null)
         {
@@ -103,6 +113,7 @@ namespace Dal
                   select item;
         }
         // Update: Updates an existing volunteer by deleting and re-adding; throws if volunteer does not exist.
+        [MethodImpl(MethodImplOptions.Synchronized)]
 
         public void Update(Volunteer item)//update an volunteer
         {
@@ -118,6 +129,7 @@ namespace Dal
             }
         }
         // updatePassword: Updates the password for a volunteer by ID.
+        [MethodImpl(MethodImplOptions.Synchronized)]
 
         public void updatePassword(int id,string password)//update the Password
         {
@@ -127,6 +139,7 @@ namespace Dal
             DataSource.Volunteers.Add(v);
         }
         // EncryptPassword: Encrypts a password by shifting each character by +2.
+        [MethodImpl(MethodImplOptions.Synchronized)]
 
         public string EncryptPassword(string password)//Encrypt the Password
         {
@@ -144,6 +157,7 @@ namespace Dal
         }
 
         // DecryptPassword: Decrypts a password by shifting each character by -2.
+        [MethodImpl(MethodImplOptions.Synchronized)]
 
         public string DecryptPassword(string encryptedPassword)
         {
@@ -160,6 +174,7 @@ namespace Dal
             return decryptedPassword.ToString();
         }
         // GenerateStrongPassword: Generates a random strong password meeting password policy requirements.
+        [MethodImpl(MethodImplOptions.Synchronized)]
 
         public string GenerateStrongPassword()//ganarate a password for a new person
         {

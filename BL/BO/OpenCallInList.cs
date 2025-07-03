@@ -16,6 +16,6 @@ public class OpenCallInList
     public string Address { get; set; } // Full address of the call (from Call.DO)
     public DateTime OpeningTime { get; set; } // Time when the call was opened (from Call.DO)
     public DateTime? MaxFinishTime { get; set; } // Maximum time to finish the call (nullable, from Call.DO)
-    public double DistanceFromVolunteer { get; set; } // Distance of the call from the volunteer
+    public double? DistanceFromVolunteer { get; set; } // Distance of the call from the volunteer
     public override string ToString() => this.ToStringProperty();
 }

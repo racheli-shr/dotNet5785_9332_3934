@@ -13,18 +13,21 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 
 namespace PL
 {
     /// <summary>
     /// Interaction logic for VolunteerMainWindow.xaml
     /// </summary>
+    ///  // Initialize window and set up volunteer's current call assignment status.
+    // Sets UI flags based on whether the volunteer has an existing assignment.
     public partial class VolunteerMainWindow : Window
     {
 
         static readonly BlApi.IBl s_bl = BlApi.Factory.Get();
 
-
+        public int VolunteerId { get; set; } = 0;
 
 
         public BO.Call VolunteerCall
@@ -97,17 +100,16 @@ namespace PL
             //};
 
 
-            var call = s_bl.Volunteer.checkIfExistingAssignment(v);
-            if (call != null)
+            VolunteerCall = s_bl.Volunteer.checkIfExistingAssignment(v);
+            if (VolunteerCall != null)
             {
-                VolunteerCall = call;
                 IsAssignedCallAble = true;
                 IsChooseCallAble = false;
             }
             else
             {
                 IsAssignedCallAble = false;
-                IsChooseCallAble = false;
+                IsChooseCallAble = true;
             }
 
             CurrentVolunteer = v;
@@ -115,11 +117,13 @@ namespace PL
             Console.WriteLine(CurrentVolunteer);
             //LoadMap();
         }
+        // Opens a window to update the current volunteer's details.
 
         private void Update_btn(object sender, RoutedEventArgs e)
         {
             new VolunteerWindow(CurrentVolunteer.Id, "VolunteerMainWindow").Show();
         }
+        // Opens the call history window for the current volunteer.
 
         private void GoToCallHistoryPage_Btn(object sender, RoutedEventArgs e)
         {
@@ -128,14 +132,16 @@ namespace PL
         }
 
 
-
+        // Opens a window allowing the volunteer to choose a call to treat.
+        // Registers a callback for when that window closes.
         private void chooseCall_Click(object sender, RoutedEventArgs e)
         {
             var chooseCallWindow = new ChooseCallToTreatWindow(CurrentVolunteer);
             chooseCallWindow.Closed += ChooseCallWindow_Closed;
             chooseCallWindow.Show();
         }
-
+        // Refreshes the current assignment status when the call selection window closes.
+        // Updates UI flags accordingly.
         private void ChooseCallWindow_Closed(object sender, EventArgs e)
         {
             var call = s_bl.Volunteer.checkIfExistingAssignment(CurrentVolunteer);
@@ -148,9 +154,11 @@ namespace PL
             else
             {
                 IsAssignedCallAble = false;
-                IsChooseCallAble = false;
+                IsChooseCallAble = true;
             }
         }
+        // Completes the current call assignment and updates UI state.
+        // Handles any exceptions by showing an error message.
         private void EndTreatment_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -161,13 +169,15 @@ namespace PL
                 IsAssignedCallAble = false;
                 IsChooseCallAble = true;
                 MessageBox.Show("הטיפול הסתיים בהצלחה");
+                
             }
             catch (Exception ex)
             {
                 MessageBox.Show("שגיאה בסיום הטיפול: " + ex.Message);
             }
         }
-
+        // Cancels the current call assignment and updates UI state.
+        // Handles any exceptions by showing an error message.
         private void CancelTreatment_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -183,53 +193,35 @@ namespace PL
                 MessageBox.Show("שגיאה בביטול הטיפול: " + ex.Message);
             }
         }
-//        private async void Window_Loaded(object sender, RoutedEventArgs e)
-//        {
-//            await MyWebView.EnsureCoreWebView2Async();
 
-//            string html = $@"
-//<!DOCTYPE html>
-//<html>
-//  <head>
-//    <meta charset='utf-8'>
-//    <style>html, body, #map {{ height: 100%; margin: 0; padding: 0; }}</style>
-//    <script src='https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY'></script>
-//    <script>
-//      function initMap() {{
-//        const origin = new google.maps.LatLng(32.0853, 34.7818); // תל אביב
-//        const destination = new google.maps.LatLng(31.7683, 35.2137); // ירושלים
 
-//        const map = new google.maps.Map(document.getElementById('map'), {{
-//          zoom: 7,
-//          center: origin
-//        }});
+        private void queryVolunteerMainWindow()
+        {
+            CurrentVolunteer = s_bl.Volunteer.Read(VolunteerId)!;
+            VolunteerCall= s_bl.Volunteer.checkIfExistingAssignment(CurrentVolunteer);
+        }
 
-//        const directionsService = new google.maps.DirectionsService();
-//        const directionsRenderer = new google.maps.DirectionsRenderer();
-//        directionsRenderer.setMap(map);
+        private volatile DispatcherOperation? _observerOperation = null; //stage 7
 
-//        directionsService.route({{
-//          origin: origin,
-//          destination: destination,
-//          travelMode: 'DRIVING'
-//        }}, function(result, status) {{
-//          if (status === 'OK') {{
-//            directionsRenderer.setDirections(result);
-//          }} else {{
-//            alert('Directions request failed due to ' + status);
-//          }}
-//        }});
-//      }}
-//    </script>
-//  </head>
-//  <body onload='initMap()'>
-//    <div id='map'></div>
-//  </body>
-//</html>";
+        private void VolunteerMainWindowObserver()
+        {
+            if (_observerOperation is null || _observerOperation.Status == DispatcherOperationStatus.Completed)
+                _observerOperation = Dispatcher.BeginInvoke(() =>
+                {
+                    queryVolunteerMainWindow();
+                });
 
-//            MyWebView.NavigateToString(html);
-//        }
+        }
 
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            s_bl.Call.AddObserver(VolunteerMainWindowObserver);
+        }
+
+        private void Window_Closed(object sender, EventArgs e)
+        {
+            s_bl.Call.RemoveObserver(VolunteerMainWindowObserver);
+        }
 
     }
 }

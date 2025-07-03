@@ -1,4 +1,6 @@
-﻿namespace Dal
+﻿using System.Runtime.CompilerServices;
+
+namespace Dal
 {
     internal static class Config
     {        // Starting ID value for Call entities.
@@ -9,7 +11,11 @@
 
         public static int NextCallId
         {
+            [MethodImpl(MethodImplOptions.Synchronized)]
+
             get => nextCallId++;
+            [MethodImpl(MethodImplOptions.Synchronized)]
+
             set => nextCallId = value;
         }
 
@@ -19,21 +25,26 @@
 
         public static int NextAssignmentId
         {
+            [MethodImpl(MethodImplOptions.Synchronized)]
+
             get => nextAssignmentId++;
+            [MethodImpl(MethodImplOptions.Synchronized)]
+
             set => nextAssignmentId = value;
         }
 
         public static DateTime Clock { get; set; } = DateTime.Now;
-        public static TimeSpan RiskRange { get; set; } = TimeSpan.Zero;
+        public static TimeSpan RiskRange { get; set; } = TimeSpan.FromDays(5);
 
         // Reset: Resets the Call and Assignment ID counters and the Clock and RiskRange values to their initial defaults.
+        [MethodImpl(MethodImplOptions.Synchronized)]
 
         public static void Reset()
         {
             nextCallId = startCallId;
             nextAssignmentId = StartAssignmentId;
             Clock = DateTime.Now;
-            RiskRange = TimeSpan.Zero;
+            RiskRange = TimeSpan.FromDays(5);
         }
     }
 }

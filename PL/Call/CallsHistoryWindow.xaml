@@ -19,8 +19,8 @@
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
-            <Label Content="Filter by End of Treatment:" VerticalAlignment="Top" FontSize="16" Margin="390,9,210,0" Grid.Column="1"/>
-            <ComboBox FontSize="16" Height="30" SelectedValue="{Binding EndTreatmentType, Mode=TwoWay}" SelectionChanged="FilterClosedCalls"  ItemsSource="{Binding Source={StaticResource EndOfTreatmentCollectionKey}}" Margin="595,10,12,11" Grid.Column="1"/>
+            <Label Content="Filter by End of Treatment:" VerticalAlignment="Top" FontSize="16" Margin="390,4,210,0" Grid.Column="1"/>
+            <ComboBox MinHeight="40" FontSize="16" Height="Auto" SelectedValue="{Binding EndTreatmentType, Mode=TwoWay}" SelectionChanged="FilterClosedCalls"  ItemsSource="{Binding Source={StaticResource EndOfTreatmentCollectionKey}}" Margin="595,10,12,11" Grid.Column="1"/>
         </Grid>
         <ListView Margin="5,5,5,5" Grid.Row="1" ItemsSource="{Binding Path=ClosedCallInList}" >
             <ListView.View>

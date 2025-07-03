@@ -8,8 +8,8 @@
         Title="ManagerChoosePageWindow" Height="350" Width="400">
     <Grid>
         <TextBlock Text="Hello manager! Choose the page that you want to visit" Margin="23,70,9,195"/>
-        <Button x:Name="managerPageBtn" Content="Manager Page" Margin="150,199,132,91" Click="managerPageBtn_Click"/>
-        <Button x:Name="volunteerPageBtn" Content="Volunteer Page" Margin="151,141,132,148" Click="volunteerPageBtn_Click"/>
+        <Button x:Name="managerPageBtn" Content="Manager Page" Margin="150,199,132,67" Click="managerPageBtn_Click"/>
+        <Button x:Name="volunteerPageBtn" Content="Volunteer Page" Margin="151,120,132,148" Click="volunteerPageBtn_Click"/>
 
     </Grid>
 </Window>

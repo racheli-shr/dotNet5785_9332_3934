@@ -5,21 +5,23 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PL.Call"
         mc:Ignorable="d"
-        Title="CallWindow" Height="450" Width="800"
+        Title="CallWindow" Height="450" Width="450"
+        Loaded="Window_Loaded"
+        Closed="Window_Closed"
         DataContext="{Binding RelativeSource={RelativeSource Mode=Self}}">
 
     <Grid>
-        <Label IsEnabled="{Binding IsEditable}" Content="CallType" HorizontalAlignment="Left" Margin="270,153,0,0" VerticalAlignment="Top"/>
-        <ComboBox IsEnabled="{Binding IsEditable}" SelectionChanged="Selected_callType" ItemsSource="{Binding Source={StaticResource callTypeCollectionKey}}" SelectedValue="{Binding Path=callType, Mode=TwoWay}"  HorizontalAlignment="Left" Margin="400,155,0,0" VerticalAlignment="Top" Height="25" Width="142" />
-        <Label IsEnabled="{Binding IsEditable}" Content="Description" HorizontalAlignment="Left" Margin="270,182,0,0" VerticalAlignment="Top"/>
-        <TextBox IsEnabled="{Binding IsEditable}"  Text="{Binding CurrentCall.Description, Mode=TwoWay, NotifyOnValidationError=true,  ValidatesOnExceptions=true}" HorizontalAlignment="Left" Margin="400,186,0,0" VerticalAlignment="Top" Height="25" Width="142"/>
-        <Label IsEnabled="{Binding IsEditable}" Content="FullAdress"  HorizontalAlignment="Left" Margin="270,212,0,0" VerticalAlignment="Top"/>
-        <Label IsEnabled="{Binding IsUpdatingEditable}" Content="OpeningCallTime" HorizontalAlignment="Left" Margin="270,242,0,0" VerticalAlignment="Top"/>
-        <Label IsEnabled="{Binding IsMaxTimeEditable}" Content="MaxTimeToEnd" HorizontalAlignment="Left" Margin="270,271,0,0" VerticalAlignment="Top"/>
-        <TextBox IsEnabled="{Binding IsEditable}" Text="{Binding CurrentCall.FullAddress, Mode=TwoWay, NotifyOnValidationError=true,  ValidatesOnExceptions=true}" HorizontalAlignment="Left" Margin="400,216,0,0" VerticalAlignment="Top" Height="25" Width="142" />
-        <DatePicker IsEnabled="{Binding IsUpdatingEditable}" DisplayDate="{Binding CurrentCall.OpeningTime, Mode=TwoWay, NotifyOnValidationError=true,  ValidatesOnExceptions=true}" HorizontalAlignment="Left" Margin="400,248,0,0" VerticalAlignment="Top" Height="25" Width="142"/>
-        <DatePicker IsEnabled="{Binding IsMaxTimeEditable}" DisplayDate="{Binding CurrentCall.MaxFinishTime, Mode=TwoWay, NotifyOnValidationError=true,  ValidatesOnExceptions=true}" HorizontalAlignment="Left" Margin="400,277,0,0" VerticalAlignment="Top" Height="25"  Width="142"/>
-        <Button Content="{Binding ButtonText}" Click="AddUpdate_btn" HorizontalAlignment="Center" Margin="0,358,0,0" VerticalAlignment="Top" Height="33" Width="62"/>
+        <Label IsEnabled="{Binding IsEditable,Mode=TwoWay}" Content="CallType" HorizontalAlignment="Left" Margin="107,74,0,0" VerticalAlignment="Top"/>
+        <ComboBox IsEnabled="{Binding IsEditable,Mode=TwoWay}" SelectionChanged="Selected_callType" ItemsSource="{Binding Source={StaticResource callTypeCollectionKey}}" SelectedValue="{Binding Path=callType, Mode=TwoWay}"  HorizontalAlignment="Left" Margin="225,71,0,0" VerticalAlignment="Top" Height="40" Width="142" />
+        <Label IsEnabled="{Binding IsEditable,Mode=TwoWay}" Content="Description" HorizontalAlignment="Left" Margin="107,119,0,0" VerticalAlignment="Top"/>
+        <TextBox IsEnabled="{Binding IsEditable,Mode=TwoWay}"   Text="{Binding CurrentCall.Description, Mode=TwoWay, NotifyOnValidationError=true,  ValidatesOnExceptions=true}" HorizontalAlignment="Left" Margin="225,115,0,0" VerticalAlignment="Top" Height="40" Width="142"/>
+        <Label IsEnabled="{Binding IsEditable,Mode=TwoWay}" Content="FullAdress"  HorizontalAlignment="Left" Margin="107,164,0,0" VerticalAlignment="Top"/>
+        <Label IsEnabled="{Binding IsUpdatingEditable,Mode=TwoWay}" Content="OpeningCallTime" HorizontalAlignment="Left" Margin="107,205,0,0" VerticalAlignment="Top"/>
+        <Label IsEnabled="{Binding IsMaxTimeEditable,Mode=TwoWay}" Content="MaxTimeToEnd" HorizontalAlignment="Left" Margin="107,250,0,0" VerticalAlignment="Top"/>
+        <TextBox IsEnabled="{Binding IsEditable,Mode=TwoWay}" Text="{Binding CurrentCall.FullAddress, Mode=TwoWay, NotifyOnValidationError=true,  ValidatesOnExceptions=true}" HorizontalAlignment="Left" Margin="225,159,0,0" VerticalAlignment="Top" Height="40" Width="142" />
+        <DatePicker IsEnabled="{Binding IsUpdatingEditable,Mode=TwoWay}" DisplayDate="{Binding CurrentCall.OpeningTime, Mode=TwoWay, NotifyOnValidationError=true,  ValidatesOnExceptions=true}" HorizontalAlignment="Left" Margin="225,203,0,0" VerticalAlignment="Top" Height="40" Width="142"/>
+        <DatePicker IsEnabled="{Binding IsMaxTimeEditable ,Mode=TwoWay}" DisplayDate="{Binding CurrentCall.MaxFinishTime, Mode=TwoWay, NotifyOnValidationError=true,  ValidatesOnExceptions=true}" HorizontalAlignment="Left" Margin="225,247,0,0" VerticalAlignment="Top" Height="40"  Width="142"/>
+        <Button Content="{Binding ButtonText}" Click="AddUpdate_btn" HorizontalAlignment="Center" Margin="0,351,0,0" VerticalAlignment="Top" Height="40" Width="89"/>
 
     </Grid>
 </Window>

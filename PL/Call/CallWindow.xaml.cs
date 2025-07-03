@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BO;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,6 +12,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 
 namespace PL.Call
 {
@@ -21,19 +23,15 @@ namespace PL.Call
     {
         static readonly BlApi.IBl s_bl = BlApi.Factory.Get();
         public BO.Call call { get; set; }
-        public string ButtonText { get; set; }
-        public bool IsEditable { get; set; } = true;
-        public bool IsMaxTimeEditable { get; set; } = true;
-        public bool IsUpdatingEditable { get; set; } = false;
-
+        public int CallId { get; set; } = 0;
         public CallWindow(int id)
         {
             
                 ButtonText = id == 0 ? "Add" : "Update";
-                InitializeComponent();
 
                 if (id != 0)
                 {
+                    CallId = id;
                     IsUpdatingEditable = true;
                     CurrentCall = s_bl.Call.Read(id)!;
 
@@ -72,21 +70,69 @@ namespace PL.Call
                 else
                 {
                     CurrentCall = new BO.Call() { Id = 0 };
-                    IsEditable = false;
-                    IsMaxTimeEditable = false;
+                    IsEditable = true;
+                    IsMaxTimeEditable = true;
                 }
 
                 DataContext = this; // חשוב כדי שכל התכונות יעבדו
+
+            InitializeComponent();
+
+
             
-
-
-            //ButtonText = id == 0 ? "Add" : "Update";
-
-            //InitializeComponent();
-            //CurrentCall = (id != 0) ? s_bl.Call.Read(id)! : new BO.Call() { Id = 0 };
-
         }
         public BO.Enums.CallType callType { get; set; } = BO.Enums.CallType.NONE;
+
+
+
+        public bool IsUpdatingEditable
+        {
+            get { return (bool)GetValue(IsUpdatingEditableProperty); }
+            set { SetValue(IsUpdatingEditableProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for IsUpdatingEditable.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty IsUpdatingEditableProperty =
+            DependencyProperty.Register("IsUpdatingEditable", typeof(bool), typeof(CallWindow), new PropertyMetadata(true));
+
+
+
+
+        public string ButtonText
+        {
+            get { return (string)GetValue(ButtonTextProperty); }
+            set { SetValue(ButtonTextProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for ButtonText.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty ButtonTextProperty =
+            DependencyProperty.Register("ButtonText", typeof(string), typeof(CallWindow), new PropertyMetadata("add"));
+
+
+
+        public bool IsEditable
+        {
+            get { return (bool)GetValue(IsEditableProperty); }
+            set { SetValue(IsEditableProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for IsEditable.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty IsEditableProperty =
+            DependencyProperty.Register("IsEditable", typeof(bool), typeof(CallWindow), new PropertyMetadata(true));
+
+
+
+
+        public bool IsMaxTimeEditable
+        {
+            get { return (bool)GetValue(IsMaxTimeEditableProperty); }
+            set { SetValue(IsMaxTimeEditableProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for IsMaxTimeEditable.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty IsMaxTimeEditableProperty =
+            DependencyProperty.Register("IsMaxTimeEditable", typeof(bool), typeof(CallWindow), new PropertyMetadata(true));
+
 
 
         public BO.Call? CurrentCall
@@ -134,6 +180,32 @@ namespace PL.Call
         private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
 
+        }
+
+        private void queryCallWindow()
+        {
+            CurrentCall = s_bl.Call.Read(CallId)!;
+        }
+        private volatile DispatcherOperation? _observerOperation = null; //stage 7
+
+        private void CallWindowObserver()
+        {
+            if (_observerOperation is null || _observerOperation.Status == DispatcherOperationStatus.Completed)
+                _observerOperation = Dispatcher.BeginInvoke(() =>
+                {
+                    queryCallWindow();
+                });
+
+        }
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            s_bl.Call.AddObserver(CallWindowObserver);
+        }
+
+        private void Window_Closed(object sender, EventArgs e)
+        {
+            s_bl.Call.RemoveObserver(CallWindowObserver);
         }
     }
 }

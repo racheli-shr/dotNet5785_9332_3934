@@ -1,7 +1,7 @@
 ﻿<Window x:Class="PL.VolunteerMainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Volunteer Info" Height="500" Width="840"
+        Title="Volunteer Info" Height="520" Width="840"
         DataContext="{Binding RelativeSource={RelativeSource Mode=Self}}">
 
     <Grid>
@@ -41,19 +41,19 @@
         <Grid IsEnabled="{Binding IsAssignedCallAble}" Margin="422,68,98,140">
 
             <Label Content="ID" HorizontalAlignment="Left" Margin="6,0,0,232" VerticalAlignment="Bottom" Height="29" Width="52"/>
-            <TextBlock Text="{Binding VolunteerCall.Id, Mode=TwoWay, NotifyOnValidationError=true,  ValidatesOnExceptions=true}" IsEnabled="{Binding IsAssignedCallAble}" HorizontalAlignment="Left" Margin="138,40,0,0" VerticalAlignment="Top" Height="25" Width="142"/>
-            <Label Content="CallType" HorizontalAlignment="Left" Margin="8,36,0,0" VerticalAlignment="Top" Height="29" Width="72"/>
-            <TextBlock  Text="{Binding VolunteerCall.CallType, Mode=TwoWay, NotifyOnValidationError=true,  ValidatesOnExceptions=true}" IsEnabled="{Binding IsAssignedCallAble}" HorizontalAlignment="Left" Margin="138,2,0,0" VerticalAlignment="Top" Height="25" Width="142"/>
+            <TextBlock Text="{Binding VolunteerCall.Id, Mode=TwoWay, NotifyOnValidationError=true,  ValidatesOnExceptions=true}" IsEnabled="{Binding IsAssignedCallAble}" HorizontalAlignment="Left" Margin="138,26,0,0" VerticalAlignment="Top" Height="Auto" MinHeight="40" Width="142"/>
+            <Label Content="CallType" HorizontalAlignment="Left" Margin="8,40,0,0" VerticalAlignment="Top" Height="31" Width="72"/>
+            <TextBlock IsEnabled="{Binding IsAssignedCallAble}" HorizontalAlignment="Left" Margin="138,56,0,0" VerticalAlignment="Top" Height="25" Width="142"/>
             <Label Content="Description"  HorizontalAlignment="Left" Margin="10,71,0,0" VerticalAlignment="Top" Height="29" Width="91"/>
-            <TextBlock  Text="{Binding VolunteerCall.Description, Mode=TwoWay, NotifyOnValidationError=true,  ValidatesOnExceptions=true}" IsEnabled="{Binding IsAssignedCallAble}" HorizontalAlignment="Left" Margin="138,76,0,0" VerticalAlignment="Top" Height="25" Width="142"/>
+            <TextBlock  Text="{Binding VolunteerCall.Description, Mode=TwoWay, NotifyOnValidationError=true,  ValidatesOnExceptions=true}" IsEnabled="{Binding IsAssignedCallAble}" HorizontalAlignment="Left" Margin="138,76,0,0" VerticalAlignment="Top" Height="Auto" MinHeight="40" Width="142"/>
             <Label Content="FullAddress"  HorizontalAlignment="Left" Margin="10,105,0,0" VerticalAlignment="Top" Height="29" Width="91"/>
-            <TextBlock  Text="{Binding VolunteerCall.FullAddress, Mode=TwoWay, NotifyOnValidationError=true,  ValidatesOnExceptions=true}" IsEnabled="{Binding IsAssignedCallAble}" HorizontalAlignment="Left" Margin="140,104,0,0" VerticalAlignment="Top" Height="25" Width="142"/>
+            <TextBlock  Text="{Binding VolunteerCall.FullAddress, Mode=TwoWay, NotifyOnValidationError=true,  ValidatesOnExceptions=true}" IsEnabled="{Binding IsAssignedCallAble}" HorizontalAlignment="Left" Margin="140,104,0,0" VerticalAlignment="Top" Height="Auto" MinHeight="40" Width="142"/>
             <Label Content="OpeningTime"  HorizontalAlignment="Left" Margin="10,144,0,0" VerticalAlignment="Top" Height="29" Width="105"/>
-            <TextBlock  Text="{Binding VolunteerCall.OpeningTime, Mode=TwoWay, NotifyOnValidationError=true,  ValidatesOnExceptions=true}" IsEnabled="{Binding IsAssignedCallAble}" HorizontalAlignment="Left" Margin="140,143,0,0" VerticalAlignment="Top" Height="25" Width="142"/>
+            <TextBlock  Text="{Binding VolunteerCall.OpeningTime, Mode=TwoWay, NotifyOnValidationError=true,  ValidatesOnExceptions=true}" IsEnabled="{Binding IsAssignedCallAble}" HorizontalAlignment="Left" Margin="140,143,0,0" VerticalAlignment="Top" Height="Auto" MinHeight="40" Width="142"/>
             <Label Content="MaxFinishTime"  HorizontalAlignment="Left" Margin="10,178,0,0" VerticalAlignment="Top" Height="29" Width="105"/>
-            <TextBlock  Text="{Binding VolunteerCall.MaxFinishTime, Mode=TwoWay, NotifyOnValidationError=true,  ValidatesOnExceptions=true}" IsEnabled="{Binding IsAssignedCallAble}" HorizontalAlignment="Left" Margin="138,177,0,0" VerticalAlignment="Top" Height="25" Width="142"/>
+            <TextBlock  Text="{Binding VolunteerCall.MaxFinishTime, Mode=TwoWay, NotifyOnValidationError=true,  ValidatesOnExceptions=true}" IsEnabled="{Binding IsAssignedCallAble}" HorizontalAlignment="Left" Margin="138,177,0,0" VerticalAlignment="Top" Height="Auto" MinHeight="40" Width="142"/>
             <Label Content="status"  HorizontalAlignment="Left" Margin="10,212,0,0" VerticalAlignment="Top" Height="29" Width="91"/>
-            <TextBlock  Text="{Binding VolunteerCall.Status, Mode=TwoWay, NotifyOnValidationError=true,  ValidatesOnExceptions=true}" IsEnabled="{Binding IsAssignedCallAble}" HorizontalAlignment="Left" Margin="140,214,0,0" VerticalAlignment="Top" Height="25" Width="142"/>
+            <TextBlock  Text="{Binding VolunteerCall.Status, Mode=TwoWay, NotifyOnValidationError=true,  ValidatesOnExceptions=true}" IsEnabled="{Binding IsAssignedCallAble}" HorizontalAlignment="Left" Margin="140,214,0,0" VerticalAlignment="Top" Height="Auto" MinHeight="40" Width="142"/>
 
         </Grid>
         <!--<TextBlock Text="Any Call was Assigned" IsEnabled="{Binding IsChooseCallAble}" Margin="474,58,166,346" Foreground="red"></TextBlock>-->
@@ -61,8 +61,6 @@
         <Button Content="Canceled Assignment" Click="CancelTreatment_Click" IsEnabled="{Binding IsAssignedCallAble}" Margin="583,322,46,94" />
         <TextBlock Text="Assigned Call Information:" Height="30" Margin="470,25,162,376" />
         <Button Content="Choose a Call" Click="chooseCall_Click" IsEnabled="{Binding IsChooseCallAble}" Margin="583,380,46,40"></Button>
-        <Grid Margin="799,47,-799,-49">
-            <!--<wv2:WebView2 x:Name="MyWebView" />-->
-        </Grid>
+        
     </Grid>
 </Window>

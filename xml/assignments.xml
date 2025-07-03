@@ -1,106 +1,90 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ArrayOfAssignment xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <Assignment>
-    <Id>1001</Id>
-    <CallId>1003</CallId>
-    <VolunteerId>390709137</VolunteerId>
-    <EntryTimeForTreatment>2025-06-05T18:14:38</EntryTimeForTreatment>
-    <ActualTreatmentEndTime>2025-06-12T18:14:38</ActualTreatmentEndTime>
+    <Id>1000</Id>
+    <CallId>1000</CallId>
+    <VolunteerId>316514041</VolunteerId>
+    <EntryTimeForTreatment>2025-07-03T11:06:40</EntryTimeForTreatment>
+    <ActualTreatmentEndTime>2026-07-03T11:06:40</ActualTreatmentEndTime>
     <AssignmentStatus>TREATED</AssignmentStatus>
   </Assignment>
   <Assignment>
-    <Id>1002</Id>
-    <CallId>1000</CallId>
-    <VolunteerId>321340291</VolunteerId>
-    <EntryTimeForTreatment>2025-06-05T18:14:38</EntryTimeForTreatment>
-    <ActualTreatmentEndTime>2025-06-12T18:14:38</ActualTreatmentEndTime>
+    <Id>1001</Id>
+    <CallId>1001</CallId>
+    <VolunteerId>281318758</VolunteerId>
+    <EntryTimeForTreatment>2025-07-03T11:06:40</EntryTimeForTreatment>
+    <ActualTreatmentEndTime>2026-07-03T11:06:40</ActualTreatmentEndTime>
     <AssignmentStatus>AssignedAndInProgress</AssignmentStatus>
+  </Assignment>
+  <Assignment>
+    <Id>1002</Id>
+    <CallId>1002</CallId>
+    <VolunteerId>384879524</VolunteerId>
+    <EntryTimeForTreatment>2025-07-03T11:06:40</EntryTimeForTreatment>
+    <ActualTreatmentEndTime>2026-07-03T11:06:40</ActualTreatmentEndTime>
+    <AssignmentStatus>MANAGER_CANCELLED</AssignmentStatus>
   </Assignment>
   <Assignment>
     <Id>1003</Id>
     <CallId>1003</CallId>
-    <VolunteerId>321340291</VolunteerId>
-    <EntryTimeForTreatment>2025-06-05T18:14:38</EntryTimeForTreatment>
-    <ActualTreatmentEndTime>2025-06-12T18:14:38</ActualTreatmentEndTime>
-    <AssignmentStatus>SELF_CANCELLED</AssignmentStatus>
+    <VolunteerId>316514041</VolunteerId>
+    <EntryTimeForTreatment>2025-07-03T11:06:40</EntryTimeForTreatment>
+    <ActualTreatmentEndTime>2026-07-03T11:06:40</ActualTreatmentEndTime>
+    <AssignmentStatus>AssignedAndInProgress</AssignmentStatus>
   </Assignment>
   <Assignment>
     <Id>1004</Id>
-    <CallId>1000</CallId>
-    <VolunteerId>390709137</VolunteerId>
-    <EntryTimeForTreatment>2025-06-05T18:14:38</EntryTimeForTreatment>
-    <ActualTreatmentEndTime>2025-06-12T18:14:38</ActualTreatmentEndTime>
-    <AssignmentStatus>NONE</AssignmentStatus>
+    <CallId>1004</CallId>
+    <VolunteerId>384879524</VolunteerId>
+    <EntryTimeForTreatment>2025-07-03T11:06:40</EntryTimeForTreatment>
+    <ActualTreatmentEndTime>2026-07-03T11:06:40</ActualTreatmentEndTime>
+    <AssignmentStatus>TREATED</AssignmentStatus>
   </Assignment>
   <Assignment>
     <Id>1005</Id>
-    <CallId>1000</CallId>
-    <VolunteerId>321340291</VolunteerId>
-    <EntryTimeForTreatment>2025-06-05T18:14:38</EntryTimeForTreatment>
-    <ActualTreatmentEndTime>2025-06-12T18:14:38</ActualTreatmentEndTime>
+    <CallId>1005</CallId>
+    <VolunteerId>316514041</VolunteerId>
+    <EntryTimeForTreatment>2025-07-03T11:06:40</EntryTimeForTreatment>
+    <ActualTreatmentEndTime>2026-07-03T11:06:40</ActualTreatmentEndTime>
     <AssignmentStatus>MANAGER_CANCELLED</AssignmentStatus>
   </Assignment>
   <Assignment>
     <Id>1006</Id>
-    <CallId>1003</CallId>
-    <VolunteerId>295874473</VolunteerId>
-    <EntryTimeForTreatment>2025-06-05T18:14:38</EntryTimeForTreatment>
-    <ActualTreatmentEndTime>2025-06-12T18:14:38</ActualTreatmentEndTime>
+    <CallId>1006</CallId>
+    <VolunteerId>239428717</VolunteerId>
+    <EntryTimeForTreatment>2025-07-03T11:06:40</EntryTimeForTreatment>
+    <ActualTreatmentEndTime>2026-07-03T11:06:40</ActualTreatmentEndTime>
     <AssignmentStatus>SELF_CANCELLED</AssignmentStatus>
   </Assignment>
   <Assignment>
     <Id>1007</Id>
-    <CallId>1002</CallId>
-    <VolunteerId>390709137</VolunteerId>
-    <EntryTimeForTreatment>2025-06-05T18:14:38</EntryTimeForTreatment>
-    <ActualTreatmentEndTime>2025-06-12T18:14:38</ActualTreatmentEndTime>
+    <CallId>1007</CallId>
+    <VolunteerId>316514041</VolunteerId>
+    <EntryTimeForTreatment>2025-07-03T11:06:40</EntryTimeForTreatment>
+    <ActualTreatmentEndTime>2026-07-03T11:06:40</ActualTreatmentEndTime>
     <AssignmentStatus>AssignedAndInProgress</AssignmentStatus>
   </Assignment>
   <Assignment>
     <Id>1008</Id>
-    <CallId>1003</CallId>
-    <VolunteerId>390709137</VolunteerId>
-    <EntryTimeForTreatment>2025-06-05T18:14:38</EntryTimeForTreatment>
-    <ActualTreatmentEndTime>2025-06-12T18:14:38</ActualTreatmentEndTime>
-    <AssignmentStatus>SELF_CANCELLED</AssignmentStatus>
-  </Assignment>
-  <Assignment>
-    <Id>1009</Id>
-    <CallId>1002</CallId>
-    <VolunteerId>295874473</VolunteerId>
-    <EntryTimeForTreatment>2025-06-05T18:14:38</EntryTimeForTreatment>
-    <ActualTreatmentEndTime>2025-06-12T18:14:38</ActualTreatmentEndTime>
+    <CallId>1008</CallId>
+    <VolunteerId>316514041</VolunteerId>
+    <EntryTimeForTreatment>2025-07-03T11:06:40</EntryTimeForTreatment>
+    <ActualTreatmentEndTime>2026-07-03T11:06:40</ActualTreatmentEndTime>
     <AssignmentStatus>TREATED</AssignmentStatus>
   </Assignment>
   <Assignment>
-    <Id>1000</Id>
-    <CallId>1001</CallId>
-    <VolunteerId>276980778</VolunteerId>
-    <EntryTimeForTreatment>2025-06-05T18:14:38</EntryTimeForTreatment>
-    <ActualTreatmentEndTime>2025-06-12T18:14:38</ActualTreatmentEndTime>
-    <AssignmentStatus>MANAGER_CANCELLED</AssignmentStatus>
+    <Id>1009</Id>
+    <CallId>1009</CallId>
+    <VolunteerId>316514041</VolunteerId>
+    <EntryTimeForTreatment>2025-07-03T11:06:40</EntryTimeForTreatment>
+    <ActualTreatmentEndTime>2026-07-03T11:06:40</ActualTreatmentEndTime>
+    <AssignmentStatus>AssignedAndInProgress</AssignmentStatus>
   </Assignment>
   <Assignment>
     <Id>1010</Id>
-    <CallId>1007</CallId>
-    <VolunteerId>328183934</VolunteerId>
-    <EntryTimeForTreatment>2025-07-07T18:14:38</EntryTimeForTreatment>
-    <ActualTreatmentEndTime xsi:nil="true" />
-    <AssignmentStatus>SELF_CANCELLED</AssignmentStatus>
-  </Assignment>
-  <Assignment>
-    <Id>1014</Id>
-    <CallId>1007</CallId>
-    <VolunteerId>328183934</VolunteerId>
-    <EntryTimeForTreatment>2025-07-07T18:14:38</EntryTimeForTreatment>
-    <ActualTreatmentEndTime xsi:nil="true" />
-    <AssignmentStatus>SELF_CANCELLED</AssignmentStatus>
-  </Assignment>
-  <Assignment>
-    <Id>1016</Id>
-    <CallId>1007</CallId>
-    <VolunteerId>328183934</VolunteerId>
-    <EntryTimeForTreatment>2025-07-07T18:14:38</EntryTimeForTreatment>
+    <CallId>1014</CallId>
+    <VolunteerId>364067959</VolunteerId>
+    <EntryTimeForTreatment>2025-07-03T11:06:40</EntryTimeForTreatment>
     <ActualTreatmentEndTime xsi:nil="true" />
     <AssignmentStatus>AssignedAndInProgress</AssignmentStatus>
   </Assignment>

@@ -19,12 +19,21 @@ internal class AdminImplementation : IAdmin
     // Retrieve the current time
     public DateTime GetClock()
     {
+
         return AdminManager.Now;
     }
 
+    public void StopSimulator()
+    => AdminManager.Stop(); //stage 7
+    public void StartSimulator(int interval)  //stage 7
+    {
+        AdminManager.ThrowOnSimulatorIsRunning();  //stage 7
+        AdminManager.Start(interval); //stage 7
+    }
     // Advance the clock by a specified time unit
     public void ForwardClock(TimeUnit unit)
     {
+        AdminManager.ThrowOnSimulatorIsRunning();  //stage 7
         switch (unit)
         {
             case TimeUnit.MINUTE:
@@ -56,35 +65,19 @@ internal class AdminImplementation : IAdmin
     // Set the risk time span
     public void SetRiskTimeSpan(TimeSpan riskTimeSpan)
     {
+        AdminManager.ThrowOnSimulatorIsRunning();  //stage 7
         _riskTimeSpan = riskTimeSpan;
     }
     public void InitializeDB()
     {
+        AdminManager.ThrowOnSimulatorIsRunning();
         AdminManager.InitializeDB();
     }
     public void ResetDB()
     {
+        AdminManager.ThrowOnSimulatorIsRunning();
         AdminManager.ResetDB();
     }
-
-    // Reset the database
-    //public void ResetDB()
-    //{
-    //    AdminManager.re(); // Call the reset method in DAL
-    //    AdminManager.UpdateClock(AdminManager.Now); // Update the clock to the current time
-    //    Console.WriteLine("Reset successfully");
-
-    //}
-
-    //// Initialize the database
-    //public void InitializeDB()
-    //{
-    //    AdminManager.ResetDB(); // Call the reset method in DAL
-    //    AdminManager.InitializeDB(); // Initialize the database
-    //    AdminManager.UpdateClock(AdminManager.Now); // Update the clock to the current time
-    //}
-
-    // Retrieve the maximum range
     public TimeSpan GetMaxRange()
     {
         return AdminManager.MaxRange; // Use IDal.Config
@@ -93,6 +86,7 @@ internal class AdminImplementation : IAdmin
     // Set the maximum range
     public void SetMaxRange(TimeSpan maxRange)
     {
+        AdminManager.ThrowOnSimulatorIsRunning();  //stage 7
         if (maxRange <= TimeSpan.Zero)
         {
             throw new ArgumentException("Max range must be a positive value.");
@@ -101,14 +95,26 @@ internal class AdminImplementation : IAdmin
         AdminManager.MaxRange = maxRange; // Update value in DAL
     }
     #region Stage 5
-    public void AddClockObserver(Action clockObserver) =>
-    AdminManager.ClockUpdatedObservers += clockObserver;
-    public void RemoveClockObserver(Action clockObserver) =>
-    AdminManager.ClockUpdatedObservers -= clockObserver;
-    public void AddConfigObserver(Action configObserver) =>
-   AdminManager.ConfigUpdatedObservers += configObserver;
-    public void RemoveConfigObserver(Action configObserver) =>
-    AdminManager.ConfigUpdatedObservers -= configObserver;
+    public void AddClockObserver(Action clockObserver)
+    {
+        AdminManager.ThrowOnSimulatorIsRunning();  //stage 7
+        AdminManager.ClockUpdatedObservers += clockObserver;
+    }
+    public void RemoveClockObserver(Action clockObserver)
+    {
+        AdminManager.ThrowOnSimulatorIsRunning();  //stage 7
+        AdminManager.ClockUpdatedObservers -= clockObserver;
+    }
+    public void AddConfigObserver(Action configObserver)
+    {
+        AdminManager.ThrowOnSimulatorIsRunning();  //stage 7
+        AdminManager.ConfigUpdatedObservers += configObserver;
+    }
+    public void RemoveConfigObserver(Action configObserver)
+    {
+        AdminManager.ThrowOnSimulatorIsRunning();  //stage 7
+        AdminManager.ConfigUpdatedObservers -= configObserver;
+    }
     #endregion Stage 5
 
 }

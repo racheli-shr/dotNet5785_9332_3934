@@ -6,7 +6,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PL"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800"
+        Title="MainWindow" Height="500" Width="800"
         DataContext="{Binding RelativeSource={RelativeSource Mode=Self}}"
         Loaded="MainWindow_Loaded"
         Closed="MainWindow_Closed">
@@ -14,31 +14,41 @@
 
         <Grid>
             <Grid.RowDefinitions >
-                <RowDefinition Height="*" />
-                <RowDefinition Height="*" />
+                <RowDefinition Height="36*" />
+                <RowDefinition Height="15*" />
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions >
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
-            <Label Content="{Binding CurrentTime}" FontWeight="Bold" FontSize="20" Grid.Row="0" Grid.Column="1" Height="30" Margin="24,20,34,166" />
-            <Button Content="Add One Minute" Click="BtnAddOneMinute_Click" Grid.Row="0" Grid.Column="1" Height="28" Margin="15,57,15,131" />
-            <Button Content="Add One Day" Click="BtnAddOneDay_Click" Grid.Row="0" Grid.Column="1" Height="28" Margin="15,87,15,101" />
-            <Button Content="Add One Hour" Click="BtnAddOneHour_Click" Grid.Row="0" Grid.Column="1" Height="28" Margin="15,117,15,71" />
-            <Button Content="Add One Month" Click="BtnAddOneMonth_Click" Grid.Row="0" Grid.Column="1" Height="28" Margin="15,147,15,41"  />
-            <Button Content="Add One Year" Click="BtnAddOneYear_Click" Grid.Row="0" Grid.Column="1" Height="28" Margin="15,178,15,10"  />
+            <Label Content="{Binding CurrentTime}" FontWeight="Bold" FontSize="15" Grid.Row="0" Grid.Column="1" Margin="24,54,34,242" Height="40"/>
+            <Button IsEnabled="{Binding EnableToChange, Mode=TwoWay}" Content="Add One Minute" Click="BtnAddOneMinute_Click" Grid.Row="0" Height="40" Grid.Column="1" Margin="15,77,15,184" />
+            <Button IsEnabled="{Binding EnableToChange, Mode=TwoWay}" Content="Add One Day" Click="BtnAddOneDay_Click" Grid.Row="0" Height="40" Grid.Column="1" Margin="15,121,15,140" />
+            <Button IsEnabled="{Binding EnableToChange, Mode=TwoWay}" Content="Add One Hour" Click="BtnAddOneHour_Click" Grid.Row="0" Height="40" Grid.Column="1" Margin="15,165,15,96" />
+            <Button IsEnabled="{Binding EnableToChange, Mode=TwoWay}" Content="Add One Month" Click="BtnAddOneMonth_Click" Grid.Row="0" Height="40" Grid.Column="1" Margin="15,209,15,52"  />
+            <Button IsEnabled="{Binding EnableToChange, Mode=TwoWay}" Content="Add One Year" Click="BtnAddOneYear_Click" Grid.Row="0" Height="40" Grid.Column="1" Margin="15,252,15,9"  />
             <!--go to volunteer list-->
-            <Button Content="Hundle Volunteer" Name="BtnHandleVolunteer" Click="HandleVolunteer_Click" Grid.Row="1" Grid.Column="1" Margin="32,70,32,107"  />
+            <Button Content="Hundle Volunteer" Height="50" Name="BtnHandleVolunteer" Click="HandleVolunteer_Click" Grid.Row="1" Grid.Column="1" Margin="28,12,36,63"  />
             <!--go to Call list-->
-            <Button Content="Hundle Call" Name="BtnHandleCall" Click="HandleCall_click" Grid.Row="1" Grid.Column="1" Margin="32,127,32,49"  />
-            <Button Content="Reset DB" Grid.Row="1"  Margin="32,70,32,106" RenderTransformOrigin="19.875,145.65" Click="BtnResetDB" />
-            <Button Content="Initialize DB" Grid.Row="1" Margin="32,127,32,49" Click="BtnInitializeDB" />
-            <TextBox Text="{Binding RiskRange, Mode=TwoWay}" Margin="10,49,165,131" TextChanged="TextBox_TextChanged" />
-            <Label Margin="88,20,88,160" Content="RiskRange"/>
-            <Button Click="BtnUpdateRiskRange_Click" Content="update the Risk Range" Margin="107,49,10,131"/>
-            <TextBlock Text="{Binding volunteer.FullName}" Grid.Column="1" HorizontalAlignment="Left" Margin="32,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="28" Width="200"/>
-
+            <Button Content="Hundle Call" Height="50" Name="BtnHandleCall" Click="HandleCall_click" Grid.Row="1" Grid.Column="1" Margin="28,67,36,8"  />
+            <Button Height="50" IsEnabled="{Binding EnableToChange, Mode=TwoWay}" Content="Reset DB" Grid.Row="1"  Margin="32,68,32,7" RenderTransformOrigin="19.875,145.65" Click="BtnResetDB"/>
+            <Button Height="50" IsEnabled="{Binding EnableToChange, Mode=TwoWay}" Content="Initialize DB" Grid.Row="1" Margin="32,13,32,62" Click="BtnInitializeDB" RenderTransformOrigin="0.5,0.5">
+                <Button.RenderTransform>
+                    <TransformGroup>
+                        <ScaleTransform ScaleY="1"/>
+                        <SkewTransform/>
+                        <RotateTransform/>
+                        <TranslateTransform/>
+                    </TransformGroup>
+                </Button.RenderTransform>
+            </Button>
+            <TextBox IsEnabled="{Binding EnableToChange, Mode=TwoWay}" Text="{Binding RiskRange, Mode=TwoWay}" Margin="68,128,68,154" TextChanged="TextBox_TextChanged" />
+            <Label IsEnabled="{Binding EnableToChange, Mode=TwoWay}" Margin="88,8,88,208" Content="RiskRange"/>
+            <Button Click="BtnUpdateRiskRange_Click" Content="update the Risk Range" Margin="45,44,45,221"/>
+            <TextBlock Height="66" Text="{Binding volunteer.FullName}" Grid.Column="1" HorizontalAlignment="Center" TextWrapping="Wrap" VerticalAlignment="Top"  Width="200" Margin="0,10,0,0"/>
+            <Button Content="{Binding SimulatorButtonText}" Click="startOrStopSimulator" Margin="45,52,44,229" Grid.Column="2"/>
+            <TextBox  IsEnabled="{Binding EnableToChange, Mode=TwoWay}" Text="{Binding Interval}" Margin="62,122,62,166" Grid.Column="2"/>
         </Grid>
 
     </Grid>

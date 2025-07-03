@@ -1,4 +1,6 @@
-﻿using BO;
+﻿using BL.Helpers;
+using BLImplementation;
+using BO;
 using DalApi;
 using DO;
 using Helpers;
@@ -14,6 +16,30 @@ namespace Helpers;
 internal static class CallManager
 {
     internal static ObserverManager Observers = new(); //stage 5 
+    private static readonly IDal c_dal = Factory.Get; //stage 4
+
+    public static async Task UpdateCoordinatesForCallAddressAsync(int callId, string address)
+    {
+        if (string.IsNullOrWhiteSpace(address))
+            throw new Exception("Address must not be null or empty.");
+
+        var (latitude, longitude) = await Tools.GetCoordinatesFromAddressAsync(address);
+
+        if (latitude < -90 || latitude > 90 || longitude < -180 || longitude > 180)
+            throw new Exception($"Invalid coordinates for address: {address}. Latitude: {latitude}, Longitude: {longitude}");
+
+        DO.Call existingCall;
+        lock (AdminManager.BlMutex)
+            existingCall = c_dal.Call.Read(callId);
+
+        existingCall = existingCall with { Latitude = latitude, longtitude = longitude };
+
+        lock (AdminManager.BlMutex)
+            c_dal.Call.Update(existingCall);
+
+        CallManager.Observers.NotifyListUpdated();
+        CallManager.Observers.NotifyItemUpdated(callId);
+    }
 
     internal static DO.Call ConvertBOToDO(BO.Call call) =>
     new DO.Call
@@ -27,76 +53,46 @@ internal static class CallManager
         Description = call.Description,
         MaxTimeToEnd = call.MaxFinishTime
     };
-    private static readonly IDal s_dal = Factory.Get; //stage 4
-    static internal BO.Enums.CallStatus GetCallStatus(int id)
+
+
+    /// <summary>
+    /// Converts a DO.StudentCall object to a BO.CallInList object.
+    /// </summary>
+    /// <param name="studentCall">The DO.StudentCall object to convert.</param>
+    /// <returns>A BO.CallInList object representing the student call.</returns>
+    internal static BO.Enums.CallStatus GetCallStatus(DateTime? MaxTimeToEnd,int callId)
     {
+        var lastAssignment = c_dal.Assignment.ReadAll(a => a.CallId == callId)
+                                         .OrderBy(a => a.EntryTimeForTreatment)
+                                         .LastOrDefault();
 
-        // Retrieve the call from the database or throw an exception if not found
-        DO.Call call = s_dal.Call.Read(v => v.Id == id)
-            ?? throw new BO.Exceptions.BlDoesNotExistException($"Call with ID={id} does not exist");
+        bool isCallExpired = MaxTimeToEnd!=null &&  MaxTimeToEnd < AdminManager.Now;
+        bool isCallInRisk = MaxTimeToEnd!=null && MaxTimeToEnd - AdminManager.Now < AdminManager.MaxRange;
 
-        // Retrieve the assignment associated with the call (null if not assigned yet)
-        DO.Assignment? assignment = s_dal.Assignment.ReadAll(a => a.CallId == call.Id)
-            .OrderByDescending(assignment => assignment.EntryTimeForTreatment).FirstOrDefault();
+        if (isCallExpired)
+            return BO.Enums.CallStatus.Expired;
 
-        // Get the current time
-        DateTime currentTime = AdminManager.Now;
+        if (lastAssignment == null)
+            return isCallInRisk ? BO.Enums.CallStatus.OpenAtRisk : BO.Enums.CallStatus.Open;
 
-        // Get the risk time span from the configuration
-        TimeSpan riskTimeSpan = ConfigManager.GetRiskTimeSpanFromDal();
+        if (isCallInRisk)
+            return BO.Enums.CallStatus.InProgressAtRisk;
 
-        // Calculate the risk threshold time
-        DateTime? riskThreshold = call.MaxTimeToEnd?.Subtract(riskTimeSpan);
-
-        // Case 1: Call is not assigned and no one is handling it
-        if (assignment == null)
+        return lastAssignment.AssignmentStatus switch
         {
-            if (call.MaxTimeToEnd != null && currentTime > call.MaxTimeToEnd)
-            {
-                return BO.Enums.CallStatus.Expired; // Call expired without being handled
-            }
-            if (riskThreshold != null && currentTime >= riskThreshold)
-            {
-                return BO.Enums.CallStatus.OpenAtRisk; // Call is at risk but still open
-            }
-            return BO.Enums.CallStatus.Open; // Call is open and not yet at risk
-        }
+            DO.Enums.AssignmentStatus.TREATED => BO.Enums.CallStatus.Closed,
+            DO.Enums.AssignmentStatus.SELF_CANCELLED => BO.Enums.CallStatus.Open,
+            DO.Enums.AssignmentStatus.MANAGER_CANCELLED => BO.Enums.CallStatus.Open,
+            DO.Enums.AssignmentStatus.EXPIRED => BO.Enums.CallStatus.Expired,
+            DO.Enums.AssignmentStatus.NONE => BO.Enums.CallStatus.InProgress,
+            DO.Enums.AssignmentStatus.AssignedAndInProgress => BO.Enums.CallStatus.InProgress
 
-        // Case 2: Call has an assignment, determine status based on AssignmentStatus
-        switch (assignment.AssignmentStatus)
-        {
-            case DO.Enums.AssignmentStatus.TREATED:
-                return BO.Enums.CallStatus.Closed; // Call was treated successfully
-
-            case DO.Enums.AssignmentStatus.SELF_CANCELLED:
-            case DO.Enums.AssignmentStatus.MANAGER_CANCELLED:
-                return BO.Enums.CallStatus.Open; // Call was reopened after cancellation
-
-            case DO.Enums.AssignmentStatus.EXPIRED:
-                return BO.Enums.CallStatus.Expired; // Call expired without being handled
-            case DO.Enums.AssignmentStatus.AssignedAndInProgress:
-                return BO.Enums.CallStatus.InProgress;
-            case DO.Enums.AssignmentStatus.NONE:
-                return BO.Enums.CallStatus.InProgress;
-        }
-
-        // Case 3: Call is in progress
-        if (call.MaxTimeToEnd != null)
-        {
-            if (currentTime > call.MaxTimeToEnd)
-            {
-                return BO.Enums.CallStatus.Expired; // Call expired during progress
-            }
-            if (currentTime >= riskThreshold)
-            {
-                return BO.Enums.CallStatus.InProgressAtRisk; // Call is in progress and at risk
-            }
-            return BO.Enums.CallStatus.InProgress; // Call is in progress and not at risk
-        }
-
-        // Default: If no specific case applies
-        return BO.Enums.CallStatus.Open;
+        };
     }
+
+
+
+    
     static internal void Validation(BO.Call call)
     {
         if (call.OpeningTime > call.MaxFinishTime)
@@ -112,7 +108,9 @@ internal static class CallManager
     /// <returns>The calculated status of the student call.</returns>
     internal static BO.Enums.CallStatus CalculateCallStatus(DO.Call call)
     {
-        var lastAssignment = s_dal.Assignment
+        DO.Assignment lastAssignment;
+        lock (AdminManager.BlMutex) //stage 7
+            lastAssignment = c_dal.Assignment
     .ReadAll(a => a.CallId == call.Id)
     .OrderBy(a => a.EntryTimeForTreatment)
     .LastOrDefault();
@@ -141,7 +139,101 @@ internal static class CallManager
     }
 
 
+    /// <summary>
+    /// מבצע בדיקות תקינות לפורמט של קריאה.
+    /// בודק שדות חובה, ערכים מספריים תקינים, וטווחי נתונים.
+    /// </summary>
+    /// <param name="boCall">אובייקט הקריאה לבדיקה</param>
+    /// <exception cref="Exception">נזרק כאשר שדה חובה חסר</exception>
+    public static void ValidateCall(BO.Call boCall)
+    {
+        // בדיקת תיאור הקריאה
+        if (string.IsNullOrWhiteSpace(boCall.Description))
+            throw new Exception("Description must not be null or empty.");
+
+        if (boCall.Description.Length > 255)
+            throw new Exception("Description must not exceed 255 characters.");
+
+        // בדיקת כתובת
+        if (string.IsNullOrWhiteSpace(boCall.FullAddress))
+            throw new Exception("Address must not be null or empty.");
+
+        if (boCall.FullAddress.Length > 255)
+            throw new Exception("Address must not exceed 255 characters.");
+
+        // בדיקת סוג קריאה
+        if (!Enum.IsDefined(typeof(BO.Enums.CallType), boCall.CallType))
+            throw new Exception($"Invalid TypeCall value: {boCall.CallType}");
+    }
 
 
 
+    /// <summary>
+    /// מבצע בדיקות היגיון לקריאה, למשל וידוא שתאריך הסיום גדול מתאריך הפתיחה.
+    /// </summary>
+    /// <param name="boCall">אובייקט הקריאה לבדיקה</param>
+    /// <exception cref="ArgumentException">
+    /// נזרק כאשר תנאי ההיגיון אינם מתקיימים (לדוגמה, תאריך הסיום קטן מתאריך הפתיחה).
+    /// </exception>
+    public static void ValidateLogicalCall(BO.Call boCall)
+    {
+        if (boCall.MaxFinishTime.HasValue && boCall.MaxFinishTime.Value <= boCall.OpeningTime)
+        {
+            throw new ArgumentException("MaxTimeFinishCall must be later than OpeningTimeCall.", nameof(boCall.MaxFinishTime));
+        }
+    }
+
+    /// <summary>
+    /// Updates the status of calls that have passed their final time.
+    /// </summary>
+    internal static void PeriodicCallStatusUpdates(DateTime oldClock, DateTime newClock)
+    {
+        IEnumerable<DO.Call> calls;
+        lock (AdminManager.BlMutex) //stage 7
+            calls = c_dal.Call.ReadAll(c => c.MaxTimeToEnd.HasValue && c.MaxTimeToEnd <= newClock);
+
+        foreach (var call in calls)
+        {
+            IEnumerable<DO.Assignment> assignments;
+            lock (AdminManager.BlMutex) //stage 7
+                assignments = c_dal.Assignment.ReadAll(a => a.CallId == call.Id).ToList();
+
+            if (assignments == null || !assignments.Any())
+            {
+                var newAssignment = new DO.Assignment
+                {
+                    CallId = call.Id,
+                    VolunteerId = 0,
+                    EntryTimeForTreatment = newClock,
+                    AssignmentStatus = DO.Enums.AssignmentStatus.EXPIRED,
+                    ActualTreatmentEndTime = newClock
+                };
+                lock (AdminManager.BlMutex) //stage 7
+                    c_dal.Assignment.Create(newAssignment);
+                Observers.NotifyItemUpdated(newAssignment.CallId);
+                Observers.NotifyListUpdated();
+                VolunteerManager.Observers.NotifyListUpdated();
+
+            }
+            else
+            {
+                foreach (var assignment in assignments.Where(a => a.ActualTreatmentEndTime == null))
+                {
+                    var updated = assignment with
+                    {
+                        ActualTreatmentEndTime = newClock,
+                        AssignmentStatus = DO.Enums.AssignmentStatus.EXPIRED
+                    };
+                    lock (AdminManager.BlMutex) //stage 7
+                        c_dal.Assignment.Update(updated);
+                    Observers.NotifyItemUpdated(updated.CallId);
+                    VolunteerManager.Observers.NotifyItemUpdated(updated.VolunteerId);
+                    VolunteerManager.Observers.NotifyListUpdated();
+                    Observers.NotifyListUpdated();
+                }
+            }
+        }
+
+        Observers.NotifyListUpdated();
+    }
 }

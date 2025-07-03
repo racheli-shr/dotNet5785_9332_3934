@@ -17,7 +17,7 @@ public class CallInProgress
     public DateTime OpeningTime { get; set; } // Time when the call was opened
     public DateTime? MaxFinishTime { get; set; } // Maximum time to complete the call
     public DateTime EntryTimeToHandle { get; set; } // Time the volunteer started handling the call
-    public double DistanceFromVolunteer { get; set; } // Distance from the volunteer to the call
+    public double? DistanceFromVolunteer { get; set; } // Distance from the volunteer to the call
     public CallStatus Status { get; set; } // Current status of the call (ENUM)
     public override string ToString() => this.ToStringProperty();
 

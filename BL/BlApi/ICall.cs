@@ -65,8 +65,6 @@ public interface ICall:BlApi.IObservable
     void CancelCallTreatment(int requesterId, int assignmentId);
     ///
     public bool closeLastAssignmentByCallId(int callId,DO.Enums.AssignmentStatus canceledBy);
-    //public IEnumerable<BO.OpenCallInList> GetOpenCallsForVolunteer(int volunteerId, Func<BO.OpenCallInList, bool> predicate = null);
-    //public IEnumerable<BO.OpenCallInList> GetFilteredAndOpenCalls(int volunteerId, BO.Enums.CallType? callType, BO.Enums.OpenCallInListFields? sortByField);
     public IEnumerable<BO.OpenCallInList> GetOpenCallsForVolunteer(int volunteerId, Func<BO.OpenCallInList, bool> predicate = null);
     public IEnumerable<BO.OpenCallInList> FilterOpenCalls(int VolunteerId, BO.Enums.OpenCallInListFields? filterField = null, object? filterValue = null);
     public IEnumerable<BO.OpenCallInList> SortOpenCalls(int volunteerId, BO.Enums.OpenCallInListFields? sortField = BO.Enums.OpenCallInListFields.Id);
