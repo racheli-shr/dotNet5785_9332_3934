@@ -145,8 +145,7 @@ namespace PL.Call
         // Observer callback that triggers call list update
 
         }
-        public void CallsListObserver() => QueryOpenCall();
-        // Filters the open calls based on the selected search criteria
+        
 
         public void QueryOpenCall()
         {
@@ -164,7 +163,7 @@ namespace PL.Call
                 MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
-        // Updates the open calls list when the filter option changes
+        // Filters the open calls based on the selected search criteria
 
         private void FilterOpenCalls(object sender, SelectionChangedEventArgs e)
         {
@@ -202,6 +201,7 @@ namespace PL.Call
         private void ClearButton_Click(object sender, RoutedEventArgs e)
 => OpenCalls = s_bl?.Call.GetOpenCallsForVolunteer(Volunteer.Id).ToList()!;
         // Performs a search based on the selected criteria
+        // Updates the open calls list when the filter option changes
 
         private void SearchButton_Click(object sender, RoutedEventArgs e) => QueryOpenCall();
         // Sorts the open calls based on the selected sort option

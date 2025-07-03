@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BO;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -63,25 +64,17 @@ public partial class VolunteerListWindow : Window
     }
     // Queries and updates the volunteer list according to the current filter.
 
-        try
-        {
-            VolunteerList = (Filter == BO.Enums.VolunteerSortField.NONE) ? s_bl?.Volunteer.GetVolunteersList(null, null)! : s_bl?.Volunteer.GetVolunteersList(null, Filter)!;
-        }
-        catch(Exception ex) 
-        {
-            MessageBox.Show("error opening add/update window" + ex.Message);
-
-        }
-    }
+        
+    
     // Queries and updates the volunteer list according to the current filter.
 
     private void queryVolunteerList()
-    => VolunteerList = (Filter == BO.Enums.VolunteerSortField.NONE) ?
-        s_bl?.Volunteer.GetVolunteersList(null,null)! : s_bl?.Volunteer.GetVolunteersList(null, Filter)!;
-    // Observer callback that refreshes the volunteer list when notified.
-        s_bl?.Volunteer.GetVolunteersList(null, null)! : s_bl?.Volunteer.GetVolunteersList(null, Filter)!;
+          =>VolunteerList = (Filter == BO.Enums.VolunteerSortField.NONE) ?s_bl?.Volunteer.GetVolunteersList(null, null)! : s_bl?.Volunteer.GetVolunteersList(null, Filter)!;
 
+   
+    
     private volatile DispatcherOperation? _observerOperation = null; //stage 7
+    // Observer callback that refreshes the volunteer list when notified.
 
     private void volunteerListObserver()
     {
