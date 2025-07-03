@@ -25,14 +25,63 @@ namespace PL.Volunteer
         public int VolunteerId { get; set; }
 
         public string password { get; set; } = "";
-        public bool IsTextBoxEnabled { set; get; }
-        public bool IsActiveEnabled { set; get; }
+        
 
         public int sender_Id = 0;
-        public bool isAbleToChange = false;
 
         public BO.Enums.Role Role { get; set; } = BO.Enums.Role.NONE;
-        public BO.Enums.DistanceType distanceType { get; set; } = BO.Enums.DistanceType.airDistance;
+
+
+
+
+
+        public BO.Enums.DistanceType DistanceType
+        {
+            get { return (BO.Enums.DistanceType)GetValue(DistanceTypeProperty); }
+            set { SetValue(DistanceTypeProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for DistanceType.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty DistanceTypeProperty =
+            DependencyProperty.Register("DistanceType", typeof(BO.Enums.DistanceType), typeof(MainWindow), new PropertyMetadata(BO.Enums.DistanceType.driveDistance));
+
+
+
+
+        public bool IsTextBoxEnabled
+        {
+            get { return (bool)GetValue(IsTextBoxEnabledProperty); }
+            set { SetValue(IsTextBoxEnabledProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for IsTextBoxEnabled.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty IsTextBoxEnabledProperty =
+            DependencyProperty.Register("IsTextBoxEnabled", typeof(bool), typeof(VolunteerWindow), new PropertyMetadata(false));
+
+
+        public bool IsActiveEnabled
+        {
+            get { return (bool)GetValue(IsActiveEnabledProperty); }
+            set { SetValue(IsActiveEnabledProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for IsActiveEnabled.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty IsActiveEnabledProperty =
+            DependencyProperty.Register("IsActiveEnabled", typeof(bool), typeof(VolunteerWindow), new PropertyMetadata(false));
+
+
+
+
+
+        public bool isAbleToChange
+        {
+            get { return (bool)GetValue(isAbleToChangeProperty); }
+            set { SetValue(isAbleToChangeProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for isAbleToChange.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty isAbleToChangeProperty =
+            DependencyProperty.Register("isAbleToChange", typeof(bool), typeof(VolunteerWindow), new PropertyMetadata(false));
 
 
 
@@ -69,7 +118,7 @@ namespace PL.Volunteer
                     isAbleToChange = true;
                 }
                 //CameFromWindow = window;
-                IsTextBoxEnabled = id != 0 ? true : false;
+                IsTextBoxEnabled = id != 0 ? false : true;
                 sender_Id = id;
                 ButtonText = id == 0 ? "Add" : "Update";
                 CurrentVolunteer = (id != 0) ? s_bl.Volunteer.Read(id)! : new BO.Volunteer() { Id = 0 };
@@ -87,6 +136,7 @@ namespace PL.Volunteer
         {
             try
             {
+                CurrentVolunteer.DistanceType = DistanceType;
                 Console.WriteLine(CurrentVolunteer.Password);
                 if (ButtonText == "Add")
                 {
@@ -114,7 +164,7 @@ namespace PL.Volunteer
         {
             if (CurrentVolunteer != null)
             {
-                CurrentVolunteer.DistanceType = distanceType;
+                CurrentVolunteer.DistanceType = DistanceType;
             }
 
         }

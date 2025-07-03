@@ -4,8 +4,8 @@
  
 
  *לסדר שיהיה אפשר לעדכן רק במצבים מסוימים
- *הוספת MaxTimeToEnd לא תקינה
+ 
  צבע לפי סטטוס
- summaries and risk range observer
+
 
 

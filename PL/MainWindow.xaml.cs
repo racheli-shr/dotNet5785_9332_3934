@@ -203,18 +203,7 @@ public partial class MainWindow : Window
         catch (Exception ex) { MessageBox.Show(ex.Message); }
     }
 
-    private void updateRiskRangeObserver()
-    {
-        try
-        {
-            if (_observerOperation is null || _observerOperation.Status == DispatcherOperationStatus.Completed)
-                _observerOperation = Dispatcher.BeginInvoke(() =>
-                {
-                    s_bl.Admin.SetMaxRange(RiskRange);
-                });
-        }
-        catch (Exception ex) { MessageBox.Show(ex.Message); }
-    }
+    
 
     private void ClockObserver()
     {
@@ -231,20 +220,20 @@ public partial class MainWindow : Window
     }
     // Updates UI to reflect the current risk range configuration.
 
-    private void ConfigObserver()
-    {
-        try
-        {
+    //private void ConfigObserver()
+    //{
+    //    try
+    //    {
 
-            if (_observerOperation is null || _observerOperation.Status == DispatcherOperationStatus.Completed)
-                _observerOperation = Dispatcher.BeginInvoke(() =>
-                {
-                    CurrentTime = s_bl.Admin.GetClock();
-                });
-        }
-        catch (Exception ex) { MessageBox.Show(ex.Message); }
+    //        if (_observerOperation is null || _observerOperation.Status == DispatcherOperationStatus.Completed)
+    //            _observerOperation = Dispatcher.BeginInvoke(() =>
+    //            {
+    //                CurrentTime = s_bl.Admin.GetClock();
+    //            });
+    //    }
+    //    catch (Exception ex) { MessageBox.Show(ex.Message); }
 
-    }
+    //}
     public object CallStatusSummaries
     {
         get { return (object)GetValue(CallStatusSummariesProperty); }
@@ -275,10 +264,9 @@ public partial class MainWindow : Window
             CurrentTime = s_bl.Admin.GetClock();
             RiskRange = s_bl.Admin.GetMaxRange();
 
-            s_bl.Admin.AddConfigObserver(ConfigObserver);
+            //s_bl.Admin.AddConfigObserver(ConfigObserver);
             s_bl.Admin.AddClockObserver(ClockObserver);
             s_bl.Call.AddObserver(updateSummaryCallsObserver);
-            s_bl.Admin.AddRiskObserver(updateRiskRangeObserver);
             s_bl.Admin.AddRiskObserver(updateSummaryCallsObserver);
         }
         catch (Exception ex)
@@ -294,9 +282,8 @@ public partial class MainWindow : Window
         try
         {
             s_bl.Admin.RemoveClockObserver(ClockObserver);
-            s_bl.Admin.RemoveConfigObserver(ConfigObserver);
+            //s_bl.Admin.RemoveConfigObserver(ConfigObserver);
             s_bl.Call.RemoveObserver(updateSummaryCallsObserver);
-            s_bl.Admin.RemoveRiskObserver(updateRiskRangeObserver);
             s_bl.Admin.RemoveRiskObserver(updateSummaryCallsObserver);
 
         }
@@ -337,7 +324,7 @@ public partial class MainWindow : Window
                 callWindow.Closed += (s, args) => callWindow = null;
                 callWindow.Show();
             }
-            catch (Exception ex) { MessageBox.Show(ex.ToString()); }
+            catch (Exception ex) { MessageBox.Show(ex.Message); }
         }
         else
         {

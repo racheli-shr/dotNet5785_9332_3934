@@ -59,6 +59,7 @@ public interface ICall:BlApi.IObservable
     void CompleteCallTreatment(int volunteerId, int assignmentId);
     public void CompleteAssignmentToCall(int volunteerId, int callId);
     public IEnumerable<object> GetCallStatusSummaries();
+    public BO.Enums.CallStatus getCallStatus(DateTime? maxtime, int callId);
 
     public bool isExistingAssignmentToCall(int callId);
     /// <summary>

@@ -333,13 +333,16 @@ internal class CallImplementation : BLApi.ICall
         try
         {
             lock (AdminManager.BlMutex) //stage 7
+            {
                 DOCall = _dal.Call.Read(c => c.Id == callId);
-            
-
-            lock (AdminManager.BlMutex) //stage 7
                 DOAssignment = _dal.Assignment.ReadAll(c => c.CallId == callId);
-            callStatus = CallManager.GetCallStatus(DOCall.MaxTimeToEnd,DOCall.Id);
-            
+            }
+            if(DOCall?.MaxTimeToEnd!=null)
+                   callStatus = CallManager.GetCallStatus(DOCall.MaxTimeToEnd,DOCall.Id);
+            else
+            {
+                callStatus = BO.Enums.CallStatus.Open;
+            }
             List<BO.CallAssignInList>? Assignments = null;
             if (DOAssignment != null)
             {
@@ -381,7 +384,10 @@ internal class CallImplementation : BLApi.ICall
         }
     }
 
-
+    public BO.Enums.CallStatus getCallStatus(DateTime? maxtime,int callId)
+    {
+        return CallManager.GetCallStatus(maxtime, callId);
+    }
 
     public IEnumerable<object> GetCallStatusSummaries()
     {

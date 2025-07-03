@@ -152,6 +152,13 @@ public partial class CallListWindow : Window
     {
         if (sender is Button btn && btn.Tag is BO.CallInList call)
         {
+            var DOcall=s_bl.Call.Read(call.Id);
+            var callStatus = s_bl.Call.getCallStatus(DOcall.MaxFinishTime, DOcall.Id);
+            if (callStatus != BO.Enums.CallStatus.Open && callStatus != BO.Enums.CallStatus.OpenAtRisk) ;
+            {
+                MessageBox.Show("can't delete an non open call");
+                return;
+            }
             var result = MessageBox.Show(
                 $"Are you sure you want to delete **all assignments** from call {call.CallId}?",
                 "Confirm Assignment Deletion",

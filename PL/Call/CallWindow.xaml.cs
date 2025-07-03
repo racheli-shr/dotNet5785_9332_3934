@@ -1,4 +1,5 @@
 ﻿using BO;
+using PL.Volunteer;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -90,6 +91,18 @@ namespace PL.Call
 
 
 
+        public BO.Enums.CallType CallType
+        {
+            get { return (BO.Enums.CallType)GetValue(CallTypeProperty); }
+            set { SetValue(CallTypeProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for CallType.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty CallTypeProperty =
+            DependencyProperty.Register("CallType", typeof(BO.Enums.CallType), typeof(VolunteerWindow), new PropertyMetadata(BO.Enums.CallType.NONE));
+
+
+
         public bool IsUpdatingEditable
         {
             get { return (bool)GetValue(IsUpdatingEditableProperty); }
@@ -161,6 +174,12 @@ namespace PL.Call
                 }
                 else
                 {
+                    var call = s_bl.Call.Read(CurrentCall.Id);
+                    if(call.OpeningTime!=CurrentCall.OpeningTime)
+                    {
+                        MessageBox.Show("can't change the opening date.");
+                        return;
+                    }
                     s_bl.Call.UpdateCall( CurrentCall!);
                     MessageBox.Show("The call was been Updated successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
 
@@ -191,7 +210,11 @@ namespace PL.Call
         {
             try
             {
+                if (CallId != 0)
+                {
                 CurrentCall = s_bl.Call.Read(CallId)!;
+
+                }
             }
             catch (Exception ex)
             {

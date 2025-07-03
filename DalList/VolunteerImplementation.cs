@@ -15,7 +15,11 @@ namespace Dal
     {
         // Read: Retrieves a volunteer by ID or throws an exception if not found.
         [MethodImpl(MethodImplOptions.Synchronized)]
-
+        public Volunteer? isExsistingId(int id)
+        {
+            Volunteer? v = DataSource.Volunteers.FirstOrDefault(x => x.Id == id); // Fetch volunteer by ID
+            return v;
+        }
         public Volunteer? Read(int id)
         {
             Volunteer? v = DataSource.Volunteers.FirstOrDefault(x => x.Id == id); // Fetch volunteer by ID

@@ -42,7 +42,7 @@ internal class VolunteerImplementation : BLApi.IVolunteer
         // נעילה רק על הפניות ל-DAL
         lock (AdminManager.BlMutex)
         {
-            var existingVolunteer = _dal.Volunteer.Read(newVolunteer.Id);
+            DO.Volunteer? existingVolunteer = _dal.Volunteer.isExsistingId(newVolunteer.Id);
             if (existingVolunteer != null)
                 throw new BO.Exceptions.BlAlreadyExistsException($"Volunteer with ID={newVolunteer.Id} already exists.");
             try
@@ -341,6 +341,11 @@ internal class VolunteerImplementation : BLApi.IVolunteer
                 throw new BO.Exceptions.BLGeneralException("שגיאה בקריאת המתנדב ממאגר הנתונים: " + ex.Message);
             }
         }
+
+        updatedVolunteer.Password = updatedVolunteer.Password != null ? updatedVolunteer.Password : _dal.Volunteer.DecryptPassword(dovolunteer.Password);
+
+        if (!(updatedVolunteer?.Password!=""&& updatedVolunteer?.Password != null&&_dal.Volunteer.checkPassword(updatedVolunteer.Password)))
+            throw new BO.Exceptions.BLGeneralException("סיסמא חלשה או לא קיימת נא הכנס סימא בעלת לפחות 8 תווים, אות קטנה ,אות גדולה,ספרה אחת לפחות,ותו מיחד כגון @!#.");
 
         if (volunteerId != updatedVolunteer.Id)
             throw new BO.Exceptions.BLGeneralException("לא ניתן לעדכן פרטי מתנדב אחר.");

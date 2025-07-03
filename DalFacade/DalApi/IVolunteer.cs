@@ -12,5 +12,5 @@ public interface IVolunteer: ICrud<Volunteer>
     string EncryptPassword(string password);
     string DecryptPassword(string password);
     string GenerateStrongPassword();
-
+    public DO.Volunteer? isExsistingId(int id);
 }

@@ -184,6 +184,8 @@ public partial class VolunteerListWindow : Window
 
         if (sender is Button btn && btn.Tag is BO.VolunteerInList volunteer)
         {
+            if(volunteer.IsActive==true) { MessageBox.Show("can't delete an active volunteer");return; }
+
             var result = MessageBox.Show(
                 $"Are you sure you want to delete volunteer {volunteer.FullName} (ID: {volunteer.Id})?",
                 "Confirm Delete",

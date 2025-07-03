@@ -40,7 +40,7 @@ internal class VolunteerImplementation : IVolunteer
 
     public bool checkPassword(string password)
     {
-        if (string.IsNullOrEmpty(password) || password.Length != 8)
+        if (string.IsNullOrEmpty(password) || password.Length > 8)
             return false;
 
         bool hasUpper = password.Any(char.IsUpper);
@@ -150,6 +150,12 @@ internal class VolunteerImplementation : IVolunteer
 
     }
     [MethodImpl(MethodImplOptions.Synchronized)]
+
+    public DO.Volunteer? isExsistingId(int id) {
+        List<Volunteer> volunteers = XMLTools.LoadListFromXMLSerializer<Volunteer>(Config.s_volunteer_xml);
+        Volunteer? volunteer = volunteers.FirstOrDefault(v => v.Id == id);
+        return volunteer;
+    }
 
     public Volunteer Read(int id)
     {

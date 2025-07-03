@@ -29,7 +29,7 @@
         <ComboBox MinHeight="40" SelectionChanged="Selected_Role" IsEnabled="{Binding isAbleToChange}" ItemsSource="{Binding Source={StaticResource VolunteerRoleCollectionKey}}" SelectedValue="{Binding Path=Role, Mode=TwoWay}"  HorizontalAlignment="Left" Margin="238,344,0,0" VerticalAlignment="Top" Height="40" Width="142" />
         <CheckBox MinHeight="40"  IsChecked="{Binding CurrentVolunteer.IsActive, Mode=TwoWay, NotifyOnValidationError=true,  ValidatesOnExceptions=true}"  Margin="296,395,118,183" RenderTransformOrigin="1.038,0.799" />
         <TextBox MinHeight="40" Text="{Binding CurrentVolunteer.MaxDistance, Mode=TwoWay, NotifyOnValidationError=true,  ValidatesOnExceptions=true}" HorizontalAlignment="Left" Margin="238,420,0,0" VerticalAlignment="Top" Height="40" Width="142"/>
-        <ComboBox MinHeight="40" SelectionChanged="Selected_distanceType" ItemsSource="{Binding Source={StaticResource distanceTypeCollectionKey}}" SelectedValue="{Binding Path=distanceType, Mode=TwoWay}"  HorizontalAlignment="Left" Margin="238,467,0,0" VerticalAlignment="Top" Height="40" Width="142" />
+        <ComboBox MinHeight="40" SelectionChanged="Selected_distanceType" ItemsSource="{Binding Source={StaticResource distanceTypeCollectionKey}}" SelectedValue="{Binding Path=DistanceType, Mode=TwoWay}"  HorizontalAlignment="Left" Margin="238,467,0,0" VerticalAlignment="Top" Height="40" Width="142" />
         <Button Content="{Binding ButtonText}" Click="AddUpdate_btn" HorizontalAlignment="Left" Margin="181,531,0,0" VerticalAlignment="Top" Height="33" Width="74"/>
         <PasswordBox Margin="238,248,70,338" PasswordChanged="PasswordBox_PasswordChanged" />
 
