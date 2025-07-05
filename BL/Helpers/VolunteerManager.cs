@@ -238,7 +238,63 @@ internal static class VolunteerManager
  
     private static int s_periodicCounter = 0;
 
-    
+    internal static void SimulateVolunteerAssignments()
+    {
+        var callImpl = new CallImplementation();
+        var volunteerImpl = new VolunteerImplementation();
+
+        var activeVolunteers = v_dal.Volunteer.ReadAll();
+        var rand = new Random();
+
+        foreach (var BoVolunteer in activeVolunteers)
+        {
+            var volunteer = volunteerImpl.Read(BoVolunteer.Id);
+            var currentCallInProgress = volunteer.CurrentCallInProgress;
+
+            // מתנדב פנוי
+            if (currentCallInProgress == null)
+            {
+                int toAssign = rand.Next(1, 11); // 10% סיכוי לשבץ
+                if (toAssign == 1)
+                {
+                    // מחפשים את סוג הקריאה השכיח ביותר של המתנדב בעבר
+                    var mostCommonType = callImpl.GetClosedCallsByVolunteer(volunteer.Id)
+                        .GroupBy(c => c.CallType)
+                        .OrderByDescending(g => g.Count())
+                        .Select(g => (BO.Enums.CallType?)g.Key)
+                        .FirstOrDefault();
+
+                    IEnumerable<BO.OpenCallInList> openCalls;
+                    if (mostCommonType != null)
+                        openCalls = callImpl.GetOpenCallsForVolunteer(volunteer.Id,v=>v.CallType== mostCommonType);
+                    else
+                        openCalls = callImpl.GetOpenCallsForVolunteer(volunteer.Id);
+
+                    openCalls = openCalls.OrderBy(c => c.DistanceFromVolunteer);
+                    if (openCalls.Any())
+                        CallManager.AssignCallToVolunteer(volunteer.Id, openCalls.First().Id);
+                }
+            }
+
+            // מתנדב מטפל כעת בקריאה
+            else
+            {
+                DateTime entryTime = currentCallInProgress.EntryTimeToHandle;
+                int extraTime = 10 + (int)Math.Floor((currentCallInProgress.DistanceFromVolunteer??0) * 2) + rand.Next(0, 6);
+
+                if (entryTime.AddMinutes(extraTime) <= AdminManager.Now)
+                {
+                    CallManager.CompleteCallTreatment(volunteer.Id, currentCallInProgress.Id);
+                }
+                else
+                {
+                    int toCancel = rand.Next(1, 11); // 10%
+                    if (toCancel == 1)
+                        CallManager.closeLastAssignmentByCallId(currentCallInProgress.Id, toCancel%2==0?DO.Enums.AssignmentStatus.MANAGER_CANCELLED: DO.Enums.AssignmentStatus.SELF_CANCELLED);
+                }
+            }
+        }
+    }
 
 }
 

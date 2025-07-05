@@ -44,7 +44,7 @@ namespace Dal
             nextCallId = startCallId;
             nextAssignmentId = StartAssignmentId;
             Clock = DateTime.Now;
-            RiskRange = TimeSpan.FromDays(5);
+            RiskRange = TimeSpan.FromDays(18);
         }
     }
 }

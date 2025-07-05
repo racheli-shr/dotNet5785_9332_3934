@@ -205,29 +205,38 @@ namespace PL
         }
 
 
-        private void queryVolunteerMainWindow()
+        private void queryVolunteerMainWindowForAssignedCall()
         {
             try
             {
-                CurrentVolunteer = s_bl.Volunteer.Read(VolunteerId)!;
-            VolunteerCall= s_bl.Volunteer.checkIfExistingAssignment(CurrentVolunteer);
+                VolunteerCall= s_bl.Volunteer.checkIfExistingAssignment(CurrentVolunteer);
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
             }
         }
-
+        private void queryVolunteerMainWindowForVolunteerInfo()
+        {
+            try
+            {
+                CurrentVolunteer = s_bl.Volunteer.Read(VolunteerId)!;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
         private volatile DispatcherOperation? _observerOperation = null; //stage 7
 
-        private void VolunteerMainWindowObserver()
+        private void VolunteerMainWindowObserverForVolunteerInfo()
         {
             try
             {
                 if (_observerOperation is null || _observerOperation.Status == DispatcherOperationStatus.Completed)
                 _observerOperation = Dispatcher.BeginInvoke(() =>
                 {
-                    queryVolunteerMainWindow();
+                    queryVolunteerMainWindowForVolunteerInfo();
                 });
             }
             catch (Exception ex)
@@ -235,12 +244,27 @@ namespace PL
                 MessageBox.Show(ex.Message);
             }
         }
-
+        private void VolunteerMainWindowObserverForAssignedCall()
+        {
+            try
+            {
+                if (_observerOperation is null || _observerOperation.Status == DispatcherOperationStatus.Completed)
+                    _observerOperation = Dispatcher.BeginInvoke(() =>
+                    {
+                        queryVolunteerMainWindowForAssignedCall();
+                    });
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             try
             {
-                s_bl.Call.AddObserver(VolunteerMainWindowObserver);
+                s_bl.Call.AddObserver(queryVolunteerMainWindowForAssignedCall);
+                s_bl.Volunteer.AddObserver(VolunteerMainWindowObserverForVolunteerInfo);
             }
             catch (Exception ex)
             {
@@ -252,7 +276,8 @@ namespace PL
         {
                 try
                 {
-                    s_bl.Call.RemoveObserver(VolunteerMainWindowObserver);
+                    s_bl.Call.RemoveObserver(queryVolunteerMainWindowForAssignedCall);
+                    s_bl.Volunteer.RemoveObserver(VolunteerMainWindowObserverForVolunteerInfo);
             }
             catch (Exception ex)
             {

@@ -13,8 +13,8 @@ internal class VolunteerImplementation : BLApi.IVolunteer
     /// <summary>
     /// Adds a new volunteer to the system.
     /// </summary>
-    
-    public void AddVolunteer(BO.Volunteer newVolunteer)
+
+    public string AddVolunteer(BO.Volunteer newVolunteer)
     {
         AdminManager.ThrowOnSimulatorIsRunning();
 
@@ -82,6 +82,7 @@ internal class VolunteerImplementation : BLApi.IVolunteer
 
 
         Console.WriteLine($"Generated password for {newVolunteer.FullName}: {generatedPassword}");
+        return generatedPassword;
     }
 
 
@@ -142,9 +143,9 @@ internal class VolunteerImplementation : BLApi.IVolunteer
             lock (AdminManager.BlMutex) //stage 7
                 doVolunteer = _dal.Volunteer.Read(v => v.Id == volunteerId)
                 ?? throw new BO.Exceptions.BlDoesNotExistException($"Volunteer with ID={volunteerId} does not exist");
-            IEnumerable <DO.Assignment> TreatedAssignments;
-            IEnumerable <DO.Assignment> SelfCanceledAssignments;
-            IEnumerable <DO.Assignment> ExpiredAssignments;
+            IEnumerable<DO.Assignment> TreatedAssignments;
+            IEnumerable<DO.Assignment> SelfCanceledAssignments;
+            IEnumerable<DO.Assignment> ExpiredAssignments;
             DO.Assignment assignedCall;
             BO.CallInProgress callInProgress;
             DO.Call calllAssignment;
@@ -154,9 +155,10 @@ internal class VolunteerImplementation : BLApi.IVolunteer
                 TreatedAssignments = _dal.Assignment.ReadAll(a => a.VolunteerId == doVolunteer.Id && a.AssignmentStatus == DO.Enums.AssignmentStatus.TREATED);
                 SelfCanceledAssignments = _dal.Assignment.ReadAll(a => a.VolunteerId == doVolunteer.Id && a.AssignmentStatus == DO.Enums.AssignmentStatus.SELF_CANCELLED);
                 ExpiredAssignments = _dal.Assignment.ReadAll(a => a.VolunteerId == doVolunteer.Id && a.AssignmentStatus == DO.Enums.AssignmentStatus.EXPIRED);
-                assignedCall= _dal.Assignment.Read(a => a.VolunteerId == doVolunteer.Id && a.AssignmentStatus == DO.Enums.AssignmentStatus.AssignedAndInProgress);
-                if(assignedCall!=null) { 
-                    calllAssignment= _dal.Call.Read(c => c.Id == assignedCall.CallId);
+                assignedCall = _dal.Assignment.Read(a => a.VolunteerId == doVolunteer.Id && a.AssignmentStatus == DO.Enums.AssignmentStatus.AssignedAndInProgress);
+                if (assignedCall != null)
+                {
+                    calllAssignment = _dal.Call.Read(c => c.Id == assignedCall.CallId);
                     callInProgress = new CallInProgress
                     {
                         Id = assignedCall.Id,
@@ -177,7 +179,7 @@ internal class VolunteerImplementation : BLApi.IVolunteer
                 }
             }
 
-            
+
             return new BO.Volunteer
             {
                 Id = volunteerId,
@@ -192,10 +194,10 @@ internal class VolunteerImplementation : BLApi.IVolunteer
                 MaxDistance = doVolunteer.MaxDistance,
                 DistanceType = (BO.Enums.DistanceType)doVolunteer.DistanceType,
                 NumberOfCalls = TreatedAssignments.Count(),
-                NumberOfCanceledCalls=SelfCanceledAssignments.Count(),
-                NumberOfexpiredCalls=ExpiredAssignments.Count(),
-                CurrentCallInProgress=callInProgress
-                
+                NumberOfCanceledCalls = SelfCanceledAssignments.Count(),
+                NumberOfexpiredCalls = ExpiredAssignments.Count(),
+                CurrentCallInProgress = callInProgress
+
             };
         }
         catch (Exception ex)
@@ -223,8 +225,8 @@ internal class VolunteerImplementation : BLApi.IVolunteer
             {
                 // Retrieve volunteers based on their availability status
                 lock (AdminManager.BlMutex) //stage 7
-                DOvolunteers = _dal.Volunteer.ReadAll(v => v.IsActive == isActive)
-                    ?? throw new BO.Exceptions.BlDoesNotExistException("No volunteers match the specified availability.");
+                    DOvolunteers = _dal.Volunteer.ReadAll(v => v.IsActive == isActive)
+                        ?? throw new BO.Exceptions.BlDoesNotExistException("No volunteers match the specified availability.");
             }
 
 
@@ -322,7 +324,7 @@ internal class VolunteerImplementation : BLApi.IVolunteer
     /// <summary>
     /// Updates the details of an existing volunteer.
     /// </summary>
-    
+
     public void UpdateVolunteerDetails(int volunteerId, BO.Volunteer updatedVolunteer)
     {
         AdminManager.ThrowOnSimulatorIsRunning();
@@ -344,7 +346,7 @@ internal class VolunteerImplementation : BLApi.IVolunteer
 
         updatedVolunteer.Password = updatedVolunteer.Password != null ? updatedVolunteer.Password : _dal.Volunteer.DecryptPassword(dovolunteer.Password);
 
-        if (!(updatedVolunteer?.Password!=""&& updatedVolunteer?.Password != null&&_dal.Volunteer.checkPassword(updatedVolunteer.Password)))
+        if (!(updatedVolunteer?.Password != "" && updatedVolunteer?.Password != null && _dal.Volunteer.checkPassword(updatedVolunteer.Password)))
             throw new BO.Exceptions.BLGeneralException("סיסמא חלשה או לא קיימת נא הכנס סימא בעלת לפחות 8 תווים, אות קטנה ,אות גדולה,ספרה אחת לפחות,ותו מיחד כגון @!#.");
 
         if (volunteerId != updatedVolunteer.Id)
@@ -410,7 +412,7 @@ internal class VolunteerImplementation : BLApi.IVolunteer
             }
         }
 
-        
+
         if (notifyItem)
             VolunteerManager.Observers.NotifyItemUpdated(dovolunteer.Id);
         if (notifyList)
@@ -444,7 +446,7 @@ internal class VolunteerImplementation : BLApi.IVolunteer
         lock (AdminManager.BlMutex) //stage 7
             assignment = _dal.Assignment.Read(a => a.VolunteerId == v.Id && a.AssignmentStatus == DO.Enums.AssignmentStatus.AssignedAndInProgress);
 
-        if (assignment!=null)
+        if (assignment != null)
         {
             DO.Call doCall;
             lock (AdminManager.BlMutex) //stage 7
@@ -468,8 +470,4 @@ internal class VolunteerImplementation : BLApi.IVolunteer
         return null;
     }
 
-    #region Stage 5
-
-
-    #endregion Stage 5
 }

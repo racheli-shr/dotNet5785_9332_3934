@@ -14,8 +14,8 @@ public static class Initialization
     private static readonly Random s_rand = new();
     private static void createVolunteer()
     {
-        s_dal.Volunteer!.Create(new(328183934, "Yael Bloch", "0534183542", "yaelbloch2023@gmail.com", s_dal!.Volunteer.EncryptPassword("Yael@2023") , "moshe zilberg 32", 31.762107245509604, 35.1859516513024, DO.Enums.Role.manager, true, 100, DO.Enums.DistanceType.driveDistance));
-        s_dal.Volunteer!.Create(new(321226227, "Lea Bloch", "0548440911", "lea@smileart.co.il", s_dal!.Volunteer.EncryptPassword("Yael@2023") , "moshe zilberg 30", 31.76146873975337, 35.18567807502385, DO.Enums.Role.volunteer, true, 100, DO.Enums.DistanceType.airDistance));
+        s_dal.Volunteer!.Create(new(328183934, "Yael Bloch", "0534183542", "yaelbloch2023@gmail.com", s_dal!.Volunteer.EncryptPassword("Yael@202") , "moshe zilberg 32", 31.762107245509604, 35.1859516513024, DO.Enums.Role.manager, true, 100, DO.Enums.DistanceType.driveDistance));
+        s_dal.Volunteer!.Create(new(321226227, "Lea Bloch", "0548440911", "lea@smileart.co.il", s_dal!.Volunteer.EncryptPassword("Yael@202") , "moshe zilberg 30", 31.76146873975337, 35.18567807502385, DO.Enums.Role.volunteer, true, 100, DO.Enums.DistanceType.airDistance));
         int MIN_ID = 20000000;
         int MAX_ID = 40000000;
         int MIN_PHONE = 500000000;

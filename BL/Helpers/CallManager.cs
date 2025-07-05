@@ -278,4 +278,140 @@ internal static class CallManager
 
         Observers.NotifyListUpdated();
     }
+
+    //if an opened assignment was found he will cancel it and sending an email- תוספת
+    public static bool closeLastAssignmentByCallId(int callId, DO.Enums.AssignmentStatus canceledBy)
+    {
+        IEnumerable<DO.Assignment> DOAssignment = null;
+        DO.Call call;
+        lock (AdminManager.BlMutex) //stage 7
+            DOAssignment = c_dal.Assignment.ReadAll(c => c.CallId == callId);
+        foreach (var assignment in DOAssignment)
+        {
+            if (assignment.AssignmentStatus == DO.Enums.AssignmentStatus.AssignedAndInProgress)
+            {
+                //update the manager cancelation of assignments
+                lock (AdminManager.BlMutex) //stage 7
+                    c_dal.Assignment.Update(assignment with { AssignmentStatus = canceledBy });
+                //searching the call
+                lock (AdminManager.BlMutex) //stage 7
+                    call = c_dal.Call.Read(c => c.Id == callId);
+                //sending an email to the concerned volunteer
+                var volunteer = c_dal.Volunteer.Read(v => v.Id == assignment.VolunteerId);
+                var subject = $"Assignment Cancelled for Call #{callId}";
+                string typeOfUser = canceledBy == DO.Enums.AssignmentStatus.MANAGER_CANCELLED ? "manager" : "volunteer";
+                var body = $"Dear {volunteer.FullName},\n\nThe assignment for call #{callId} has been cancelled by the {typeOfUser}.\n\nCall details:\nType: {call.CallType}.\nLocation: {call.FullAdress}.\nDescription: {call.Description} .\n\nBest regards,\nManagement System";
+
+                MailHelper.SendEmail(volunteer.Email, subject, body);
+                //return success
+                return true;
+            }
+        }
+        CallManager.Observers.NotifyItemUpdated(callId);
+        CallManager.Observers.NotifyListUpdated();
+        return false;
+    }
+
+
+    public static void CompleteCallTreatment(int volunteerId, int assignmentId)
+    {
+        DO.Assignment assignment;
+
+        
+        try
+        {
+            // Retrieve the assignment from the database
+            lock (AdminManager.BlMutex) //stage 7
+                assignment = c_dal.Assignment.Read(assignmentId);
+            // Check if the assignment belongs to the volunteer, if not throw an error
+            if (assignment.VolunteerId != volunteerId)
+                throw new BO.Exceptions.BLGeneralException($"invalid action,cannot complete assignment that is not yours ");
+            // Check if the assignment is in a state that cannot be completed (e.g., already treated, cancelled, expired, or completed)
+            if (assignment.AssignmentStatus == DO.Enums.AssignmentStatus.TREATED ||
+               assignment.AssignmentStatus == DO.Enums.AssignmentStatus.SELF_CANCELLED ||
+               assignment.AssignmentStatus == DO.Enums.AssignmentStatus.MANAGER_CANCELLED ||
+               assignment.AssignmentStatus == DO.Enums.AssignmentStatus.EXPIRED
+              )
+            {
+                throw new BO.Exceptions.BLGeneralException($"invalid action,cannot complete assignment that is not open ");
+            }
+            var updatedAssignment = new DO.Assignment()
+            {
+                Id = assignment.Id,
+                CallId = assignment.CallId,
+                VolunteerId = volunteerId,
+                EntryTimeForTreatment = assignment.EntryTimeForTreatment,
+                ActualTreatmentEndTime = AdminManager.Now,
+                AssignmentStatus = DO.Enums.AssignmentStatus.TREATED
+            };
+            // Update the assignment in the database
+            lock (AdminManager.BlMutex) //stage 7
+                c_dal.Assignment.Update(updatedAssignment);
+            CallManager.Observers.NotifyItemUpdated(updatedAssignment.Id);  //stage 5
+            CallManager.Observers.NotifyListUpdated();  //stage 5  
+        }
+        catch (Exception ex)
+        {
+            throw new BO.Exceptions.BlDoesNotExistException($"cannot complete call treatment : {ex.Message}", ex);
+        }
+    }
+
+
+    public static void AssignCallToVolunteer(int volunteerId, int callId)
+    {
+        IEnumerable<DO.Assignment> assignments;
+        DO.Volunteer volunteer;
+        DO.Call call;
+
+        try
+        {
+            // Fetch the necessary data from the data layer
+            lock (AdminManager.BlMutex) //stage 7
+            {
+                call = c_dal.Call.Read(callId);
+                volunteer = c_dal.Volunteer.Read(volunteerId);
+                assignments = c_dal.Assignment.ReadAll(a => a.CallId == callId);
+            }
+            // Using 'let' to create a variable for filtering the assignments
+            var openAssignments = from assignment in assignments
+                                  let isAssigned = assignment.AssignmentStatus == DO.Enums.AssignmentStatus.TREATED || assignment.AssignmentStatus == DO.Enums.AssignmentStatus.EXPIRED
+                                  where isAssigned
+                                  select assignment;
+
+            // Check if the call is already being handled or has expired
+            if (openAssignments.Any())
+                throw new BO.Exceptions.BLGeneralException("The call is already being handled or has expired.");
+
+            // Check if the call has expired based on the max finish time
+            if (call.MaxTimeToEnd < AdminManager.Now)
+                throw new BO.Exceptions.BLGeneralException("The call has expired.");
+
+            double? Latitude = volunteer.Latitude ?? 0;
+            double? longtitude = volunteer.longtitude ?? 0;
+            var distanceBetweenVolToCall = VolunteerManager.GetDistance(Latitude, longtitude, call.Latitude, call.longtitude, volunteer.DistanceType);
+            if (volunteer.MaxDistance < distanceBetweenVolToCall)
+                throw new BO.Exceptions.BLInvalidDataException("The call is further from volunteer max distance .");
+
+            // Create a new assignment if the call is open and valid
+            var newAssignment = new DO.Assignment
+            {
+                CallId = callId,
+                VolunteerId = volunteerId,
+                AssignmentStatus = DO.Enums.AssignmentStatus.AssignedAndInProgress,
+                EntryTimeForTreatment = AdminManager.Now,
+                ActualTreatmentEndTime = null,// Not known at this stage
+
+            };
+
+            // Add the new assignment to the data layer
+            lock (AdminManager.BlMutex) //stage 7
+                c_dal.Assignment.Create(newAssignment);
+            CallManager.Observers.NotifyListUpdated();  //stage 5  
+        }
+        catch (Exception ex)
+        {
+            // General exception handling for assignment failure
+            throw new BO.Exceptions.BLGeneralException($"Error assigning call to volunteer: {ex.Message}", ex);
+        }
+    }
 }

@@ -9,6 +9,7 @@
         Title="MainWindow" Height="500" Width="800"
         DataContext="{Binding RelativeSource={RelativeSource Mode=Self}}"
         Loaded="MainWindow_Loaded"
+        
         Closed="MainWindow_Closed">
     <Grid>
 

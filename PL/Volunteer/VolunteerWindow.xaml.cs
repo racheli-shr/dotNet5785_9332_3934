@@ -58,6 +58,15 @@ namespace PL.Volunteer
         public static readonly DependencyProperty IsTextBoxEnabledProperty =
             DependencyProperty.Register("IsTextBoxEnabled", typeof(bool), typeof(VolunteerWindow), new PropertyMetadata(false));
 
+        public bool IsTextBoxNotEnabled
+        {
+            get { return (bool)GetValue(IsTextBoxNotEnabledProperty); }
+            set { SetValue(IsTextBoxNotEnabledProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for IsTextBoxEnabled.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty IsTextBoxNotEnabledProperty =
+            DependencyProperty.Register("IsTextBoxNotEnabled", typeof(bool), typeof(VolunteerWindow), new PropertyMetadata(true));
 
         public bool IsActiveEnabled
         {
@@ -119,6 +128,7 @@ namespace PL.Volunteer
                 }
                 //CameFromWindow = window;
                 IsTextBoxEnabled = id != 0 ? false : true;
+                IsTextBoxNotEnabled = id != 0 ? true : false;
                 sender_Id = id;
                 ButtonText = id == 0 ? "Add" : "Update";
                 CurrentVolunteer = (id != 0) ? s_bl.Volunteer.Read(id)! : new BO.Volunteer() { Id = 0 };
@@ -134,19 +144,25 @@ namespace PL.Volunteer
 
         private void AddUpdate_btn(object sender, RoutedEventArgs e)
         {
+            
             try
             {
+                
                 CurrentVolunteer.DistanceType = DistanceType;
                 Console.WriteLine(CurrentVolunteer.Password);
                 if (ButtonText == "Add")
                 {
                     //status_message = "Adding...";
                     Console.WriteLine(CurrentVolunteer);
-                    s_bl.Volunteer.AddVolunteer(CurrentVolunteer!);
-                    MessageBox.Show("The Volunteer was been added successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                    string passoword=s_bl.Volunteer.AddVolunteer(CurrentVolunteer!);
+                    MessageBox.Show($"The Volunteer was been added successfully!\n Your generated password is {passoword}", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
                 else
                 {
+                    if (CurrentVolunteer.Password == "" || CurrentVolunteer.Password == null)
+                    {
+                        CurrentVolunteer.Password = s_bl.Volunteer.Read(CurrentVolunteer.Id).Password;
+                    }
                     //status_message = "Updating...";
                     s_bl.Volunteer.UpdateVolunteerDetails(CurrentVolunteer!.Id, CurrentVolunteer!);
                     MessageBox.Show("The Volunteer was been Updated successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);

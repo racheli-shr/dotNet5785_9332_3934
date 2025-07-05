@@ -51,7 +51,7 @@ internal class Config
     {
         NextCallId = 1000;
         NextAssignmentId = 1000;
-        RiskRange = TimeSpan.Zero;
+        RiskRange = TimeSpan.FromDays(18);
         Clock = DateTime.Now;
     }
     [MethodImpl(MethodImplOptions.Synchronized)]

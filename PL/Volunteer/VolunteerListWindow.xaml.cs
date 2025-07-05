@@ -149,6 +149,8 @@ public partial class VolunteerListWindow : Window
     {
         try
         {
+            MessageBox.Show("Attention please!\nthe password input is desabled because at first time the password is generated for maximal security. in case of inconvinience the password is changeable at your personal area\n thank you!");
+
             new VolunteerWindow(0, "VolunteerListWindow").ShowDialog();
 
         }
