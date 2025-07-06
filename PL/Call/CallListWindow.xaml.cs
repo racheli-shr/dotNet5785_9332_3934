@@ -154,7 +154,7 @@ public partial class CallListWindow : Window
         {
             var DOcall=s_bl.Call.Read(call.Id);
             var callStatus = s_bl.Call.getCallStatus(DOcall.MaxFinishTime, DOcall.Id);
-            if (callStatus != BO.Enums.CallStatus.Open && callStatus != BO.Enums.CallStatus.OpenAtRisk) ;
+            if (callStatus != BO.Enums.CallStatus.InProgress && callStatus != BO.Enums.CallStatus.OpenAtRisk)
             {
                 MessageBox.Show("can't delete an non open call");
                 return;

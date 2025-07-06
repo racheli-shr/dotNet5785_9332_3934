@@ -30,11 +30,14 @@ internal class VolunteerImplementation : BLApi.IVolunteer
 
         if (!VolunteerManager.IsValidPhoneNumber(newVolunteer.Phone))
             throw new BO.Exceptions.BLInvalidDataException("Invalid phone number");
-
+        string generatedPassword;
+        string encryptedPassword;
         // יצירת סיסמה והצפנתה מחוץ ל-lock
-        string generatedPassword = _dal.Volunteer.GenerateStrongPassword();
-        string encryptedPassword = _dal.Volunteer.EncryptPassword(generatedPassword);
-
+        lock (AdminManager.BlMutex)
+        {
+            generatedPassword = _dal.Volunteer.GenerateStrongPassword();
+            encryptedPassword = _dal.Volunteer.EncryptPassword(generatedPassword);
+        }   
         // חישוב קואורדינטות מחוץ ל-lock
 
         bool didCreate = false;
@@ -343,12 +346,13 @@ internal class VolunteerImplementation : BLApi.IVolunteer
                 throw new BO.Exceptions.BLGeneralException("שגיאה בקריאת המתנדב ממאגר הנתונים: " + ex.Message);
             }
         }
-
-        updatedVolunteer.Password = updatedVolunteer.Password != null ? updatedVolunteer.Password : _dal.Volunteer.DecryptPassword(dovolunteer.Password);
-
-        if (!(updatedVolunteer?.Password != "" && updatedVolunteer?.Password != null && _dal.Volunteer.checkPassword(updatedVolunteer.Password)))
-            throw new BO.Exceptions.BLGeneralException("סיסמא חלשה או לא קיימת נא הכנס סימא בעלת לפחות 8 תווים, אות קטנה ,אות גדולה,ספרה אחת לפחות,ותו מיחד כגון @!#.");
-
+        lock (AdminManager.BlMutex) //stage 7
+            updatedVolunteer.Password = updatedVolunteer.Password != null ? updatedVolunteer.Password : _dal.Volunteer.DecryptPassword(dovolunteer.Password);
+        lock (AdminManager.BlMutex) //stage 7
+        {
+            if (!(updatedVolunteer?.Password != "" && updatedVolunteer?.Password != null && _dal.Volunteer.checkPassword(updatedVolunteer.Password)))
+                throw new BO.Exceptions.BLGeneralException("סיסמא חלשה או לא קיימת נא הכנס סימא בעלת לפחות 8 תווים, אות קטנה ,אות גדולה,ספרה אחת לפחות,ותו מיחד כגון @!#.");
+        }
         if (volunteerId != updatedVolunteer.Id)
             throw new BO.Exceptions.BLGeneralException("לא ניתן לעדכן פרטי מתנדב אחר.");
 

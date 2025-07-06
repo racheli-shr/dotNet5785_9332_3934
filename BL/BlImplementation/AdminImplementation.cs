@@ -27,8 +27,12 @@ internal class AdminImplementation : IAdmin
     => AdminManager.Stop(); //stage 7
     public void StartSimulator(int interval)  //stage 7
     {
-        AdminManager.ThrowOnSimulatorIsRunning();  //stage 7
-        AdminManager.Start(interval); //stage 7
+        try
+        {
+            AdminManager.ThrowOnSimulatorIsRunning();  //stage 7
+            AdminManager.Start(interval); //stage 7
+        }catch(Exception ex) { throw new Exception(ex.Message); }
+
     }
     // Advance the clock by a specified time unit
     public void ForwardClock(TimeUnit unit)

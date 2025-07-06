@@ -220,20 +220,7 @@ public partial class MainWindow : Window
     }
     // Updates UI to reflect the current risk range configuration.
 
-    //private void ConfigObserver()
-    //{
-    //    try
-    //    {
-
-    //        if (_observerOperation is null || _observerOperation.Status == DispatcherOperationStatus.Completed)
-    //            _observerOperation = Dispatcher.BeginInvoke(() =>
-    //            {
-    //                CurrentTime = s_bl.Admin.GetClock();
-    //            });
-    //    }
-    //    catch (Exception ex) { MessageBox.Show(ex.Message); }
-
-    //}
+ 
     public object CallStatusSummaries
     {
         get { return (object)GetValue(CallStatusSummariesProperty); }

@@ -23,11 +23,18 @@ internal static class AdminManager //stage 4
     /// </summary>
     internal static TimeSpan MaxRange
     {
-        get => s_dal.Config.RiskRange;
+       
+        get  {
+            TimeSpan t;
+            lock (AdminManager.BlMutex) //stage 7
+                t = s_dal.Config.RiskRange;
+            return t; 
+        }
         set
         {
             //_maxRange = value;
-            s_dal.Config.RiskRange = value;
+            lock (AdminManager.BlMutex) //stage 7
+                s_dal.Config.RiskRange = value;
             ConfigUpdatedObservers?.Invoke();
         }
     }
@@ -35,13 +42,19 @@ internal static class AdminManager //stage 4
     /// <summary>
     /// Property for providing current application's clock value for any BL class that may need it
     /// </summary>
-    internal static DateTime Now { get => s_dal.Config.Clock; } //stage 4
+    internal static DateTime Now { get {
+            DateTime t;
+            lock (AdminManager.BlMutex) //stage 7
+                t = s_dal.Config.Clock;
+            return t;
+        } } //stage 4
 
     internal static void ResetDB() //stage 4
     {
         lock (BlMutex) //stage 7
         {
-            s_dal.ResetDB();
+            lock (AdminManager.BlMutex) //stage 7
+                s_dal.ResetDB();
             AdminManager.UpdateClock(AdminManager.Now); //stage 5 - needed since we want the label on Pl to be updated
             AdminManager.MaxRange = AdminManager.MaxRange; // stage 5 - needed to update PL 
         }
@@ -65,23 +78,17 @@ internal static class AdminManager //stage 4
     /// <param name="newClock">updated clock value</param>
     internal static void UpdateClock(DateTime newClock) //stage 4-7
     {
-        var oldClock = s_dal.Config.Clock; //stage 4
-        s_dal.Config.Clock = newClock; //stage 4
+        lock (AdminManager.BlMutex) //stage 7
+        {
+            var oldClock = s_dal.Config.Clock; //stage 4
+            s_dal.Config.Clock = newClock; //stage 4
 
-        //TO_DO:
-        //Add calls here to any logic method that should be called periodically,
-        //after each clock update
-        //for example, Periodic students' updates:
-        //Go through all students to update properties that are affected by the clock update
-        //(students becomes not active after 5 years etc.)
-
-        //StudentManager.PeriodicStudentsUpdates(oldClock, newClock); //stage 4
-        if (_periodicTask is null || _periodicTask.IsCompleted) //stage 7
-                _periodicTask = Task.Run(() => CallManager.PeriodicCallStatusUpdates(oldClock, newClock)); 
-              //etc ...
-
-            //Calling all the observers of clock update
+           
+            if (_periodicTask is null || _periodicTask.IsCompleted) //stage 7
+                _periodicTask = Task.Run(() => CallManager.PeriodicCallStatusUpdates(oldClock, newClock));
+           
             ClockUpdatedObservers?.Invoke(); //prepared for stage 5
+        }
     }
     #endregion Stage 4
 
@@ -118,13 +125,16 @@ internal static class AdminManager //stage 4
     [MethodImpl(MethodImplOptions.Synchronized)] //stage 7                                                 
     internal static void Start(int interval)
     {
-        if (s_thread is null)
+        try
         {
-            s_interval = interval;
-            s_stop = false;
-            s_thread = new(clockRunner) { Name = "ClockRunner" };
-            s_thread.Start();
-        }
+            if (s_thread is null)
+            {
+                s_interval = interval;
+                s_stop = false;
+                s_thread = new(clockRunner) { Name = "ClockRunner" };
+                s_thread.Start();
+            }
+        }catch(Exception ex) { throw new Exception(ex.Message); }
     }
 
     [MethodImpl(MethodImplOptions.Synchronized)] //stage 7                                                 
@@ -145,15 +155,20 @@ internal static class AdminManager //stage 4
     {
         while (!s_stop)
         {
-            UpdateClock(Now.AddMinutes(s_interval));
+            try
+            {
+                UpdateClock(Now.AddMinutes(s_interval));
 
-            //TO_DO:
-            //Add calls here to any logic simulation that was required in stage 7
-            //for example: course registration simulation
-        if (_simulateTask is null || _simulateTask.IsCompleted)//stage 7
-            _simulateTask = Task.Run(() => VolunteerManager.SimulateVolunteerAssignments());
+                //TO_DO:
+                //Add calls here to any logic simulation that was required in stage 7
+                //for example: course registration simulation
+                if (_simulateTask is null || _simulateTask.IsCompleted)//stage 7
+                    _simulateTask = Task.Run(() => VolunteerManager.SimulateVolunteerAssignments());
 
-              
+            }catch(Exception ex)
+            {
+                throw new Exception(ex.Message);
+            } 
 
                 try
                 {

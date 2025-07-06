@@ -297,6 +297,7 @@ internal class CallImplementation : BLApi.ICall
     public bool closeLastAssignmentByCallId(int callId, DO.Enums.AssignmentStatus canceledBy)
     { IEnumerable<DO.Assignment> DOAssignment = null;
         DO.Call call;
+        DO.Volunteer volunteer;
         AdminManager.ThrowOnSimulatorIsRunning();  //stage 7
         lock (AdminManager.BlMutex) //stage 7
             DOAssignment = _dal.Assignment.ReadAll(c => c.CallId == callId);
@@ -307,16 +308,7 @@ internal class CallImplementation : BLApi.ICall
                 //update the manager cancelation of assignments
                 lock (AdminManager.BlMutex) //stage 7
                     _dal.Assignment.Update(assignment with { AssignmentStatus = canceledBy});
-                //searching the call
-                lock (AdminManager.BlMutex) //stage 7
-                    call = _dal.Call.Read(c => c.Id == callId);
-                //sending an email to the concerned volunteer
-                var volunteer = _dal.Volunteer.Read(v => v.Id == assignment.VolunteerId);
-                var subject = $"Assignment Cancelled for Call #{callId}";
-                string typeOfUser = canceledBy == DO.Enums.AssignmentStatus.MANAGER_CANCELLED ? "manager" : "volunteer";
-                var body = $"Dear {volunteer.FullName},\n\nThe assignment for call #{callId} has been cancelled by the {typeOfUser}.\n\nCall details:\nType: {call.CallType}.\nLocation: {call.FullAdress}.\nDescription: {call.Description} .\n\nBest regards,\nManagement System";
-                
-                MailHelper.SendEmail(volunteer.Email, subject, body);
+               
                 //return success
                 return true;
             }

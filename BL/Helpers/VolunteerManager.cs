@@ -21,14 +21,18 @@ internal static class VolunteerManager
 
     internal static void TutorSimulator()
     {
-        BLApi.IVolunteer volunteerImplementation= new VolunteerImplementation();
+        BLApi.IVolunteer volunteerImplementation = new VolunteerImplementation();
         BLApi.ICall callImplementation = new CallImplementation();
-        
+        IEnumerable<DO.Volunteer> activeDOTutors;
+        IEnumerable<BO.Volunteer> activeTutors;
         Random rnd = new Random();
         int toCancel = rnd.Next(1, 6);
         int toAssign = rnd.Next(1, 6);
-        var activeDOTutors = v_dal.Volunteer.ReadAll(tutor => tutor.IsActive);
-        IEnumerable<BO.Volunteer> activeTutors = activeDOTutors.Select(t => volunteerImplementation.Read(t.Id));
+        lock (AdminManager.BlMutex) //stage 7
+        {
+            activeDOTutors = v_dal.Volunteer.ReadAll(tutor => tutor.IsActive);
+            activeTutors = activeDOTutors.Select(t => volunteerImplementation.Read(t.Id));
+        }
         foreach (var tutor in activeTutors)
         {
             BO.CallInProgress currentCallInProgress = tutor.CurrentCallInProgress;
@@ -86,7 +90,7 @@ internal static class VolunteerManager
 
         return Regex.IsMatch(name, pattern);
     }
-    
+
     public static DO.Volunteer ConvertBOToDO(BO.Volunteer input) =>
         new DO.Volunteer
         {
@@ -175,8 +179,8 @@ internal static class VolunteerManager
 
     private static double? DegreesToRadians(double? degrees)
     {
-        
-        return degrees!=null?degrees * (Math.PI / 180):null;
+
+        return degrees != null ? degrees * (Math.PI / 180) : null;
     }
 
     internal static bool IsValidEmail(string? email)
@@ -235,66 +239,70 @@ internal static class VolunteerManager
             throw new BO.Exceptions.BLInvalidDataException("One or more numeric fields in the volunteer object contain invalid data.");
         }
     }
- 
+
     private static int s_periodicCounter = 0;
 
     internal static void SimulateVolunteerAssignments()
     {
-        var callImpl = new CallImplementation();
-        var volunteerImpl = new VolunteerImplementation();
+        try {
+            var callImpl = new CallImplementation();
+            var volunteerImpl = new VolunteerImplementation();
+            IEnumerable<DO.Volunteer> activeVolunteers;
 
-        var activeVolunteers = v_dal.Volunteer.ReadAll();
-        var rand = new Random();
+            lock (AdminManager.BlMutex) //stage 7
+                activeVolunteers = v_dal.Volunteer.ReadAll();
+            var rand = new Random();
 
-        foreach (var BoVolunteer in activeVolunteers)
-        {
-            var volunteer = volunteerImpl.Read(BoVolunteer.Id);
-            var currentCallInProgress = volunteer.CurrentCallInProgress;
-
-            // מתנדב פנוי
-            if (currentCallInProgress == null)
+            foreach (var BoVolunteer in activeVolunteers)
             {
-                int toAssign = rand.Next(1, 11); // 10% סיכוי לשבץ
-                if (toAssign == 1)
+                var volunteer = volunteerImpl.Read(BoVolunteer.Id);
+                var currentCallInProgress = volunteer.CurrentCallInProgress;
+
+                // מתנדב פנוי
+                if (currentCallInProgress == null)
                 {
-                    // מחפשים את סוג הקריאה השכיח ביותר של המתנדב בעבר
-                    var mostCommonType = callImpl.GetClosedCallsByVolunteer(volunteer.Id)
-                        .GroupBy(c => c.CallType)
-                        .OrderByDescending(g => g.Count())
-                        .Select(g => (BO.Enums.CallType?)g.Key)
-                        .FirstOrDefault();
+                    int toAssign = rand.Next(1, 4); // 30% סיכוי לשבץ
+                    if (toAssign == 1)
+                    {
+                        // מחפשים את סוג הקריאה השכיח ביותר של המתנדב בעבר
+                        var mostCommonType = callImpl.GetClosedCallsByVolunteer(volunteer.Id)
+                            .GroupBy(c => c.CallType)
+                            .OrderByDescending(g => g.Count())
+                            .Select(g => (BO.Enums.CallType?)g.Key)
+                            .FirstOrDefault();
 
-                    IEnumerable<BO.OpenCallInList> openCalls;
-                    if (mostCommonType != null)
-                        openCalls = callImpl.GetOpenCallsForVolunteer(volunteer.Id,v=>v.CallType== mostCommonType);
-                    else
-                        openCalls = callImpl.GetOpenCallsForVolunteer(volunteer.Id);
+                        IEnumerable<BO.OpenCallInList> openCalls;
+                        if (mostCommonType != null)
+                            openCalls = callImpl.GetOpenCallsForVolunteer(volunteer.Id, v => v.CallType == mostCommonType);
+                        else
+                            openCalls = callImpl.GetOpenCallsForVolunteer(volunteer.Id);
 
-                    openCalls = openCalls.OrderBy(c => c.DistanceFromVolunteer);
-                    if (openCalls.Any())
-                        CallManager.AssignCallToVolunteer(volunteer.Id, openCalls.First().Id);
+                        openCalls = openCalls.OrderBy(c => c.DistanceFromVolunteer);
+                        if (openCalls.Any())
+                            CallManager.AssignCallToVolunteer(volunteer.Id, openCalls.First().Id);
+                    }
                 }
-            }
 
-            // מתנדב מטפל כעת בקריאה
-            else
-            {
-                DateTime entryTime = currentCallInProgress.EntryTimeToHandle;
-                int extraTime = 10 + (int)Math.Floor((currentCallInProgress.DistanceFromVolunteer??0) * 2) + rand.Next(0, 6);
-
-                if (entryTime.AddMinutes(extraTime) <= AdminManager.Now)
-                {
-                    CallManager.CompleteCallTreatment(volunteer.Id, currentCallInProgress.Id);
-                }
+                // מתנדב מטפל כעת בקריאה
                 else
                 {
-                    int toCancel = rand.Next(1, 11); // 10%
-                    if (toCancel == 1)
-                        CallManager.closeLastAssignmentByCallId(currentCallInProgress.Id, toCancel%2==0?DO.Enums.AssignmentStatus.MANAGER_CANCELLED: DO.Enums.AssignmentStatus.SELF_CANCELLED);
+                    DateTime entryTime = currentCallInProgress.EntryTimeToHandle;
+                    int extraTime = 10 + (int)Math.Floor((currentCallInProgress.DistanceFromVolunteer ?? 0) * 2) + rand.Next(0, 6);
+
+                    if (entryTime.AddMinutes(extraTime) <= AdminManager.Now)
+                    {
+                        CallManager.CompleteCallTreatment(volunteer.Id, currentCallInProgress.Id);
+                    }
+                    else
+                    {
+                        int toCancel = rand.Next(1, 4); // 30%
+                        if (toCancel == 1)
+                            CallManager.closeLastAssignmentByCallId(currentCallInProgress.Id, toCancel % 2 == 0 ? DO.Enums.AssignmentStatus.MANAGER_CANCELLED : DO.Enums.AssignmentStatus.SELF_CANCELLED);
+                    }
                 }
             }
         }
+        catch (Exception ex) { throw new Exception(ex.Message); }
     }
-
 }
 

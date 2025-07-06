@@ -102,11 +102,11 @@ internal static class CallManager
     /// <returns>A BO.CallInList object representing the student call.</returns>
     internal static BO.Enums.CallStatus GetCallStatus(DateTime? MaxTimeToEnd,int callId)
     {
+        DO.Assignment lastAssignment;
         if (MaxTimeToEnd == null)
             return  BO.Enums.CallStatus.Open;
-        var lastAssignment = c_dal.Assignment.ReadAll(a => a.CallId == callId)
-                                         .OrderBy(a => a.EntryTimeForTreatment)
-                                         .LastOrDefault();
+        lock (AdminManager.BlMutex) //stage 7
+            lastAssignment = c_dal.Assignment.ReadAll(a => a.CallId == callId).OrderBy(a => a.EntryTimeForTreatment).LastOrDefault();
 
         bool isCallExpired = MaxTimeToEnd!=null &&  MaxTimeToEnd < AdminManager.Now;
         bool isCallInRisk = MaxTimeToEnd!=null && MaxTimeToEnd - AdminManager.Now < AdminManager.MaxRange;
@@ -152,10 +152,7 @@ internal static class CallManager
     {
         DO.Assignment lastAssignment;
         lock (AdminManager.BlMutex) //stage 7
-            lastAssignment = c_dal.Assignment
-    .ReadAll(a => a.CallId == call.Id)
-    .OrderBy(a => a.EntryTimeForTreatment)
-    .LastOrDefault();
+            lastAssignment = c_dal.Assignment.ReadAll(a => a.CallId == call.Id).OrderBy(a => a.EntryTimeForTreatment).LastOrDefault();
         bool isCallExpired = call.MaxTimeToEnd.HasValue && call.MaxTimeToEnd < AdminManager.Now;
         bool isCallInRisk = call.MaxTimeToEnd.HasValue && call.MaxTimeToEnd - AdminManager.Now < AdminManager.MaxRange;
         if (isCallExpired)
@@ -284,6 +281,7 @@ internal static class CallManager
     {
         IEnumerable<DO.Assignment> DOAssignment = null;
         DO.Call call;
+        DO.Volunteer volunteer;
         lock (AdminManager.BlMutex) //stage 7
             DOAssignment = c_dal.Assignment.ReadAll(c => c.CallId == callId);
         foreach (var assignment in DOAssignment)
@@ -292,17 +290,7 @@ internal static class CallManager
             {
                 //update the manager cancelation of assignments
                 lock (AdminManager.BlMutex) //stage 7
-                    c_dal.Assignment.Update(assignment with { AssignmentStatus = canceledBy });
-                //searching the call
-                lock (AdminManager.BlMutex) //stage 7
-                    call = c_dal.Call.Read(c => c.Id == callId);
-                //sending an email to the concerned volunteer
-                var volunteer = c_dal.Volunteer.Read(v => v.Id == assignment.VolunteerId);
-                var subject = $"Assignment Cancelled for Call #{callId}";
-                string typeOfUser = canceledBy == DO.Enums.AssignmentStatus.MANAGER_CANCELLED ? "manager" : "volunteer";
-                var body = $"Dear {volunteer.FullName},\n\nThe assignment for call #{callId} has been cancelled by the {typeOfUser}.\n\nCall details:\nType: {call.CallType}.\nLocation: {call.FullAdress}.\nDescription: {call.Description} .\n\nBest regards,\nManagement System";
-
-                MailHelper.SendEmail(volunteer.Email, subject, body);
+                    c_dal.Assignment.Update(assignment with { AssignmentStatus = canceledBy });    
                 //return success
                 return true;
             }
